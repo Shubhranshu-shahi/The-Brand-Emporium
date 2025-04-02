@@ -4,7 +4,7 @@ import { invoiceGenrate } from "../assets/helper/InvoiceApi";
 import mainLogo from "../img/logo-transp.png";
 import { Mail, MapPin, PhoneCall } from "lucide-react";
 
-function InvoiceBill({ id }) {
+function InvoiceBill({ id, pdf }) {
   const [inv, setInv] = useState({
     rows: [],
     customerAndInvoice: {},
@@ -87,7 +87,7 @@ function InvoiceBill({ id }) {
 
   return (
     <div className="bg-gray-100 p-6 text-black">
-      <div className="max-w-6xl mt-16 mx-auto bg-white p-6 rounded-lg shadow-md">
+      <div className="max-w-6xl mt-8 mx-auto bg-white p-6 rounded-lg shadow-md">
         {/* Header Section */}
         <div className="flex flex-wrap  text-sm md:text-base">
           <div className="bg-gray-800 w-full md:w-1/4 flex justify-center p-2">
@@ -106,13 +106,11 @@ function InvoiceBill({ id }) {
             </p>
           </div>
         </div>
-
         <div className="p-4 font-sans bg-gray-800 text-gray-100  md:rounded-r-full text-center md:text-left text-sm w-full md:text-base md:w-4/6">
           <h1 className="text-xl font-bold">The Brand Emporium Enterprise</h1>
           <p>GSTIN: 09AAWFT0842R1Z4</p>
           <p>State: 09 - Uttar Pradesh</p>
         </div>
-
         {/* Invoice Info */}
         <div className="grid grid-cols-1 md:grid-cols-6 gap-4 p-4 text-sm md:text-base">
           <div className="md:col-span-2">
@@ -141,7 +139,6 @@ function InvoiceBill({ id }) {
             </p>
           </div>
         </div>
-
         {/* Table Section */}
         <div className="overflow-x-auto">
           <table className="w-full border-collapse mt-4 text-sm md:text-base">
@@ -245,7 +242,6 @@ function InvoiceBill({ id }) {
             <strong>You Saved:</strong> ₹ {discountAm}
           </p>
         </div>
-
         {/* Invoice Amount In Words */}
         <div className="mt-4 p-4">
           <p>
@@ -258,17 +254,20 @@ function InvoiceBill({ id }) {
             only
           </p>
         </div>
-
         {/* Terms and Conditions */}
         <div className="mt-4 p-4 border-t">
           <p className="font-bold text-red-600">Terms And Conditions</p>
           <p>No return nor refund.</p>
         </div>
-
         {/* Footer */}
         <div className="mt-4 text-right">
           <p>For: The Brand Emporium Enterprise</p>
           <p className="font-bold mt-2">Authorized Signatory</p>
+        </div>
+        <div className="mt-4 p-4 text-left">
+          <button onClick={pdf} className="hover:text-blue-600">
+            Download invoice
+          </button>
         </div>
       </div>
     </div>
