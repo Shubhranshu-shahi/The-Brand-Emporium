@@ -28,7 +28,7 @@ export default function HeaderNav({
     <header className="bg-[#0f1215] text-white p-4 flex justify-between items-center w-full fixed top-0 left-0 z-50">
       <div className="flex items-center space-x-2">
         <img src={logo} alt="Logo" className="w-18 h-10" />
-        <span className="text-xl font-bold">Brand Emporium</span>
+        <span className="text-xl font-bold font-sans">The Brand Emporium</span>
       </div>
       <div className="relative">
         <img
