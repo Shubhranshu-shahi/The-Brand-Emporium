@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { LogOut, Shield, User } from "lucide-react";
 import { handleSuccess } from "../assets/helper/utils";
 import { useNavigate } from "react-router-dom";
-import s from "../img/logo-transp.png";
+import logo from "../img/logo.jpeg";
 function TopNav() {
   const navigate = useNavigate();
   const [loggedInUser, setLoggedInUser] = useState("");
@@ -28,7 +28,7 @@ function TopNav() {
             <div className="flex items-center justify-start rtl:justify-end">
               <a href="#" className="flex ms-2 md:me-24">
                 <img
-                  src="../img/logo-transp.png"
+                  src={logo}
                   className="h-8 me-3"
                   alt="Brand Emporium Logo"
                 />

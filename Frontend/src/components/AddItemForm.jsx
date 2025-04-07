@@ -6,6 +6,7 @@ import axios from "axios";
 import { getAllProduct, productInsert } from "../assets/helper/productApi";
 import { handleSuccess } from "../assets/helper/utils";
 import { genrateBarcode } from "../assets/helper/Helpers";
+import { categoryInsert, getAllCategory } from "../assets/helper/category";
 
 const BarcodeModal = ({ itemCode, isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -48,6 +49,7 @@ function AddItemForm() {
   const [formData, setFormData] = useState(initialFormState);
   const [isGenerated, setIsGenerated] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
     const mrp = parseFloat(formData.mrp) || 0;
@@ -77,6 +79,33 @@ function AddItemForm() {
     formData.taxPurchase,
   ]);
 
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  //get all category
+  const getCategory = async () => {
+    try {
+      const res = await getAllCategory();
+      const names = res.map((cat) => cat.categoryName);
+      setCategories(names);
+      console.log(names, "----------category names");
+    } catch (err) {
+      console.error("Error loading categories:", err);
+    }
+  };
+
+  //catgory insert
+  const catInsert = async (categoryName) => {
+    console.log(categories, "-------------");
+    const exists = categories.includes(categoryName.categoryName);
+    console.log(exists, "---exits");
+    if (!exists) {
+      console.log("Category not found. Inserting...");
+      await categoryInsert(categoryName);
+    }
+  };
+
   // Handle form input changes
 
   const handleChange = (e) => {
@@ -91,22 +120,21 @@ function AddItemForm() {
     setIsGenerated(true);
   }, []);
 
-  //backendCall
-
   //save handle
 
   const handleSave = async () => {
-    // getAllProduct();
+    await catInsert({ categoryName: formData.category });
     await productInsert(formData);
     console.log("Saved Data:", formData);
-    // alert("Item Saved Successfully!");
+    alert("Item Saved Successfully!");
   };
 
   // Save & Reset Form
   const handleSaveNew = async () => {
     console.log("Saved Data:", formData);
+    await catInsert({ categoryName: formData.category });
     await productInsert(formData);
-    // alert("Item Saved & Ready for New Entry!");
+    alert("Item Saved & Ready for New Entry!");
     setFormData(initialFormState); // Reset form fields
     setIsGenerated(false); // Reset barcode status
   };
@@ -157,11 +185,9 @@ function AddItemForm() {
           />
 
           <datalist id="category-list">
-            <option value="Chocolate"></option>
-            <option value="Coconut"></option>
-            <option value="Mint"></option>
-            <option value="Strawberry"></option>
-            <option value="Vanilla"></option>
+            {categories.map((cat) => (
+              <option key={cat} value={cat}></option>
+            ))}
           </datalist>
           <div class="flex items-center space-x-2">
             <input

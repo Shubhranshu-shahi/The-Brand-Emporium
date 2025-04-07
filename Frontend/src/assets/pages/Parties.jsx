@@ -1,14 +1,14 @@
 import React from "react";
 import AsideTable from "../../components/AsideTable";
-import Navs from "./Navs";
+
+import Layout from "../../components/Layout";
 function Parties() {
   return (
-    <div>
-      <Navs />
-      <div className="p-4 mt-16 sm:ml-64">
+    <Layout>
+      <div className="p-4 overflow-hidden">
         <AsideTable />
       </div>
-    </div>
+    </Layout>
   );
 }
 

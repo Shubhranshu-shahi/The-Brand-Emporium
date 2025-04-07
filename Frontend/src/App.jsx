@@ -16,10 +16,11 @@ import AddItem from "./assets/pages/AddItem";
 import Te from "./components/Te";
 import AuthPage from "./assets/pages/AuthPage";
 import { ToastContainer } from "react-toastify";
-import Navs from "./assets/pages/Navs";
+
 import RefreshHandler from "./components/RefreshHandler";
 import BarcodeImage from "./components/BarcodeImage";
 import Invoice from "./assets/pages/Invoice";
+import WholeNavs from "./components/WholeNavs";
 // import WholeNavs from "./components/wholeNavs";
 
 function App() {
@@ -46,7 +47,7 @@ function App() {
           path="/parties"
           element={<PrivateRoute element={<Parties />} />}
         />
-        <Route path="/test" element={<Test />} />
+        <Route path="/test" element={<WholeNavs />} />
         <Route path="/sales" element={<PrivateRoute element={<Sales />} />} />
         <Route path="/items" element={<PrivateRoute element={<Items />} />} />
         <Route

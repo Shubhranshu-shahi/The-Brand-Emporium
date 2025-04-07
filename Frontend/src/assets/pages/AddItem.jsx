@@ -1,15 +1,15 @@
 import React from "react";
 import AddItemForm from "../../components/AddItemForm";
-import Navs from "./Navs";
+
+import Layout from "../../components/Layout";
 
 function AddItem() {
   return (
-    <>
-      <Navs />
-      <div className="p-4 mt-16 sm:ml-64">
+    <Layout>
+      <div className="p-4">
         <AddItemForm />
       </div>
-    </>
+    </Layout>
   );
 }
 

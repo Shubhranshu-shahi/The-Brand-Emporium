@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { numberToWords } from "../assets/helper/Helpers";
 import { invoiceGenrate } from "../assets/helper/InvoiceApi";
-import mainLogo from "../img/logo-transp.png";
+import logo from "../img/logo.jpeg";
+import sign from "../img/sign.jpeg";
 import { Mail, MapPin, PhoneCall } from "lucide-react";
 
 function InvoiceBill({ id, pdf }) {
@@ -90,8 +91,8 @@ function InvoiceBill({ id, pdf }) {
       <div className="max-w-6xl mt-8 mx-auto bg-white p-6 rounded-lg shadow-md">
         {/* Header Section */}
         <div className="flex flex-wrap  text-sm md:text-base">
-          <div className="bg-gray-800 w-full md:w-1/4 flex justify-center p-2">
-            <img src={mainLogo} className="h-16" alt="Logo" />
+          <div className="bg-[#0f1316] w-full md:w-1/4 flex justify-center p-2">
+            <img src={logo} className="h-16" alt="Logo" />
           </div>
           <div className="bg-red-600 gap-2 font-sans w-full md:w-3/4 text-white p-4 flex flex-col md:flex-row md:justify-between md:items-center">
             <p className="flex items-center text-sm md:text-base">
@@ -106,7 +107,7 @@ function InvoiceBill({ id, pdf }) {
             </p>
           </div>
         </div>
-        <div className="p-4 font-sans bg-gray-800 text-gray-100  md:rounded-r-full text-center md:text-left text-sm w-full md:text-base md:w-4/6">
+        <div className="p-4 font-sans bg-[#0f1316] text-gray-100  md:rounded-r-full text-center md:text-left text-sm w-full md:text-base md:w-4/6">
           <h1 className="text-xl font-bold">The Brand Emporium Enterprise</h1>
           <p>GSTIN: 09AAWFT0842R1Z4</p>
           <p>State: 09 - Uttar Pradesh</p>
@@ -143,7 +144,7 @@ function InvoiceBill({ id, pdf }) {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse mt-4 text-sm md:text-base">
             <thead>
-              <tr className="bg-gray-700 text-gray-100">
+              <tr className="bg-[#0f1316] text-gray-100">
                 <th className="border p-2">#</th>
                 <th className="border p-2">Item Name</th>
                 <th className="border p-2">HSN/SAC</th>
@@ -249,9 +250,8 @@ function InvoiceBill({ id, pdf }) {
           </p>
           <p>
             {inv.totalDetails.roundOff
-              ? numberToWords(inv.totalDetails.roundOff)
+              ? numberToWords(parseInt(inv.totalDetails.roundOff))
               : "N/A"}{" "}
-            only
           </p>
         </div>
         {/* Terms and Conditions */}
@@ -260,9 +260,10 @@ function InvoiceBill({ id, pdf }) {
           <p>No return nor refund.</p>
         </div>
         {/* Footer */}
-        <div className="mt-4 text-right">
-          <p>For: The Brand Emporium Enterprise</p>
-          <p className="font-bold mt-2">Authorized Signatory</p>
+        <div className="mt-8 flex justify-end items-end flex-col text-right">
+          <p className="mb-1">For: The Brand Emporium Enterprise</p>
+          <img src={sign} alt="Authorized Sign" className="h-16 mb-1" />
+          <p className="font-bold">Authorized Signatory</p>
         </div>
         <div className="mt-4 p-4 text-left">
           <button onClick={pdf} className="hover:text-blue-600">

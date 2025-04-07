@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
   Home,
@@ -11,15 +11,32 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
+import { useLocation, Link } from "react-router-dom";
 
 export default function WholeNavs() {
-  // const [ collapsed, setCollapsed, contentHidden, setContentHidden ] =
-  //         useContext(shieldNSlideContext);
+  const location = useLocation();
 
   const [collapsed, setCollapsed] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [contentHidden, setContentHidden] = useState(false);
+  const navItems = [
+    { path: "/dashboard", icon: <Home />, label: "Dashboard" },
+    { path: "/parties", icon: <Users />, label: "Parties" },
+    { path: "/items", icon: <Box />, label: "Items" },
+    { path: "/sales", icon: <ShoppingCart />, label: "Sales" },
+    { path: "/reports", icon: <BarChart />, label: "Reports" },
+  ];
 
+  useEffect(() => {
+    if (contentHidden) {
+      document.body.classList.add("no-scroll");
+    } else {
+      document.body.classList.remove("no-scroll");
+    }
+
+    // Cleanup on unmount
+    return () => document.body.classList.remove("no-scroll");
+  }, [contentHidden]);
   return (
     <div className="flex h-screen relative">
       {/* Navigation Wrapper */}
@@ -70,7 +87,7 @@ export default function WholeNavs() {
           initial={{ width: "16rem" }}
           animate={{ width: collapsed ? "4rem" : "16rem" }}
           transition={{ duration: 0.3 }}
-          className="bg-gray-900 text-white p-4 h-full fixed top-16 left-0"
+          className="bg-gray-900 text-white p-4 h-full fixed top-16 left-0 z-40"
         >
           <button
             onClick={() => setCollapsed(!collapsed)}
@@ -79,22 +96,26 @@ export default function WholeNavs() {
             {collapsed ? <ArrowRight /> : <ArrowLeft />}
           </button>
           <nav className="flex flex-col space-y-2">
-            {[
-              { icon: <Home />, label: "Dashboard" },
-              { icon: <Users />, label: "Parties" },
-              { icon: <Box />, label: "Items" },
-              { icon: <ShoppingCart />, label: "Sales" },
-              { icon: <BarChart />, label: "Reports" },
-            ].map(({ icon, label }, index) => (
-              <motion.div
-                key={index}
-                whileHover={{ scale: 1.1 }}
-                className="flex items-center space-x-4 p-2 hover:bg-gray-700 rounded"
-              >
-                <div className="text-xl w-6 flex justify-center">{icon}</div>
-                {!collapsed && <span>{label}</span>}
-              </motion.div>
-            ))}
+            {navItems.map(({ path, icon, label }, index) => {
+              const isActive = location.pathname === path;
+
+              return (
+                <Link to={path}>
+                  <motion.div
+                    key={index}
+                    whileHover={{ scale: 1.05 }}
+                    className={`flex items-center space-x-4 p-2 rounded cursor-pointer ${
+                      isActive ? "bg-gray-700" : "hover:bg-gray-700"
+                    }`}
+                  >
+                    <div className="text-xl w-6 flex justify-center">
+                      {icon}
+                    </div>
+                    {!collapsed && <span>{label}</span>}
+                  </motion.div>
+                </Link>
+              );
+            })}
           </nav>
         </motion.aside>
       </div>
@@ -106,7 +127,7 @@ export default function WholeNavs() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="absolute inset-0 bg-black bg-opacity-90 flex justify-center items-center z-50"
+          className="fixed inset-0 bg-black bg-opacity-95 flex justify-center items-center z-[9999]"
         >
           <button
             onClick={() => setContentHidden(false)}
@@ -116,6 +137,11 @@ export default function WholeNavs() {
           </button>
         </motion.div>
       )}
+      <motion.main
+        animate={{ marginLeft: collapsed ? "4rem" : "16rem" }}
+        transition={{ duration: 0.3 }}
+        className="mt-16 p-4"
+      ></motion.main>
 
       {/* Content Area */}
     </div>
