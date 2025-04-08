@@ -52,7 +52,7 @@ function InvoiceBill({ id, pdf }) {
   const getinvoice = async () => {
     console.log("Fetching invoice...");
     try {
-      const invoice = await invoiceGenrate(id); // Ensure API is awaited
+      const invoice = await invoiceGenrate(id); 
       if (invoice) {
         setInv(invoice);
       }

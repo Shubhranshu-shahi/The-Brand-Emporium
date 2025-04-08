@@ -1,7 +1,6 @@
 import React from "react";
 import "./sales.css";
-import SaleTable from "../../components/SaleTable";
-import TestingTable from "../../components/testingTable";
+
 import ReportComponent from "../../components/ReportComponent";
 
 import Layout from "../../components/Layout";

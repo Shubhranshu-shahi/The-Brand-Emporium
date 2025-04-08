@@ -44,12 +44,12 @@ export const invoiceGenrate = async (id) => {
 };
 
 export const getAllInvoice = async () => {
-    try {
-        const res = await axios.get(BASE_URL);
-        console.log(res.data.data);
-        return res.data.data;
-    } catch(err) {
-        console.log(err);
-        return err.message;
-    }
-}
+  try {
+    const res = await axios.get(BASE_URL);
+    console.log(res.data.data);
+    return res.data.data;
+  } catch (err) {
+    console.log(err);
+    return err.message;
+  }
+};
