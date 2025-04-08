@@ -35,7 +35,7 @@ export const invoiceGenrate = async (id) => {
   const url = `${BASE_URL}/${id}`;
   try {
     const response = await axios.get(url);
-    console.log(response.data.data, "----invoice api");
+    // console.log(response.data.data, "----invoice api");
     return response.data.data;
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -48,6 +48,18 @@ export const getAllInvoice = async () => {
     const res = await axios.get(BASE_URL);
     console.log(res.data.data);
     return res.data.data;
+  } catch (err) {
+    console.log(err);
+    return err.message;
+  }
+};
+
+export const invoiceDelete = async (id) => {
+  try {
+    const url = `${BASE_URL}/${id}`;
+    const response = await axios.delete(url);
+    console.log(response);
+    return response;
   } catch (err) {
     console.log(err);
     return err.message;

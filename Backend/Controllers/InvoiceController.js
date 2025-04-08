@@ -69,6 +69,7 @@ const invoiceInsert = async (req, res) => {
 };
 const invoiceDelete = async (req, res) => {
   try {
+    console.log("check");
     const { id } = req.params;
     const invoice = await InvoiceModal.findByIdAndDelete({ _id: id });
     // const invoice = await InvoiceModal.findOne({ itemCode });

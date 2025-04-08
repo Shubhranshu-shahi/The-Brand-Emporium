@@ -23,13 +23,12 @@ import {
   ChevronsRight,
   Search,
 } from "lucide-react";
-import { getAllInvoice, invoiceDelete } from "../assets/helper/InvoiceApi";
+import { getAllInvoice } from "../assets/helper/InvoiceApi";
 import { dateToString } from "../assets/helper/Helpers";
-import { handleSuccess } from "../assets/helper/utils";
 
 const columnHelper = createColumnHelper();
 
-function ReportComponent() {
+function ReportComponentTest() {
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
   const [startDate, setStartDate] = useState(null);
@@ -38,7 +37,6 @@ function ReportComponent() {
   const [globalFilter, setGlobalFilter] = useState("");
   const tableRef = useRef(null);
   const exportRef = useRef(null);
-  const [deletingId, setDeletingId] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,20 +113,7 @@ function ReportComponent() {
               View
             </button>
             <button
-              onClick={async () => {
-                setDeletingId(rowData._id);
-                setTimeout(async () => {
-                  await invoiceDelete(rowData._id);
-                  setFilteredData((prev) =>
-                    prev.filter((item) => item._id !== rowData._id)
-                  );
-                  setData((prev) =>
-                    prev.filter((item) => item._id !== rowData._id)
-                  );
-                  setDeletingId(null);
-                }, 300);
-                handleSuccess("invoice Deleted");
-              }}
+              onClick={() => console.log("Delete", rowData._id)}
               className="text-red-600 hover:underline"
             >
               Delete
@@ -204,47 +189,6 @@ function ReportComponent() {
 
   return (
     <div className="p-4 space-y-4">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {[
-          {
-            title: "Total Invoices",
-            value: data.length,
-            color: "text-gray-700",
-          },
-          {
-            title: "Filtered Invoices",
-            value: filteredData.length,
-            color: "text-gray-700",
-          },
-          {
-            title: "Total Received",
-            value: `₹${filteredData
-              .reduce((sum, item) => sum + (item.receive || 0), 0)
-              .toFixed(2)}`,
-            color: "text-green-600",
-          },
-          {
-            title: "Total Remaining",
-            value: `₹${filteredData
-              .reduce((sum, item) => sum + (item.remaining || 0), 0)
-              .toFixed(2)}`,
-            color: "text-red-500",
-          },
-        ].map((card, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            className="bg-white shadow rounded-2xl p-4 text-center border"
-          >
-            <h3 className="text-gray-500 text-sm font-medium">{card.title}</h3>
-            <p className={`text-lg font-semibold ${card.color}`}>
-              {card.value}
-            </p>
-          </motion.div>
-        ))}
-      </div>
       <div className="flex flex-wrap gap-4 items-center">
         <div className="relative">
           <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
@@ -330,11 +274,7 @@ function ReportComponent() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.35, ease: "easeInOut" }}
-                className={`hover:bg-indigo-50 transition-colors border-t ${
-                  deletingId === row.original._id
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }`}
+                className="hover:bg-indigo-50 transition-colors border-t"
               >
                 {row.getVisibleCells().map((cell) => (
                   <td key={cell.id} className="p-4 text-sm text-gray-600">
@@ -454,4 +394,4 @@ function ReportComponent() {
   );
 }
 
-export default ReportComponent;
+export default ReportComponentTest;
