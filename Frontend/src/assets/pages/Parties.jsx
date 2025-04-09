@@ -3,12 +3,12 @@ import AsideTable from "../../components/AsideTable";
 
 import Layout from "../../components/Layout";
 
-import PartiesNameTable from "../../components/PartiesNameTable";
+import PartiesList from "../../components/PartiesList";
 function Parties() {
   return (
     <Layout>
       <div className="overflow-hidden">
-        <PartiesNameTable />
+        <PartiesList />
       </div>
     </Layout>
   );

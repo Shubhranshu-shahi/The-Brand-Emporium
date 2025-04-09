@@ -13,13 +13,16 @@ import { Pencil, X } from "lucide-react";
 import PartyDetails from "./PartyDetails";
 import { getAllCustomer } from "../assets/helper/customerApi";
 
-const PartiesInfoTable = lazy(() => import("./PartieInfoTable"));
+const PartiesInvoice = lazy(() => import("./PartiesInvoice"));
 
-function PartiesNameTable() {
+function ItemsList() {
   const [globalFilter, setGlobalFilter] = useState("");
   const [selectedCustomer, SetSelectedCustomer] = useState({});
   const [customers, setCustomers] = useState([]);
   const [sorting, setSorting] = useState([]);
+
+  const [selectedRowId, setSelectedRowId] = useState("");
+
   const [pagination, setPagination] = useState({
     pageIndex: 0,
     pageSize: 10, // Adjust this as needed
@@ -34,6 +37,8 @@ function PartiesNameTable() {
       accessorKey: "phone",
       header: "Phone",
     },
+    { accessorKey: "email", header: "Email" },
+    { accessorKey: "gstin", header: "GSTIN" },
     {
       id: "actions",
       header: "Actions",
@@ -82,6 +87,7 @@ function PartiesNameTable() {
         name: cust.customerName || "N/A",
         phone: cust.phone || "N/A",
         gstin: cust.CustomerGstin || "N/A",
+        email: cust.email || "N/A",
         invoiceNumbers: Array.isArray(cust.invoiceNumber)
           ? cust.invoiceNumber
           : [],
@@ -106,10 +112,16 @@ function PartiesNameTable() {
   const handleUpdate = (row) => console.log("Update:", row);
   const handleDelete = (row) => console.log("Delete:", row);
 
-  const handleRowClick = (rowData) => SetSelectedCustomer(rowData);
+  const handleRowClick = (rowData) => {
+    SetSelectedCustomer(rowData);
+    setSelectedRowId(rowData.id);
+    console.log(rowData.id);
+    console.log(rowData);
+    console.log(selectedRowId);
+  };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 py-6">
+    <div className="w-full max-w-[100rem] mx-auto px-4 py-6">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left Column - Party List */}
         <div className="lg:col-span-4">
@@ -148,29 +160,35 @@ function PartiesNameTable() {
                   ))}
                 </thead>
                 <tbody>
-                  {table.getRowModel().rows.map((row) => (
-                    <motion.tr
-                      key={row.id}
-                      whileHover={{ scale: 1.01, backgroundColor: "#f3f4f6" }}
-                      className="cursor-pointer transition"
-                      onClick={(e) => {
-                        if (e.target.closest("button")) return;
-                        handleRowClick(row.original);
-                      }}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <td
-                          key={cell.id}
-                          className="px-4 py-3 border-t border-gray-200"
-                        >
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </td>
-                      ))}
-                    </motion.tr>
-                  ))}
+                  {table.getRowModel().rows.map((row) => {
+                    return (
+                      <motion.tr
+                        key={row.id}
+                        whileHover={{ scale: 1.01 }}
+                        className={`cursor-pointer transition ${
+                          selectedRowId === row.original.id
+                            ? "bg-indigo-100 border-l-4 border-indigo-500"
+                            : ""
+                        } hover:bg-indigo-100`}
+                        onClick={(e) => {
+                          if (e.target.closest("button")) return;
+                          handleRowClick(row.original);
+                        }}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <td
+                            key={cell.id}
+                            className="px-4 py-3 border-t border-gray-200"
+                          >
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </td>
+                        ))}
+                      </motion.tr>
+                    );
+                  })}
                 </tbody>
               </table>
               <div className="mt-4 flex items-center justify-between text-sm text-gray-700">
@@ -204,14 +222,14 @@ function PartiesNameTable() {
 
         {/* Right Column - Party Details & Invoices */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          <motion.div
+          {/* <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
             className="bg-white rounded-2xl shadow-md p-4"
           >
             <PartyDetails selectedCustomer={selectedCustomer} />
-          </motion.div>
+          </motion.div> */}
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -223,7 +241,7 @@ function PartiesNameTable() {
               fallback={<div className="text-gray-500">Loading table...</div>}
             >
               {selectedCustomer?.invoiceNumbers?.length > 0 && (
-                <PartiesInfoTable selectedCustomer={selectedCustomer} />
+                <PartiesInvoice selectedCustomer={selectedCustomer} />
               )}
             </Suspense>
           </motion.div>
@@ -233,4 +251,4 @@ function PartiesNameTable() {
   );
 }
 
-export default PartiesNameTable;
+export default ItemsList;

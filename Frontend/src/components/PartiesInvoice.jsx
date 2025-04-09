@@ -8,26 +8,24 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import {
   ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
-  Search,
   FileText,
   Calendar,
   DollarSign,
 } from "lucide-react";
-
 import { fetchInvoicesByInvoiceNumbers } from "../assets/helper/InvoiceApi";
 
 const columnHelper = createColumnHelper();
 
-function PartiesInfoTable({ selectedCustomer }) {
+function PartiesInvoice({ selectedCustomer }) {
   const [fetchedInvoices, setFetchedInvoices] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectedRowId, setSelectedRowId] = useState(null);
 
   const fetchInvoicesByNumbers = async (invoiceNumbers) => {
     try {
@@ -56,7 +54,6 @@ function PartiesInfoTable({ selectedCustomer }) {
 
   const invoiceData = useMemo(() => {
     if (!Array.isArray(fetchedInvoices)) return [];
-    console.log(fetchedInvoices);
     return fetchedInvoices.map((inv, idx) => ({
       id: idx + 1,
       invoiceNumber: inv.customerAndInvoice?.invoiceNumber || "N/A",
@@ -98,7 +95,10 @@ function PartiesInfoTable({ selectedCustomer }) {
           <DollarSign className="mr-2" size={16} /> Total
         </span>
       ),
-      cell: (info) => `₹${info.getValue()}`,
+      cell: (info) =>
+        `₹${info.getValue().toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+        })}`,
     }),
     columnHelper.accessor("balance", {
       header: () => (
@@ -106,7 +106,10 @@ function PartiesInfoTable({ selectedCustomer }) {
           <DollarSign className="mr-2" size={16} /> Balance
         </span>
       ),
-      cell: (info) => `₹${info.getValue()}`,
+      cell: (info) =>
+        `₹${info.getValue().toLocaleString("en-IN", {
+          minimumFractionDigits: 2,
+        })}`,
     }),
   ];
 
@@ -130,6 +133,11 @@ function PartiesInfoTable({ selectedCustomer }) {
 
   return (
     <div className="flex flex-col overflow-x-auto">
+      <label className="text-left px-4 py-2 font-semibold text-gray-700">
+        Invoices
+      </label>
+
+      {/* Search */}
       <div className="mb-4 relative">
         <input
           value={globalFilter ?? ""}
@@ -139,63 +147,93 @@ function PartiesInfoTable({ selectedCustomer }) {
         />
       </div>
 
+      {/* Loading */}
       {loading ? (
-        <div className="text-sm text-gray-500">Fetching invoices...</div>
+        <div className="flex justify-center items-center text-gray-500 py-6">
+          <svg
+            className="animate-spin h-5 w-5 mr-2 text-indigo-500"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+              fill="none"
+            />
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8H4z"
+            />
+          </svg>
+          Fetching invoices...
+        </div>
       ) : invoiceData.length > 0 ? (
         <>
-          <table className="min-w-full text-sm text-left text-black">
-            <caption className="text-left px-4 py-2 font-semibold text-gray-700">
-              Invoices
-            </caption>
-            <thead className="text-xs text-gray-400 uppercase border-b border-gray-600 bg-gray-800 sticky top-0 z-10">
-              {table.getHeaderGroups().map((headerGroup) => (
-                <tr key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <th
-                      key={header.id}
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider"
-                    >
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none flex items-center"
-                            : "",
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
+          <div className="overflow-y-auto max-h-[60vh]">
+            <table className="min-w-full text-sm text-left text-black">
+              <thead className="text-xs text-gray-400 uppercase border-b border-gray-600 bg-gray-800 sticky top-0 z-10">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider"
+                      >
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? "cursor-pointer select-none flex items-center"
+                              : "",
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          <ArrowUpDown className="ml-2" size={14} />
+                        </div>
+                      </th>
+                    ))}
+                  </tr>
+                ))}
+              </thead>
+
+              <tbody>
+                {table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    onClick={() => {
+                      console.log("check");
+                      setSelectedRowId(row.id);
+                    }}
+                    className={`cursor-pointer ${
+                      selectedRowId === row.id ? "bg-indigo-100" : ""
+                    } hover:bg-indigo-50`}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td
+                        key={cell.id}
+                        className="text-center px-0 py-3 border-b border-gray-200"
                       >
                         {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
+                          cell.column.columnDef.cell,
+                          cell.getContext()
                         )}
-                        <ArrowUpDown className="ml-2" size={14} />
-                      </div>
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-
-            <tbody>
-              {table.getRowModel().rows.map((row) => (
-                <tr key={row.id} className="hover:bg-gray-50">
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="text-center  px-0 py-3 border-b border-gray-700"
-                    >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {/* Pagination */}
-          <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
+          <div className="flex justify-between items-center mt-4 text-sm text-gray-600">
             <div className="flex items-center">
               <span className="mr-2">Items per page</span>
               <select
@@ -266,4 +304,4 @@ function PartiesInfoTable({ selectedCustomer }) {
   );
 }
 
-export default PartiesInfoTable;
+export default PartiesInvoice;
