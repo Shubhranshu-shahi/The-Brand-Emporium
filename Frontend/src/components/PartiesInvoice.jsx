@@ -218,7 +218,7 @@ function PartiesInvoice({ selectedCustomer }) {
                     {row.getVisibleCells().map((cell) => (
                       <td
                         key={cell.id}
-                        className="text-center px-0 py-3 border-b border-gray-200"
+                        className="text-left px-7 py-3 border-b border-gray-200"
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

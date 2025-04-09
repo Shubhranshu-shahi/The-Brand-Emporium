@@ -7,7 +7,9 @@ export const getAllProduct = async () => {
     const res = await axios.get(BASE_URl);
     if (res.data.success) {
       console.log(res.data);
-      handleSuccess(res.data.message);
+      return res.data.data;
+      // console.log(res.data);
+      // handleSuccess(res.data.message);
     } else {
       handleError(res.data.message);
     }

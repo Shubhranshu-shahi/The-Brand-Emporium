@@ -12,13 +12,14 @@ import { Link } from "react-router-dom";
 import { Pencil, X } from "lucide-react";
 import PartyDetails from "./PartyDetails";
 import { getAllCustomer } from "../assets/helper/customerApi";
+import { getAllProduct } from "../assets/helper/productApi";
 
 const PartiesInvoice = lazy(() => import("./PartiesInvoice"));
 
 function ItemsList() {
   const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedCustomer, SetSelectedCustomer] = useState({});
-  const [customers, setCustomers] = useState([]);
+  const [selectedProducts, SetSelectedProducts] = useState({});
+  const [products, setProducts] = useState([]);
   const [sorting, setSorting] = useState([]);
 
   const [selectedRowId, setSelectedRowId] = useState("");
@@ -30,15 +31,15 @@ function ItemsList() {
 
   const columns = [
     {
-      accessorKey: "name",
-      header: "Party Name",
+      accessorKey: "itemName",
+      header: "Item Name",
     },
     {
-      accessorKey: "phone",
-      header: "Phone",
+      accessorKey: "mrp",
+      header: "MRP",
     },
-    { accessorKey: "email", header: "Email" },
-    { accessorKey: "gstin", header: "GSTIN" },
+    { accessorKey: "sellingPrice", header: "Sale At" },
+    { accessorKey: "purchasedPrice", header: "Purchased At" },
     {
       id: "actions",
       header: "Actions",
@@ -64,7 +65,7 @@ function ItemsList() {
   ];
 
   const table = useReactTable({
-    data: customers,
+    data: products,
     columns,
     state: {
       globalFilter,
@@ -79,41 +80,45 @@ function ItemsList() {
     getPaginationRowModel: getPaginationRowModel(),
   });
 
-  const allCustomers = async () => {
+  const fetchProducts = async () => {
     try {
-      const res = await getAllCustomer();
-      const cleaned = res.map((cust) => ({
-        id: cust._id,
-        name: cust.customerName || "N/A",
-        phone: cust.phone || "N/A",
-        gstin: cust.CustomerGstin || "N/A",
-        email: cust.email || "N/A",
-        invoiceNumbers: Array.isArray(cust.invoiceNumber)
-          ? cust.invoiceNumber
-          : [],
-        invoiceDates: Array.isArray(cust.invoiceDate) ? cust.invoiceDate : [],
+      const res = await getAllProduct();
+      const cleaned = res.map((prod) => ({
+        id: prod._id,
+        itemHSN: prod.itemHSN || "N/A",
+        category: prod.category || "N/A",
+        itemCode: prod.itemCode,
+        mrp: prod.mrp,
+        discountSale: prod.discountSale || 0,
+        itemName: prod.itemName || "N/A",
+        salePrice: prod.salePrice || mrp,
+        taxSale: prod.taxSale || 0,
+        sellingPrice: prod.sellingPrice || mrp,
+        purchasePrice: prod.purchasePrice || 0,
+        taxPurchase: prod.taxPurchase || 0,
+        purchasedPrice: prod.purchasedPrice || 0,
       }));
-      setCustomers(cleaned);
+      setProducts(cleaned);
     } catch (err) {
       console.log("err", err);
     }
   };
 
   useEffect(() => {
-    allCustomers();
+    fetchProducts();
   }, []);
 
   useEffect(() => {
-    if (customers.length > 0) {
-      SetSelectedCustomer(customers[0]);
+    if (products.length > 0) {
+      SetSelectedProducts(products[0]);
     }
-  }, [customers]);
+  }, [products]);
 
   const handleUpdate = (row) => console.log("Update:", row);
   const handleDelete = (row) => console.log("Delete:", row);
 
   const handleRowClick = (rowData) => {
-    SetSelectedCustomer(rowData);
+    SetSelectedProducts(rowData);
     setSelectedRowId(rowData.id);
     console.log(rowData.id);
     console.log(rowData);
@@ -240,8 +245,8 @@ function ItemsList() {
             <Suspense
               fallback={<div className="text-gray-500">Loading table...</div>}
             >
-              {selectedCustomer?.invoiceNumbers?.length > 0 && (
-                <PartiesInvoice selectedCustomer={selectedCustomer} />
+              {selectedProducts?.invoiceNumbers?.length > 0 && (
+                <PartiesInvoice selectedProducts={selectedProducts} />
               )}
             </Suspense>
           </motion.div>

@@ -1,15 +1,14 @@
 import React, { useContext } from "react";
 import "./sales.css";
 
-import AsideTable from "../../components/AsideTable";
-
 import Layout from "../../components/Layout";
+import ItemsList from "../../components/ItemsList";
 
 function Items() {
   return (
     <Layout>
       <div className="overflow-hidden">
-        <AsideTable />
+        <ItemsList />
       </div>
     </Layout>
   );
