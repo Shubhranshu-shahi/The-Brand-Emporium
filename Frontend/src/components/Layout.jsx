@@ -51,7 +51,7 @@ export default function Layout({ children }) {
       <motion.main
         animate={{ marginLeft: collapsed ? "4rem" : "16rem" }}
         transition={{ duration: 0.3 }}
-        className="mt-16 p-4 w-full"
+        className="mt-16 w-full"
       >
         {children}
       </motion.main>

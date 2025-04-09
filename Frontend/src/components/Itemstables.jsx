@@ -4,7 +4,7 @@ import UpperCard from "./UpperCard";
 import Tables from "./Tables";
 import { Link } from "react-router-dom";
 
-function AsideTable() {
+function ItemsTables() {
   return (
     <div className="w-full max-w-12xl mx-auto px-4 py-6">
       {/* Top Bar */}
@@ -64,4 +64,4 @@ function AsideTable() {
   );
 }
 
-export default AsideTable;
+export default ItemsTables;

@@ -135,10 +135,40 @@ const invoiceUpdate = async (req, res) => {
     });
   }
 };
+
+const invoiceNumbersSearch = async (req, res) => {
+  try {
+    const { invoiceNumbers } = req.body;
+    console.log("📥 Received invoiceNumbers:", invoiceNumbers);
+
+    if (!Array.isArray(invoiceNumbers) || invoiceNumbers.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "invoiceNumbers must be a non-empty array" });
+    }
+
+    // Double-check if values are strings
+    const sanitizedInvoiceNumbers = invoiceNumbers.map((num) =>
+      String(num).trim()
+    );
+    console.log("🔍 Sanitized invoiceNumbers:", sanitizedInvoiceNumbers);
+
+    const invoices = await InvoiceModal.find({
+      "customerAndInvoice.invoiceNumber": { $in: sanitizedInvoiceNumbers },
+    });
+    console.log("invoices : ", invoices);
+    console.log("✅ Matched invoices:", invoices.length);
+    return res.json({ message: "Match Found", success: true, data: invoices });
+  } catch (err) {
+    console.error("❌ Error fetching invoices:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
 module.exports = {
   getAllInvoice,
   invoiceByID,
   invoiceInsert,
   invoiceUpdate,
   invoiceDelete,
+  invoiceNumbersSearch,
 };

@@ -35,3 +35,13 @@ export const customerInsert = async (customerData) => {
     handleError(err?.response?.data?.message);
   }
 };
+export const getAllCustomer = async () => {
+  try {
+    const res = await axios.get(BASE_URL);
+    console.log(res.data.data, "==== api call result");
+    return res.data.data;
+  } catch (err) {
+    console.log(err);
+    return err.message;
+  }
+};

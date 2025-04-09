@@ -65,3 +65,25 @@ export const invoiceDelete = async (id) => {
     return err.message;
   }
 };
+
+export const fetchInvoicesByInvoiceNumbers = async (invoiceNumbers) => {
+  const url = `${BASE_URL}/invoice-numbers`;
+
+  // console.log(invoiceNumbers, " : from api");
+  try {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ invoiceNumbers }),
+    });
+
+    const json = await res.json();
+    const returnData = JSON.stringify({ json });
+    return json.data || [];
+    // return res.data.data;
+  } catch (err) {
+    console.log(err);
+  }
+};

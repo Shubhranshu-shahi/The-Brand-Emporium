@@ -203,7 +203,7 @@ function ReportComponent() {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 rounded-2xl shadow-md">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           {
@@ -245,7 +245,7 @@ function ReportComponent() {
           </motion.div>
         ))}
       </div>
-      <div className="flex flex-wrap gap-4 items-center">
+      <div className="flex flex-wrap gap-4 items-center rounded-2xl p-4 shadow-md">
         <div className="relative">
           <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
           <input
@@ -292,7 +292,7 @@ function ReportComponent() {
 
       <table
         ref={tableRef}
-        className="w-full text-sm text-left border border-gray-200 shadow-md rounded-lg overflow-hidden transition-all duration-300"
+        className="w-full  text-sm text-left border border-gray-200 shadow-md rounded-lg overflow-hidden transition-all duration-300"
       >
         <thead className="bg-gray-100 text-gray-700">
           {table.getHeaderGroups().map((headerGroup) => (
