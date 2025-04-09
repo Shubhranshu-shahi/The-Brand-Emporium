@@ -109,6 +109,7 @@ function PartiesList() {
   useEffect(() => {
     if (customers.length > 0) {
       SetSelectedCustomer(customers[0]);
+      setSelectedRowId(customers[0].id);
     }
   }, [customers]);
 
@@ -162,7 +163,7 @@ function PartiesList() {
               className="w-full mb-4 px-4 py-2 text-sm rounded-xl border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
 
-            <div className="overflow-y-auto max-h-[400px]">
+            <div className=" max-h-auto">
               <table className="min-w-full text-sm text-left text-gray-800">
                 <thead className="bg-gray-100 text-gray-600 text-xs uppercase">
                   {table.getHeaderGroups().map((headerGroup) => (
@@ -272,7 +273,6 @@ function PartiesList() {
         onSave={handleSaveEdit}
         party={editPartyData}
       />
-      
     </div>
   );
 }

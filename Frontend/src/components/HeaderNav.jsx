@@ -47,13 +47,13 @@ export default function HeaderNav({
       {/* Desktop nav buttons */}
       <div className="hidden md:flex items-center space-x-4">
         <Link
-          to="/add-item"
+          to="/items/add-item"
           className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm"
         >
           <PlusCircle size={18} /> Add Item
         </Link>
         <Link
-          to="/sale"
+          to="/sales"
           className="flex items-center justify-center gap-2 px-2 py-2 w-30 bg-green-600 hover:bg-green-700 rounded-lg text-sm"
         >
           <ShoppingCart size={18} /> Sale
@@ -111,16 +111,16 @@ export default function HeaderNav({
         >
           <button
             onClick={() => {
-              navigate("/add-item");
+              navigate("/items/add-item");
               setNavOpen(false);
             }}
-            className="w-full text-left px-4 py-2 bg-teal-600 rounded-lg hover:bg-teal-700"
+            className="w-full text-left px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700"
           >
             Add Item
           </button>
           <button
             onClick={() => {
-              navigate("/add-sale");
+              navigate("/sales");
               setNavOpen(false);
             }}
             className="w-full text-left px-4 py-2 bg-indigo-600 rounded-lg hover:bg-indigo-700"

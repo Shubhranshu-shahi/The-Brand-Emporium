@@ -8,10 +8,9 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { Pencil, X } from "lucide-react";
-import PartyDetails from "./PartyDetails";
-import { getAllCustomer } from "../assets/helper/customerApi";
+import { Link, useNavigate } from "react-router-dom";
+import { Pencil, PlusCircleIcon, PlusCircle, X } from "lucide-react";
+
 import { getAllProduct } from "../assets/helper/productApi";
 
 const ItemsInvoice = lazy(() => import("././ItemsInvoice"));
@@ -28,6 +27,8 @@ function ItemsList() {
     pageIndex: 0,
     pageSize: 10, // Adjust this as needed
   });
+
+  const navigate = useNavigate();
 
   const columns = [
     {
@@ -111,6 +112,7 @@ function ItemsList() {
   useEffect(() => {
     if (products.length > 0) {
       SetSelectedProduct(products[0]);
+      setSelectedRowId(products[0].id);
     }
   }, [products]);
 
@@ -135,9 +137,18 @@ function ItemsList() {
             transition={{ duration: 0.5 }}
             className="bg-white rounded-2xl shadow-md p-4"
           >
-            <h2 className="text-lg font-semibold mb-4 text-gray-800">
+            <h2 className=" flex flex-1 text-lg font-semibold mb-4 text-gray-800">
               Items List
             </h2>
+
+            <button
+              className="w-full mb-4 px-4 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition duration-300 ease-in-out"
+              onClick={() => {
+                navigate("/items/add-item");
+              }}
+            >
+              + Add Item
+            </button>
 
             <input
               type="text"
@@ -147,7 +158,7 @@ function ItemsList() {
               className="w-full mb-4 px-4 py-2 text-sm rounded-xl border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
 
-            <div className="overflow-y-auto max-h-[400px]">
+            <div className="max-h-auto">
               <table className="min-w-full text-sm text-left text-gray-800">
                 <thead className="bg-gray-100 text-gray-600 text-xs uppercase">
                   {table.getHeaderGroups().map((headerGroup) => (
