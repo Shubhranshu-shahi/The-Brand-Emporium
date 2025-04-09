@@ -138,6 +138,7 @@ const invoiceUpdate = async (req, res) => {
 
 const invoiceNumbersSearch = async (req, res) => {
   try {
+    console.log(req.body);
     const { invoiceNumbers } = req.body;
     console.log("📥 Received invoiceNumbers:", invoiceNumbers);
 
@@ -164,6 +165,25 @@ const invoiceNumbersSearch = async (req, res) => {
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+const InvoiceProductIdSearch = async (req, res) => {
+  console.log(req.body);
+
+  const { selectedProduct } = req.body;
+  console.log(selectedProduct.id);
+  const invoice = await InvoiceModal.find({
+    "rows.productId": selectedProduct.id,
+  });
+  if (!invoice) {
+    return res
+      .status(400)
+      .json({ message: "No invoice found with this product", success: false });
+  }
+  return res
+    .status(200)
+    .json({ message: "Invoice Found", success: true, data: invoice });
+};
+
 module.exports = {
   getAllInvoice,
   invoiceByID,
@@ -171,4 +191,5 @@ module.exports = {
   invoiceUpdate,
   invoiceDelete,
   invoiceNumbersSearch,
+  InvoiceProductIdSearch,
 };

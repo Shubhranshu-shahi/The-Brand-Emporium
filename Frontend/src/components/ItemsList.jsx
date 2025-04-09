@@ -14,11 +14,11 @@ import PartyDetails from "./PartyDetails";
 import { getAllCustomer } from "../assets/helper/customerApi";
 import { getAllProduct } from "../assets/helper/productApi";
 
-const PartiesInvoice = lazy(() => import("./PartiesInvoice"));
+const ItemsInvoice = lazy(() => import("././ItemsInvoice"));
 
 function ItemsList() {
   const [globalFilter, setGlobalFilter] = useState("");
-  const [selectedProducts, SetSelectedProducts] = useState({});
+  const [selectedProduct, SetSelectedProduct] = useState({});
   const [products, setProducts] = useState([]);
   const [sorting, setSorting] = useState([]);
 
@@ -110,7 +110,7 @@ function ItemsList() {
 
   useEffect(() => {
     if (products.length > 0) {
-      SetSelectedProducts(products[0]);
+      SetSelectedProduct(products[0]);
     }
   }, [products]);
 
@@ -118,11 +118,10 @@ function ItemsList() {
   const handleDelete = (row) => console.log("Delete:", row);
 
   const handleRowClick = (rowData) => {
-    SetSelectedProducts(rowData);
+    SetSelectedProduct(rowData);
     setSelectedRowId(rowData.id);
     console.log(rowData.id);
     console.log(rowData);
-    console.log(selectedRowId);
   };
 
   return (
@@ -137,7 +136,7 @@ function ItemsList() {
             className="bg-white rounded-2xl shadow-md p-4"
           >
             <h2 className="text-lg font-semibold mb-4 text-gray-800">
-              Parties List
+              Items List
             </h2>
 
             <input
@@ -245,8 +244,8 @@ function ItemsList() {
             <Suspense
               fallback={<div className="text-gray-500">Loading table...</div>}
             >
-              {selectedProducts?.invoiceNumbers?.length > 0 && (
-                <PartiesInvoice selectedProducts={selectedProducts} />
+              {selectedProduct?.id && (
+                <ItemsInvoice selectedProduct={selectedProduct} />
               )}
             </Suspense>
           </motion.div>

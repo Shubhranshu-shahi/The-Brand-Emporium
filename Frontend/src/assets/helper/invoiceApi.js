@@ -87,3 +87,26 @@ export const fetchInvoicesByInvoiceNumbers = async (invoiceNumbers) => {
     console.log(err);
   }
 };
+
+export const SearchInvoiceByProductId = async (selectedProduct) => {
+  const url = `${BASE_URL}/product-id`;
+
+  // console.log(invoiceNumbers, " : from api");
+  try {
+    console.log("hello from api ");
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ selectedProduct }),
+    });
+
+    const json = await res.json();
+    const returnData = JSON.stringify({ json });
+    return json.data || [];
+    // return res.data.data;
+  } catch (err) {
+    console.log(err);
+  }
+};

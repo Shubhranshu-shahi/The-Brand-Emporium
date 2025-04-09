@@ -5,6 +5,7 @@ const {
   invoiceUpdate,
   invoiceDelete,
   invoiceNumbersSearch,
+  InvoiceProductIdSearch,
 } = require("../Controllers/InvoiceController");
 
 
@@ -16,5 +17,6 @@ router.post("/", invoiceInsert);
 router.put("/:id", invoiceUpdate);
 router.delete("/:id", invoiceDelete);
 router.post("/invoice-numbers", invoiceNumbersSearch);
+router.post("/product-id", InvoiceProductIdSearch);
 
 module.exports = router;
