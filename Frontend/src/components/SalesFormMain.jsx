@@ -17,6 +17,10 @@ function SalesFormMain() {
   const lastInputRef = useRef(null);
 
   const [product, setProduct] = useState([]);
+  const [errors, setErrors] = useState({
+    phone: false,
+    customerName: false,
+  });
   const [rows, setRows] = useState([
     {
       items: 1,
@@ -70,28 +74,50 @@ function SalesFormMain() {
     const newRoundOff = totalAmount;
     setRoundOff(newRoundOff);
     setRemaining(newRoundOff - receive);
-  }, [rows, totalAmount, receive]);
+  }, [rows, totalAmount]);
+  useEffect(() => {
+    setRemaining(roundOff - receive);
+  }, [roundOff]);
 
   const handleSubmit = async () => {
-    const cust = await customerInsert(customerAndInvoice);
-    setCustomerAndInvoice({ ...customerAndInvoice, customerId: cust._id });
-    const formData = {
-      customerAndInvoice,
-      rows,
-      totalDetails: {
-        total: totalAmount,
-        roundOff,
-        receive,
-        remaining,
-        type,
-      },
-    };
+    const newErrors = {};
 
-    const invoiceData = await invoiceInsert(formData);
-    if (invoiceData) {
-      navigate(`/invoice/${customerAndInvoice.invoiceNumber}`, {
-        state: { id: customerAndInvoice.invoiceNumber },
+    if (!customerAndInvoice.phone || customerAndInvoice.phone.length !== 10) {
+      newErrors.phone = "Enter a valid 10-digit phone number";
+    }
+
+    if (!customerAndInvoice.customerName?.trim()) {
+      newErrors.customerName = "Customer name is required";
+    }
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      console.log("Submitting customer:", customerAndInvoice);
+      const cust = await customerInsert(customerAndInvoice);
+      setCustomerAndInvoice({
+        ...customerAndInvoice,
+        customerId: cust._id,
       });
+      const formData = {
+        customerAndInvoice,
+        rows,
+        totalDetails: {
+          total: totalAmount,
+          roundOff,
+          receive,
+          remaining,
+          type,
+        },
+      };
+
+      const invoiceData = await invoiceInsert(formData);
+      if (invoiceData) {
+        navigate(`/invoice/${customerAndInvoice.invoiceNumber}`, {
+          state: { id: customerAndInvoice.invoiceNumber },
+        });
+      }
+      // Submit the form (API call or parent handler)
     }
   };
 
@@ -125,6 +151,8 @@ function SalesFormMain() {
             customer={customerAndInvoice}
             setCustomer={setCustomerAndInvoice}
             getCustomerByPhone={getCustomerByPhone}
+            errors={errors}
+            setErrors={setErrors}
           />
           <div></div>
           <InvoiceDetails

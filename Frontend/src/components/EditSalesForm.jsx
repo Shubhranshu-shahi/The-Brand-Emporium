@@ -6,6 +6,7 @@ import CustomerDetails from "./CustomerDetails";
 import InvoiceDetails from "./InvoiceDetails";
 import ProductTable from "./ProductTable";
 import TotalSummaryCard from "./TotalSummaryCard";
+import { productById } from "../assets/helper/productApi";
 
 export default function EditSalesForm() {
   const { invoiceNumber } = useParams();
@@ -24,6 +25,12 @@ export default function EditSalesForm() {
     (sum, row) => sum + (parseFloat(row.sellingPrice) || 0),
     0
   );
+
+  const searchByidProduct = async (itemCode) => {
+    const prod = await productById(itemCode);
+    setProduct(prod);
+    return prod;
+  };
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -75,6 +82,8 @@ export default function EditSalesForm() {
             customer={customerAndInvoice}
             setCustomer={setCustomerAndInvoice}
             getCustomerByPhone={() => {}}
+            errors={() => {}}
+            setErrors={() => {}}
           />
           <div></div>
           <InvoiceDetails
@@ -89,7 +98,7 @@ export default function EditSalesForm() {
           product={product}
           setProduct={setProduct}
           lastInputRef={lastInputRef}
-          searchByidProduct={() => {}}
+          searchByidProduct={searchByidProduct}
         />
 
         <div className="flex justify-between mt-4 items-start">

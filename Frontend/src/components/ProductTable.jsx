@@ -1,4 +1,5 @@
 import { Eye, X } from "lucide-react";
+import { useMemo } from "react";
 
 function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
   const generateProductId = () => {

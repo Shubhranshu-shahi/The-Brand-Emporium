@@ -1,11 +1,25 @@
-function CustomerDetails({ customer, setCustomer, getCustomerByPhone }) {
-  const handlePhoneChange = (e) => {
-    const phone = e.target.value;
-    setCustomer({ ...customer, phone });
+import { useState } from "react";
+import { handleError } from "../assets/helper/utils";
 
-    if (phone.trim() !== "" && phone.length > 9 && phone.length < 11) {
+function CustomerDetails({
+  customer,
+  setCustomer,
+  getCustomerByPhone,
+  errors,
+  setErrors,
+}) {
+  const handlePhoneChange = (e) => {
+    const phone = e.target.value.trim();
+    setCustomer({ ...customer, phone });
+    const isValid = /^[0-9]{10}$/.test(phone);
+
+    if (isValid) {
       getCustomerByPhone(phone);
     }
+
+    // if (phone.trim() !== "" && phone.length > 9 && phone.length < 11) {
+    //   getCustomerByPhone(phone);
+    // }
   };
 
   return (
@@ -18,21 +32,30 @@ function CustomerDetails({ customer, setCustomer, getCustomerByPhone }) {
       <input
         type="text"
         name="phone"
-        className="w-full p-2 text-black border rounded"
+        className={`w-full p-2 border rounded ${
+          errors.phone ? "border-red-500" : "border-gray-300"
+        }`}
+        maxLength={10}
         placeholder="Phone No."
+        required
         value={customer.phone}
         onChange={handlePhoneChange}
       />
-
+      {errors.phone && <p className="text-red-500 text-sm">{errors.phone}</p>}
       <label className="block font-semibold text-gray-400">Customer</label>
       <input
         name="customerName"
-        className="w-full p-2 border text-black rounded border-amber-600"
+        className={`w-full p-2 border rounded ${
+          errors.customerName ? "border-red-500" : "border-amber-600"
+        }`}
         value={customer.customerName}
         onChange={(e) =>
           setCustomer({ ...customer, customerName: e.target.value })
         }
       />
+      {errors.customerName && (
+        <p className="text-red-500 text-sm">{errors.customerName}</p>
+      )}
 
       <label className="block font-semibold text-gray-400 mt-2">
         Customer GSTIN
@@ -52,7 +75,7 @@ function CustomerDetails({ customer, setCustomer, getCustomerByPhone }) {
       <input
         name="customerEmail"
         className="w-full p-2 border text-black rounded border-amber-600"
-        value={customer.customerEmail}
+        value={customer.email}
         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
       />
     </div>
