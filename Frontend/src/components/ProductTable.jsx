@@ -84,11 +84,11 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
     let row = rows[index];
     const qty = parseFloat(row.qty) || 1;
     const mrp = parseFloat(row.mrp) || 0;
-    const discount = parseFloat(row.discountSale) || 0;
+    const discount = parseFloat(row.discountSale) / 100 || 0;
     const taxSale = parseFloat(row.taxSale) || 0;
 
     const newMrp = mrp * qty;
-    const sellingPrice = newMrp * ((discount || 100) / 100);
+    const sellingPrice = newMrp - newMrp * discount;
     const discountAmount = newMrp - sellingPrice;
     const taxAmount = sellingPrice * (taxSale / 100);
     const salePrice = sellingPrice - taxAmount;
