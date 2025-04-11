@@ -11,8 +11,9 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Pencil, X } from "lucide-react";
 import PartyDetails from "./PartyDetails";
-import { getAllCustomer } from "../assets/helper/customerApi";
+import { customerDelete, getAllCustomer } from "../assets/helper/customerApi";
 import { EditPartyModal } from "./EditPartyModal";
+import { handleSuccess } from "../assets/helper/utils";
 
 const PartiesInvoice = lazy(() => import("./PartiesInvoice"));
 
@@ -130,7 +131,11 @@ function PartiesList() {
     }
   };
 
-  const handleDelete = (row) => console.log("Delete:", row);
+  const handleDelete = async (row) => {
+    const res = await customerDelete(row.id);
+    allCustomers();
+    handleSuccess(res.message);
+  };
 
   const handleRowClick = (rowData) => {
     SetSelectedCustomer(rowData);
@@ -163,7 +168,7 @@ function PartiesList() {
               className="w-full mb-4 px-4 py-2 text-sm rounded-xl border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
 
-            <div className=" max-h-auto">
+            <div className=" overflow-y-auto max-h-auto">
               <table className="min-w-full text-sm text-left text-gray-800">
                 <thead className="bg-gray-100 text-gray-600 text-xs uppercase">
                   {table.getHeaderGroups().map((headerGroup) => (

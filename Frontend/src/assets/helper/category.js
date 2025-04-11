@@ -39,11 +39,10 @@ export const categoryInsert = async (categoryData) => {
       console.log(data, "------inside success");
 
       console.log(data);
-      handleSuccess(data.message);
+
       return data;
     }
   } catch (err) {
     console.log(err);
-    handleError(err?.response?.data?.message);
   }
 };

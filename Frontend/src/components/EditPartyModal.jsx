@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { customerUpdate } from "../assets/helper/customerApi";
 
 export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
   const [formData, setFormData] = useState({
@@ -23,7 +24,8 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    await customerUpdate(party.id, formData);
     onSave({ ...party, ...formData });
     onClose();
   };

@@ -21,6 +21,8 @@ import RefreshHandler from "./components/RefreshHandler";
 import BarcodeImage from "./components/BarcodeImage";
 import Invoice from "./assets/pages/Invoice";
 import WholeNavs from "./components/WholeNavs";
+import EditSalesForm from "./components/EditSalesForm";
+import EditAddItemForm from "./components/EditAddItemForm";
 // import WholeNavs from "./components/wholeNavs";
 
 function App() {
@@ -60,6 +62,11 @@ function App() {
           element={<PrivateRoute element={<AddItem />} />}
         />
         <Route path="/invoice/:id" element={<Invoice />} />
+        <Route
+          path="/edit-invoice/:invoiceNumber"
+          element={<EditSalesForm />}
+        />
+        <Route path="/edit-item/:product" element={<EditAddItemForm />} />
       </Routes>
 
       {/* <WholeNavs /> */}

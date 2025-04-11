@@ -52,7 +52,7 @@ function InvoiceBill({ id, pdf }) {
   const getinvoice = async () => {
     console.log("Fetching invoice...");
     try {
-      const invoice = await invoiceGenrate(id); 
+      const invoice = await invoiceGenrate(id);
       if (invoice) {
         setInv(invoice);
       }
@@ -63,6 +63,7 @@ function InvoiceBill({ id, pdf }) {
 
   React.useEffect(() => {
     getinvoice();
+    console.log(inv, "----inv");
   }, [id]);
 
   React.useEffect(() => {
@@ -138,6 +139,11 @@ function InvoiceBill({ id, pdf }) {
               <strong>Date:</strong>{" "}
               {new Date(inv.customerAndInvoice.invoiceDate).toDateString()}
             </p>
+            {inv.totalDetails.type && (
+              <p>
+                <strong>Payment:</strong> {inv.totalDetails.type}
+              </p>
+            )}
           </div>
         </div>
         {/* Table Section */}

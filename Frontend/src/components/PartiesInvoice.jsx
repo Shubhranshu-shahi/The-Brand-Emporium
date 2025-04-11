@@ -17,8 +17,15 @@ import {
   FileText,
   Calendar,
   DollarSign,
+  Pencil,
+  X,
 } from "lucide-react";
-import { fetchInvoicesByInvoiceNumbers } from "../assets/helper/InvoiceApi";
+import {
+  fetchInvoicesByInvoiceNumbers,
+  invoiceDelete,
+} from "../assets/helper/InvoiceApi";
+import { useNavigate } from "react-router-dom";
+import { dateToString } from "../assets/helper/Helpers";
 
 const columnHelper = createColumnHelper();
 
@@ -27,6 +34,7 @@ function PartiesInvoice({ selectedCustomer }) {
   const [loading, setLoading] = useState(false);
   const [selectedRowId, setSelectedRowId] = useState(null);
 
+  const navigate = useNavigate();
   const fetchInvoicesByNumbers = async (invoiceNumbers) => {
     try {
       setLoading(true);
@@ -56,15 +64,24 @@ function PartiesInvoice({ selectedCustomer }) {
     if (!Array.isArray(fetchedInvoices)) return [];
     return fetchedInvoices.map((inv, idx) => ({
       id: idx + 1,
+      _id: inv._id,
       invoiceNumber: inv.customerAndInvoice?.invoiceNumber || "N/A",
-      type: "Retail",
-      date: new Date(inv.customerAndInvoice?.invoiceDate).toLocaleDateString(),
+      type: inv.totalDetails?.type || "Cash",
+      date: dateToString(inv.customerAndInvoice?.invoiceDate),
       total: inv.totalDetails?.roundOff || 0,
       balance: inv.totalDetails?.remaining || 0,
     }));
   }, [fetchedInvoices]);
 
   const columns = [
+    columnHelper.accessor("id", {
+      header: () => (
+        <span className="flex items-center">
+          <FileText className="mr-2" size={16} /> #
+        </span>
+      ),
+      cell: (info) => info.getValue(),
+    }),
     columnHelper.accessor("invoiceNumber", {
       header: () => (
         <span className="flex items-center">
@@ -111,7 +128,44 @@ function PartiesInvoice({ selectedCustomer }) {
           minimumFractionDigits: 2,
         })}`,
     }),
+    {
+      id: "action",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex space-x-2">
+          <button
+            onClick={() => {
+              console.log(row.original);
+              handleUpdate(row.original);
+            }}
+            className="p-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+            title="Edit"
+          >
+            <Pencil size={16} />
+          </button>
+          <button
+            onClick={() => handleDelete(row.original)}
+            className="p-1 rounded-lg bg-red-600 hover:bg-red-700 text-white"
+            title="Delete"
+          >
+            <X size={16} />
+          </button>
+        </div>
+      ),
+    },
   ];
+  const handleUpdate = (row) => {
+    navigate(`/edit-invoice/${row.invoiceNumber}`);
+  };
+
+  const handleDelete = async (row) => {
+    const res = await invoiceDelete(row._id);
+    setFetchedInvoices((prev) =>
+      prev.filter(
+        (inv) => inv.customerAndInvoice.invoiceNumber !== row.invoiceNumber
+      )
+    );
+  };
 
   const [sorting, setSorting] = useState([]);
   const [globalFilter, setGlobalFilter] = useState("");

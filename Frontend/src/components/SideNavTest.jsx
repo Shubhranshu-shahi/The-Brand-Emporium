@@ -8,9 +8,9 @@ import {
   ArrowLeft,
   ArrowRight,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
-export default function SideNav({ collapsed, setCollapsed }) {
+export default function SideNavTest({ collapsed, setCollapsed }) {
   const navItems = [
     { path: "/dashboard", icon: <Home />, label: "Dashboard" },
     { path: "/parties", icon: <Users />, label: "Parties" },
@@ -19,6 +19,7 @@ export default function SideNav({ collapsed, setCollapsed }) {
     { path: "/reports", icon: <BarChart />, label: "Reports" },
   ];
 
+  const location = useLocation();
   return (
     <motion.aside
       initial={{ width: "16rem" }}
@@ -33,18 +34,25 @@ export default function SideNav({ collapsed, setCollapsed }) {
         {collapsed ? <ArrowRight /> : <ArrowLeft />}
       </button>
       <nav className="flex flex-col space-y-2">
-        {navItems.map(({ icon, label, path }, index) => (
-          <Link to={path} key={index}>
-            <motion.div
-              //   key={index}
-              whileHover={{ scale: 1.1 }}
-              className="flex items-center space-x-4 p-2 hover:bg-gray-700 rounded"
-            >
-              <div className="text-xl w-6 flex justify-center">{icon}</div>
-              {!collapsed && <span>{label}</span>}
-            </motion.div>
-          </Link>
-        ))}
+        {navItems.map(({ icon, label, path }, index) => {
+          const isActive = location.pathname.startsWith(path);
+
+          return (
+            <Link to={path} key={index} title={collapsed ? label : ""}>
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                className={`flex items-center space-x-4 p-2 rounded transition-all ${
+                  isActive
+                    ? "bg-gray-700 text-blue-300 font-semibold"
+                    : "hover:bg-gray-700"
+                }`}
+              >
+                <div className="text-xl w-6 flex justify-center">{icon}</div>
+                {!collapsed && <span>{label}</span>}
+              </motion.div>
+            </Link>
+          );
+        })}
       </nav>
     </motion.aside>
   );

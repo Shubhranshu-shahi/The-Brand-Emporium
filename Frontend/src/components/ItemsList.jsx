@@ -11,7 +11,7 @@ import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { Pencil, PlusCircleIcon, PlusCircle, X } from "lucide-react";
 
-import { getAllProduct } from "../assets/helper/productApi";
+import { getAllProduct, productDelete } from "../assets/helper/productApi";
 
 const ItemsInvoice = lazy(() => import("././ItemsInvoice"));
 
@@ -41,6 +41,7 @@ function ItemsList() {
     },
     { accessorKey: "sellingPrice", header: "Sale At" },
     { accessorKey: "purchasedPrice", header: "Purchased At" },
+    { accessorKey: "itemCode", header: "Item Code" },
     {
       id: "actions",
       header: "Actions",
@@ -116,8 +117,16 @@ function ItemsList() {
     }
   }, [products]);
 
-  const handleUpdate = (row) => console.log("Update:", row);
-  const handleDelete = (row) => console.log("Delete:", row);
+  const handleUpdate = (row) => {
+    navigate(`/edit-item/${row.id}`, { state: row });
+    console.log("Update:", row);
+  };
+
+  const handleDelete = async (row) => {
+    const res = await productDelete(row.id);
+
+    fetchProducts();
+  };
 
   const handleRowClick = (rowData) => {
     SetSelectedProduct(rowData);
@@ -158,7 +167,7 @@ function ItemsList() {
               className="w-full mb-4 px-4 py-2 text-sm rounded-xl border border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
 
-            <div className="max-h-auto">
+            <div className="overflow-y-auto max-h-auto">
               <table className="min-w-full text-sm text-left text-gray-800">
                 <thead className="bg-gray-100 text-gray-600 text-xs uppercase">
                   {table.getHeaderGroups().map((headerGroup) => (

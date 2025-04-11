@@ -68,7 +68,7 @@ const productDelete = async (req, res) => {
     if (!product) {
       return res.status(404).send("Product not found");
     }
-    res
+    return res
       .status(200)
       .json({ message: "Product delete Successfully", success: false });
   } catch (err) {
@@ -81,33 +81,11 @@ const productDelete = async (req, res) => {
 const productUpdate = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      itemName,
-      itemHSN,
-      category,
-      itemCode,
-      mrp,
-      discountSale,
-      salePrice,
-      taxSale,
-      sellingPrice,
-      purchasePrice,
-      taxPurchase,
-      purchasedPrice,
-    } = req.body;
+    const prod = req.body;
+    console.log(prod, "--------productUpdate");
+    console.log(id, "--------id");
     let updatedProduct = {
-      itemName,
-      itemHSN,
-      category,
-      itemCode,
-      mrp,
-      discountSale,
-      salePrice,
-      taxSale,
-      sellingPrice,
-      purchasePrice,
-      taxPurchase,
-      purchasedPrice,
+      ...prod,
       updatedAt: new Date(),
     };
     const product = await ProductModal.findByIdAndUpdate(id, updatedProduct, {

@@ -53,3 +53,35 @@ export const productById = async (id) => {
     return null;
   }
 };
+
+export const productDelete = async (id) => {
+  try {
+    const url = `${BASE_URl}/${id}`;
+    const response = await axios.delete(url);
+    handleSuccess(response.data.message);
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    handleError(error?.response?.data?.message);
+  }
+};
+
+export const productUpdate = async (id, productData) => {
+  console.log("options", productData);
+  console.log("options", id);
+  const url = `${BASE_URl}/${id}`;
+  try {
+    const response = await axios.put(url, productData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (response.data.success) {
+      return response.data;
+    } else {
+      handleError(response.data.message);
+    }
+  } catch (error) {
+    console.error("Error updating product:", error);
+    handleError(error?.response?.data?.message);
+  }
+};

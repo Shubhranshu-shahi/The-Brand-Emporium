@@ -28,7 +28,7 @@ export const customerInsert = async (customerData) => {
 
       console.log(data);
       handleSuccess(data.message);
-      return data;
+      return data.data;
     }
   } catch (err) {
     console.log(err);
@@ -43,5 +43,38 @@ export const getAllCustomer = async () => {
   } catch (err) {
     console.log(err);
     return err.message;
+  }
+};
+export const customerDelete = async (id) => {
+  try {
+    const url = `${BASE_URL}/${id}`;
+    const response = await axios.delete(url);
+
+    return response.data;
+  } catch (err) {
+    console.log(err);
+    return err.message;
+  }
+};
+export const customerUpdate = async (id, customerData) => {
+  try {
+    const url = `${BASE_URL}/${id}`;
+    const res = await axios.put(url, customerData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const { data } = res;
+    console.log(data);
+    if (data.success) {
+      console.log(data, "------inside success");
+
+      console.log(data);
+      handleSuccess(data.message);
+      return data.data;
+    }
+  } catch (err) {
+    console.log(err);
+    handleError(err?.response?.data?.message);
   }
 };

@@ -61,7 +61,7 @@ const customerInsert = async (req, res) => {
     } else {
       const customers = new CustomerModal(customer);
       await customers.save();
-      res
+      return res
         .status(201)
         .json({ message: "Customer Inserted", success: true, data: customers });
     }
@@ -81,7 +81,7 @@ const customerDelete = async (req, res) => {
     if (!customer) {
       return res.status(404).send("Customer not found");
     }
-    res
+    return res
       .status(200)
       .json({ message: "Customer delete Successfully", success: false });
   } catch (err) {
@@ -94,24 +94,13 @@ const customerDelete = async (req, res) => {
 const customerUpdate = async (req, res) => {
   try {
     const { id } = req.params;
-    const { customerName, phone, invoiceNumber, invoiceDate, email, GSTIN } =
-      req.body;
-    let updatedCustomer = {
-      customerName,
-      phone,
-      invoiceNumber,
-      invoiceDate,
-      email,
-      GSTIN,
-      updatedAt: new Date(),
-    };
-    const customer = await CustomerModal.findByIdAndUpdate(
-      id,
-      updatedCustomer,
-      {
-        new: true,
-      }
-    );
+    const cust = req.body;
+
+    cust.updatedAt = new Date();
+
+    const customer = await CustomerModal.findByIdAndUpdate(id, cust, {
+      new: true,
+    });
     // const product = await ProductModal.findOne({ itemCode });
     if (!customer) {
       return res.status(404).send("Customer not found");

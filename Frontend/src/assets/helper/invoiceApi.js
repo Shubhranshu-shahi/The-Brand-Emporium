@@ -58,7 +58,7 @@ export const invoiceDelete = async (id) => {
   try {
     const url = `${BASE_URL}/${id}`;
     const response = await axios.delete(url);
-    console.log(response);
+    handleSuccess(response.data.message);
     return response;
   } catch (err) {
     console.log(err);
@@ -108,5 +108,22 @@ export const SearchInvoiceByProductId = async (selectedProduct) => {
     // return res.data.data;
   } catch (err) {
     console.log(err);
+  }
+};
+
+export const updateInvoice = async (id, data) => {
+  try {
+    const url = `${BASE_URL}/${id}`;
+    console.log(url, " : from api");
+    console.log(data, " : from api");
+    console.log(id, " : from api");
+
+    const res = await axios.put(url, data, {
+      headers: { "Content-Type": "application/json" },
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Failed to update invoice:", err);
+    return null;
   }
 };

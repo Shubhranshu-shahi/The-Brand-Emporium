@@ -6,7 +6,7 @@ import { currentDate, currentDateAndTime } from "../assets/helper/Helpers";
 import { customerByPhone, customerInsert } from "../assets/helper/customerApi";
 import { invoiceInsert } from "../assets/helper/InvoiceApi";
 
-function SalesForm() {
+function SalesFormtestOld() {
   const [product, setProduct] = useState([]);
 
   let navigate = useNavigate();
@@ -253,6 +253,8 @@ function SalesForm() {
     customerName: "",
     phone: "",
     CustomerGstin: "",
+    customerEmail: "",
+    customerId: "",
     invoiceNumber: currentDateAndTime(),
     invoiceDate: currentDate(),
   });
@@ -267,12 +269,15 @@ function SalesForm() {
         roundOff: roundOff,
         receive: receive,
         remaining: remaining,
+        type,
       },
     };
 
     const invoiceData = await invoiceInsert(formData);
     if (invoiceData) {
-      await customerInsert(customerAndInvoice);
+      const cust = await customerInsert(customerAndInvoice);
+      setCustomerAndInvoice({ ...customerAndInvoice, customerId: cust._id });
+
       console.log("Submitted Data:", JSON.stringify(formData, null, 2));
       console.log(invoiceData);
       console.log(`/invoice/${customerAndInvoice.invoiceNumber}`);
@@ -307,6 +312,7 @@ function SalesForm() {
   const [roundOff, setRoundOff] = useState(totalAmount);
   const [receive, setReceive] = useState(0);
   const [remaining, setRemaining] = useState(0);
+  const [type, setType] = useState("Online");
 
   //check get customer by number
   const getCustomerByPhone = async (phone) => {
@@ -315,6 +321,8 @@ function SalesForm() {
     setCustomerAndInvoice((prevState) => ({
       ...prevState,
       customerName: cust.customerName || "",
+      customerId: cust._id,
+      email: cust.email || "",
       phone,
     }));
     console.log(cust, "---customer");
@@ -390,6 +398,21 @@ function SalesForm() {
                 }
                 value={customerAndInvoice.CustomerGstin}
               />
+              <label className="block font-semibold text-gray-400 mt-1">
+                Customer Email
+              </label>
+              <input
+                id="CustomerGstin"
+                name="CustomerGstin"
+                className="w-full p-2 border text-black rounded border-amber-600"
+                onChange={(e) =>
+                  setCustomerAndInvoice({
+                    ...customerAndInvoice,
+                    customerEmail: e.target.value,
+                  })
+                }
+                value={customerAndInvoice.customerEmail}
+              />
             </div>
             <div></div>
 
@@ -433,53 +456,56 @@ function SalesForm() {
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-lg">
-            <div className="overflow-x-auto rounded-lg shadow-lg">
-              <table className="min-w-full border  border-gray-100 text-black">
-                <thead className="text-white">
-                  <tr className="bg-gray-800">
-                    <th className="border px-4 py-2">Item</th>
-                    <th className="border px-4 py-2">Item Code</th>
-
-                    <th className="border px-4 py-2">Product Name</th>
-                    <th className="border px-4 py-2">MRP</th>
-                    <th className="border px-4 py-2">Qty</th>
-
-                    <th className="border px-4 py-2">Discount %</th>
-                    <th className="border px-4 py-2">Discount Amount</th>
-                    <th className="border w-22 px-4 py-2">Tax %</th>
-                    <th className="border px-4 py-2">Tax Amount</th>
-                    <th className="border px-4 py-2">Price</th>
-                    <th className="border px-4 py-2">Amount</th>
-                    <th className="border px-4 py-2">Show</th>
-                    <th className="border px-4 py-2">Action</th>
+            <div className="overflow-x-auto rounded-xl shadow-lg border border-gray-200">
+              <table className="min-w-full text-sm text-left text-gray-700 bg-white">
+                <thead>
+                  <tr className="bg-gray-800 text-white text-xs uppercase tracking-wider">
+                    {[
+                      "Item",
+                      "Item Code",
+                      "Product Name",
+                      "MRP",
+                      "Qty",
+                      "Discount %",
+                      "Discount Amount",
+                      "Tax %",
+                      "Tax Amount",
+                      "Price",
+                      "Amount",
+                      "Show",
+                      "Action",
+                    ].map((header) => (
+                      <th key={header} className="px-4 py-3 border">
+                        {header}
+                      </th>
+                    ))}
                   </tr>
                 </thead>
-                <tbody className="">
+                <tbody>
                   {rows.map((row, index) => (
-                    <tr key={row.items} className="border  bg-[#e8f0fe]">
-                      <td className="border px-4 py-2 text-center">
+                    <tr
+                      key={row.items}
+                      className={`${
+                        index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      } hover:bg-blue-50 transition`}
+                    >
+                      <td className="px-4 py-3 text-center border">
                         {row.items}
                       </td>
-                      <td className="border px-4 py-2">
+
+                      <td className="px-4 py-3 border">
                         <input
-                          type="text"
-                          className="w-full p-1 border rounded"
-                          name="itemCode"
-                          onFocus={(e) =>
-                            e.target.classList.add("bg-[#e8f0fe]")
-                          }
-                          required
+                          className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                           value={row.itemCode}
                           onChange={(e) =>
                             handleInputChange(index, "itemCode", e.target.value)
                           }
                         />
                       </td>
-                      <td className="border px-4 py-2">
+
+                      <td className="px-4 py-3 border">
                         <input
-                          type="text"
-                          required
-                          className="w-full p-1 border rounded"
+                          className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                           value={row.itemName}
                           onChange={(e) =>
                             handleInputChange(index, "itemName", e.target.value)
@@ -487,40 +513,34 @@ function SalesForm() {
                         />
                       </td>
 
-                      <td className="border px-4 py-2">
+                      <td className="px-4 py-3 border">
                         <input
-                          type="text"
-                          className="w-full p-1 border rounded"
-                          name="mrp"
-                          value={row.mrp}
-                          required
+                          className="w-full p-2 border rounded-lg"
+                          type="number"
                           min="0"
+                          value={row.mrp}
                           onChange={(e) =>
                             handleInputChange(index, "mrp", e.target.value)
                           }
                         />
                       </td>
-                      <td className="border px-4 py-2">
+
+                      <td className="px-4 py-3 border">
                         <input
+                          className="w-full p-2 border rounded-lg"
                           type="number"
-                          className="w-full p-1 border rounded"
-                          value={row.qty}
-                          name="qty"
                           min="0"
+                          value={row.qty}
                           onChange={(e) =>
                             handleInputChange(index, "qty", e.target.value)
                           }
                         />
                       </td>
 
-                      <td className="border px-4 py-2">
+                      <td className="px-4 py-3 border">
                         <input
-                          type="text"
-                          className="w-full p-1 border rounded"
+                          className="w-full p-2 border rounded-lg"
                           value={row.discountSale}
-                          name="discountSale"
-                          min="0"
-                          required
                           onChange={(e) =>
                             handleInputChange(
                               index,
@@ -530,14 +550,15 @@ function SalesForm() {
                           }
                         />
                       </td>
-                      <td className="border px-4 py-2 text-center">
+
+                      <td className="px-4 py-3 text-center border">
                         {row.discountAmount}
                       </td>
-                      <td className="border px-4 w-20 py-2">
+
+                      <td className="px-4 py-3 border w-28">
                         <select
-                          className="w-full p-1 border rounded"
+                          className="w-full p-2 border rounded-lg text-center"
                           value={row.taxSale}
-                          name="taxSale"
                           onChange={(e) =>
                             handleInputChange(index, "taxSale", e.target.value)
                           }
@@ -549,32 +570,35 @@ function SalesForm() {
                           ))}
                         </select>
                       </td>
-                      <td className="border px-4 py-2 text-center">
+
+                      <td className="px-4 py-3 text-center border">
                         {row.taxAmount}
                       </td>
-                      <td className="border px-4 py-2 text-center">
+                      <td className="px-4 py-3 text-center border">
                         {row.salePrice}
                       </td>
-                      <td className="border px-4 py-2 font-bold text-center">
+                      <td className="px-4 py-3 font-semibold text-center border">
                         {row.sellingPrice}
                       </td>
-                      <td className="border px-4 py-2 text-center">
+
+                      <td className="px-4 py-3 text-center border">
                         <button
                           onClick={() => toggleShow(index)}
-                          className={`flex items-center justify-center w-10 h-8 rounded-xl transition-colors duration-200 ${
+                          className={`w-10 h-8 rounded-lg flex items-center justify-center ${
                             row.show
-                              ? " text-gray-800 hover:bg-gray-400"
-                              : "bg-blue-500 text-white hover:bg-blue-600"
+                              ? "bg-gray-300 text-gray-700 hover:bg-gray-400"
+                              : "bg-blue-600 text-white hover:bg-blue-700"
                           }`}
                         >
                           {row.show ? row.purchasedPrice : <Eye size={16} />}
                         </button>
                       </td>
-                      <td className="border px-4 py-2 text-center">
+
+                      <td className="px-4 py-3 text-center border">
                         {rows.length > 1 && index !== 0 && (
                           <button
                             onClick={() => deleteRow(index)}
-                            className="flex items-center justify-center w-8 h-8 bg-red-600 text-white rounded-xl shadow hover:bg-red-700 transition"
+                            className="w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center"
                             title="Delete Row"
                           >
                             <X size={16} />
@@ -584,41 +608,42 @@ function SalesForm() {
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="bg-gray-100 font-semibold">
+
+                <tfoot className="bg-gray-100 font-medium">
                   <tr>
-                    <td colSpan="4" className="border p-2 text-left">
+                    <td colSpan="4" className="px-4 py-2 border text-left">
                       Total:
                     </td>
-                    <td colSpan="1" className="border p-2 text-center">
+                    <td className="px-4 py-2 border text-center">
                       {rows.reduce((sum, row) => sum + Number(row.qty), 0)}
                     </td>
-                    <td></td>
-                    <td className="border p-2 text-center">
+                    <td />
+                    <td className="px-4 py-2 border text-center">
                       {rows.reduce(
                         (sum, row) => sum + Number(row.discountAmount || 0),
                         0
                       )}
                     </td>
-                    <td></td>
-                    <td className="border p-2 text-center">
+                    <td />
+                    <td className="px-4 py-2 border text-center">
                       {rows.reduce(
                         (sum, row) => sum + Number(row.taxAmount || 0),
                         0
                       )}
                     </td>
-                    <td></td>
-                    <td className="border p-2 text-center">
+                    <td />
+                    <td className="px-4 py-2 border text-center">
                       {rows.reduce(
                         (sum, row) => sum + Number(row.sellingPrice || 0),
                         0
                       )}
                     </td>
-                    <td className="border p-2"></td>
-                    <td className="border p-2"></td>
+                    <td colSpan="2" />
                   </tr>
                 </tfoot>
               </table>
             </div>
+
             <div className="flex space-x-4 mt-4">
               <button
                 onClick={addRow}
@@ -636,7 +661,7 @@ function SalesForm() {
               <div className="flex justify-start"></div>
 
               <div className="flex justify-end mt-4">
-                <div className="bg-gray-800 text-white p-4 rounded-lg shadow-lg w-72">
+                <div className="bg-gray-800 text-white p-4 rounded-lg shadow-lg md:w-1/4 w-full">
                   <div className="flex justify-between items-center mb-2">
                     <span className="font-semibold">Total:</span>
                     <span className="text-lg">₹ {totalAmount.toFixed(2)}</span>
@@ -650,7 +675,7 @@ function SalesForm() {
                     <input
                       type="text"
                       min="0"
-                      className="w-16 p-1 text-white border rounded"
+                      className="w-1/3 p-1 text-white border rounded"
                       placeholder="0.00"
                       //   value={roundOff}
                       //   onChange={(e) => setRoundOff(e.target.value)}
@@ -669,7 +694,7 @@ function SalesForm() {
                     <input
                       type="text"
                       min="0"
-                      className="w-16 p-1 text-white border rounded"
+                      className="w-1/3 p-1 text-white border rounded"
                       placeholder="0.00"
                       onChange={(e) => {
                         setReceive(e.target.value);
@@ -684,6 +709,21 @@ function SalesForm() {
                         e.preventDefault()
                       }
                     />
+                  </div>
+
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-semibold">Type:</span>
+                    <select
+                      className="w-1/3 p-2 border rounded-lg text-center"
+                      value={type}
+                      onChange={(e) => setType(e.target.value)}
+                    >
+                      {["Online", "Cash"].map((tax) => (
+                        <option key={tax} value={tax} className="text-black">
+                          {tax}
+                        </option>
+                      ))}
+                    </select>
                   </div>
 
                   <div className="flex justify-between items-center border-t pt-2">
@@ -712,4 +752,4 @@ function SalesForm() {
   );
 }
 
-export default SalesForm;
+export default SalesFormtestOld;

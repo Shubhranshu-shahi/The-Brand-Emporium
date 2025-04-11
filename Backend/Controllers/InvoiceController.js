@@ -76,7 +76,7 @@ const invoiceDelete = async (req, res) => {
     if (!invoice) {
       return res.status(404).send("invoice not found");
     }
-    res
+    return res
       .status(200)
       .json({ message: "invoice delete Successfully", success: false });
   } catch (err) {
@@ -89,39 +89,19 @@ const invoiceDelete = async (req, res) => {
 const invoiceUpdate = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      itemName,
-      itemHSN,
-      category,
-      itemCode,
-      mrp,
-      discountSale,
-      salePrice,
-      taxSale,
-      sellingPrice,
-      purchasePrice,
-      taxPurchase,
-      purchasedPrice,
-    } = req.body;
-    let updatedinvoice = {
-      itemName,
-      itemHSN,
-      category,
-      itemCode,
-      mrp,
-      discountSale,
-      salePrice,
-      taxSale,
-      sellingPrice,
-      purchasePrice,
-      taxPurchase,
-      purchasedPrice,
+
+    const updatedinvoice = req.body;
+    let updatedInv = {
+      ...updatedinvoice,
       updatedAt: new Date(),
     };
-    const invoice = await InvoiceModal.findByIdAndUpdate(id, updatedinvoice, {
-      new: true,
-    });
-    // const invoice = await InvoiceModal.findOne({ itemCode });
+
+    const invoice = await InvoiceModal.findOneAndUpdate(
+      { "customerAndInvoice.invoiceNumber": id },
+      updatedInv,
+      { new: true }
+    );
+
     if (!invoice) {
       return res.status(404).send("invoice not found");
     }
@@ -138,9 +118,7 @@ const invoiceUpdate = async (req, res) => {
 
 const invoiceNumbersSearch = async (req, res) => {
   try {
-    console.log(req.body);
     const { invoiceNumbers } = req.body;
-    console.log("📥 Received invoiceNumbers:", invoiceNumbers);
 
     if (!Array.isArray(invoiceNumbers) || invoiceNumbers.length === 0) {
       return res
@@ -152,25 +130,20 @@ const invoiceNumbersSearch = async (req, res) => {
     const sanitizedInvoiceNumbers = invoiceNumbers.map((num) =>
       String(num).trim()
     );
-    console.log("🔍 Sanitized invoiceNumbers:", sanitizedInvoiceNumbers);
 
     const invoices = await InvoiceModal.find({
       "customerAndInvoice.invoiceNumber": { $in: sanitizedInvoiceNumbers },
     });
-    console.log("invoices : ", invoices);
-    console.log("✅ Matched invoices:", invoices.length);
+
     return res.json({ message: "Match Found", success: true, data: invoices });
   } catch (err) {
-    console.error("❌ Error fetching invoices:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
 const InvoiceProductIdSearch = async (req, res) => {
-  console.log(req.body);
-
   const { selectedProduct } = req.body;
-  console.log(selectedProduct.id);
+
   const invoice = await InvoiceModal.find({
     "rows.productId": selectedProduct.id,
   });

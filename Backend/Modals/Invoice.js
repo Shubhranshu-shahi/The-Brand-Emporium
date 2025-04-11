@@ -16,6 +16,12 @@ const InvoiceSchema = new Schema(
         type: String,
         required: true,
       },
+      email: {
+        type: String,
+      },
+      customerId: {
+        type: String,
+      },
       invoiceNumber: {
         type: String,
         required: true,
@@ -74,6 +80,13 @@ const InvoiceSchema = new Schema(
           type: String,
           required: true,
         },
+        taxAmount: {
+          type: String,
+        },
+        purchasedPrice: {
+          type: String,
+        },
+
         discountAmount: {
           type: String,
         },
@@ -92,6 +105,9 @@ const InvoiceSchema = new Schema(
       },
       remaining: {
         type: Number,
+      },
+      type: {
+        type: String,
       },
     },
   },
