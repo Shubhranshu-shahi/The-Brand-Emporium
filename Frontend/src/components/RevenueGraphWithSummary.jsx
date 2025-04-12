@@ -10,6 +10,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 import { getAllInvoice } from "../assets/helper/InvoiceApi";
 import { format, parseISO } from "date-fns";
@@ -27,6 +28,7 @@ ChartJS.register(
 export default function RevenueGraphWithSummary() {
   const [view, setView] = useState("monthly");
   const [invoiceData, setInvoiceData] = useState([]);
+  const [showSummary, setShowSummary] = useState(false);
 
   useEffect(() => {
     const getInvoices = async () => {
@@ -108,37 +110,60 @@ export default function RevenueGraphWithSummary() {
   return (
     <div className="p-6 max-w-5xl mx-auto">
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      {showSummary && (
         <motion.div
           layout
-          className="bg-green-100 text-green-700 p-4 rounded-2xl shadow-md text-center"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.4 }}
+          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 overflow-hidden"
         >
-          <div className="text-xl font-bold">
-            ₹ {totalRevenue.toLocaleString("en-IN")}
-          </div>
-          <div className="text-sm">Total Revenue</div>
+          <motion.div
+            layout
+            className="bg-green-100 text-green-700 p-4 rounded-2xl shadow-md text-center"
+          >
+            <div className="text-xl font-bold">
+              ₹ {totalRevenue.toLocaleString("en-IN")}
+            </div>
+            <div className="text-sm">Total Revenue</div>
+          </motion.div>
+          <motion.div
+            layout
+            className="bg-red-100 text-red-700 p-4 rounded-2xl shadow-md text-center"
+          >
+            <div className="text-xl font-bold">
+              ₹ {totalCost.toLocaleString("en-IN")}
+            </div>
+            <div className="text-sm">Total Cost</div>
+          </motion.div>
+          <motion.div
+            layout
+            className="bg-blue-100 text-blue-700 p-4 rounded-2xl shadow-md text-center"
+          >
+            <div className="text-xl font-bold">
+              ₹ {profit.toLocaleString("en-IN")}
+            </div>
+            <div className="text-sm">Profit</div>
+          </motion.div>
         </motion.div>
-        <motion.div
-          layout
-          className="bg-red-100 text-red-700 p-4 rounded-2xl shadow-md text-center"
-        >
-          <div className="text-xl font-bold">
-            ₹ {totalCost.toLocaleString("en-IN")}
-          </div>
-          <div className="text-sm">Total Cost</div>
-        </motion.div>
-        <motion.div
-          layout
-          className="bg-blue-100 text-blue-700 p-4 rounded-2xl shadow-md text-center"
-        >
-          <div className="text-xl font-bold">
-            ₹ {profit.toLocaleString("en-IN")}
-          </div>
-          <div className="text-sm">Profit</div>
-        </motion.div>
-      </div>
+      )}
 
       {/* Toggle Buttons */}
+      <div className="flex justify-center mb-4">
+        <button
+          onClick={() => setShowSummary((prev) => !prev)}
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-200 hover:bg-gray-300 text-sm font-semibold shadow transition-all duration-300"
+        >
+          <motion.span
+            animate={{ rotate: showSummary ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <ChevronDown size={18} />
+          </motion.span>
+          {showSummary ? "Hide Summary" : "Show Summary"}
+        </button>
+      </div>
       <div className="flex space-x-4 justify-center mb-6">
         {[
           { label: "Daily", value: "daily" },

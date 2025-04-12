@@ -39,7 +39,7 @@ export default function HeaderNav({
     <header className="bg-[#0f1215] text-white px-4 py-3 flex justify-between items-center w-full fixed top-0 left-0 z-50">
       <div className="flex items-center space-x-3">
         <img src={logo} alt="Logo" className="w-10 h-10" />
-        <span className="text-2xl font-extrabold tracking-wide bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-500 text-transparent bg-clip-text font-sans">
+        <span className="text-2xl font-extrabold tracking-wide bg-gradient-to-r from-cyan-500 via-indigo-500 to-cyan-500 text-transparent bg-clip-text font-sans">
           The Brand Emporium
         </span>
       </div>

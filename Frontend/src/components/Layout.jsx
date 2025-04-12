@@ -37,7 +37,7 @@ export default function Layout({ children }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-50 bg-black bg-opacity-90 flex justify-center items-center"
+          className="fixed inset-0 z-50 bg-black bg-opacity-100 flex justify-center items-center"
         >
           <button
             onClick={() => setContentHidden(false)}
