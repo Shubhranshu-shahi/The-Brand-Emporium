@@ -4,23 +4,41 @@ import HeaderNav from "./HeaderNav";
 import SideNavTest from "./SideNavTest";
 
 export default function Layout({ children }) {
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(null); // null initially
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [contentHidden, setContentHidden] = useState(false);
 
-  // Collapse sidebar on mobile screen
+  // Detect screen size and sync with localStorage
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const storedValue = localStorage.getItem("SideNavCollapsed");
 
-    const handleResize = (e) => setCollapsed(e.matches);
+    const isMobile = mediaQuery.matches;
 
-    handleResize(mediaQuery); // Initial check
+    // on mobile, force collapsed
+    if (isMobile) {
+      setCollapsed(true);
+    } else {
+      //use localStorage or default to false
+      setCollapsed(storedValue === "true");
+    }
+
+    // auto-collapse on resize to mobile
+    const handleResize = (e) => {
+      if (e.matches) {
+        setCollapsed(true);
+      }
+    };
+
     mediaQuery.addEventListener("change", handleResize);
 
     return () => {
       mediaQuery.removeEventListener("change", handleResize);
     };
   }, []);
+
+  // Prevent rendering until we know `collapsed`
+  if (collapsed === null) return null;
 
   return (
     <div className="flex h-screen relative">
@@ -49,7 +67,7 @@ export default function Layout({ children }) {
       )}
 
       <motion.main
-        animate={{ marginLeft: collapsed ? "4rem" : "16rem" }}
+        animate={{ marginLeft: collapsed ? "4.5rem" : "16rem" }}
         transition={{ duration: 0.3 }}
         className="mt-16 w-full"
       >

@@ -34,8 +34,8 @@ const BarcodeModal = ({ itemCode, isOpen, onClose }) => {
   );
 };
 
-function EditAddItemForm(product) {
-  const { state } = useLocation();
+function EditAddItemForm({state}) {
+  
   const navigate = useNavigate();
 
   useEffect(() => {

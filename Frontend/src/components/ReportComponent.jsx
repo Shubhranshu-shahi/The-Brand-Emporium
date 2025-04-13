@@ -26,6 +26,7 @@ import {
 import { getAllInvoice, invoiceDelete } from "../assets/helper/InvoiceApi";
 import { dateToString } from "../assets/helper/Helpers";
 import { handleSuccess } from "../assets/helper/utils";
+import { useNavigate } from "react-router-dom";
 
 const columnHelper = createColumnHelper();
 
@@ -39,6 +40,8 @@ function ReportComponent() {
   const tableRef = useRef(null);
   const exportRef = useRef(null);
   const [deletingId, setDeletingId] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,6 +118,16 @@ function ReportComponent() {
               View
             </button>
             <button
+              onClick={() => {
+                console.log(rowData);
+                handleUpdate(rowData);
+              }}
+              className="text-blue-600 hover:underline"
+              title="Edit"
+            >
+              Edit
+            </button>
+            <button
               onClick={async () => {
                 setDeletingId(rowData._id);
                 setTimeout(async () => {
@@ -138,6 +151,10 @@ function ReportComponent() {
       },
     }),
   ];
+
+  const handleUpdate = (row) => {
+    navigate(`/edit-invoice/${row.invoiceNumber}`);
+  };
 
   const table = useReactTable({
     data: filteredData,

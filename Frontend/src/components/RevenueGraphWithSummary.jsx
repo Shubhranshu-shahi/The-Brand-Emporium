@@ -108,7 +108,7 @@ export default function RevenueGraphWithSummary() {
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       {/* Summary Cards */}
       {showSummary && (
         <motion.div
@@ -117,7 +117,7 @@ export default function RevenueGraphWithSummary() {
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.4 }}
-          className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 overflow-hidden"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6 overflow-hidden"
         >
           <motion.div
             layout
@@ -149,7 +149,7 @@ export default function RevenueGraphWithSummary() {
         </motion.div>
       )}
 
-      {/* Toggle Buttons */}
+      {/* Toggle Summary Button */}
       <div className="flex justify-center mb-4">
         <button
           onClick={() => setShowSummary((prev) => !prev)}
@@ -164,7 +164,9 @@ export default function RevenueGraphWithSummary() {
           {showSummary ? "Hide Summary" : "Show Summary"}
         </button>
       </div>
-      <div className="flex space-x-4 justify-center mb-6">
+
+      {/* View Toggle Buttons */}
+      <div className="flex flex-wrap justify-center gap-2 mb-6">
         {[
           { label: "Daily", value: "daily" },
           { label: "Monthly", value: "monthly" },
@@ -190,9 +192,11 @@ export default function RevenueGraphWithSummary() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-white p-4 rounded-xl shadow-lg"
+        className="bg-white p-4 rounded-xl shadow-lg overflow-x-auto"
       >
-        <Line data={data} options={options} />
+        <div className="min-w-[500px]">
+          <Line key={view} data={data} options={options} />
+        </div>
       </motion.div>
     </div>
   );

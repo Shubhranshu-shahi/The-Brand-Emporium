@@ -8,8 +8,7 @@ import ProductTable from "./ProductTable";
 import TotalSummaryCard from "./TotalSummaryCard";
 import { productById } from "../assets/helper/productApi";
 
-export default function EditSalesForm() {
-  const { invoiceNumber } = useParams();
+export default function EditSalesForm({ invoiceNumber }) {
   const navigate = useNavigate();
   const lastInputRef = useRef(null);
 
@@ -60,10 +59,13 @@ export default function EditSalesForm() {
         type,
       },
     };
-
+    // console.log("Form Data:", formData);
+    console.log("Invoice Number:", invoiceNumber);
     const result = await updateInvoice(invoiceNumber, formData);
     if (result) {
-      navigate(`/invoice/${invoiceNumber}`, { state: { id: invoiceNumber } });
+      navigate(`/invoice/${invoiceNumber}`, {
+        state: { id: invoiceNumber },
+      });
     }
   };
   useEffect(() => {

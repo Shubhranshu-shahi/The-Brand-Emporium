@@ -7,32 +7,49 @@ import {
   BarChart,
   ArrowLeft,
   ArrowRight,
+  Shirt,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function SideNavTest({ collapsed, setCollapsed }) {
   const navItems = [
     { path: "/dashboard", icon: <Home />, label: "Dashboard" },
     { path: "/parties", icon: <Users />, label: "Parties" },
-    { path: "/items", icon: <Box />, label: "Items" },
+    { path: "/items", icon: <Shirt />, label: "Items" },
     { path: "/sales", icon: <ShoppingCart />, label: "Sales" },
     { path: "/reports", icon: <BarChart />, label: "Reports" },
   ];
 
   const location = useLocation();
+
+  // Save collapsed state to localStorage
+  useEffect(() => {
+    localStorage.setItem("SideNavCollapsed", collapsed);
+  }, [collapsed]);
+
+  // 🧠 Prevent animation on first render
+  const hasMounted = useRef(false);
+
   return (
     <motion.aside
-      initial={{ width: "16rem" }}
-      animate={{ width: collapsed ? "4rem" : "16rem" }}
-      transition={{ duration: 0.3 }}
+      initial={false}
+      animate={{ width: collapsed ? "4.5rem" : "16rem" }}
+      transition={{
+        duration: hasMounted.current ? 0.3 : 0, // skip animation on first render
+      }}
+      onAnimationComplete={() => {
+        hasMounted.current = true;
+      }}
       className="bg-gray-900 text-white p-4 h-full fixed top-16 left-0 z-40"
     >
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="ml-3 mb-4 text-xl"
+        className="mb-4 text-xl hover:bg-gray-700 p-2 rounded-full transition-all duration-300"
       >
         {collapsed ? <ArrowRight /> : <ArrowLeft />}
       </button>
+
       <nav className="flex flex-col space-y-2">
         {navItems.map(({ icon, label, path }, index) => {
           const isActive = location.pathname.startsWith(path);

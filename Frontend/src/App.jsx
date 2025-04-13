@@ -23,6 +23,8 @@ import Invoice from "./assets/pages/Invoice";
 import WholeNavs from "./components/WholeNavs";
 import EditSalesForm from "./components/EditSalesForm";
 import EditAddItemForm from "./components/EditAddItemForm";
+import EditSales from "./assets/pages/EditSales";
+import EditItems from "./assets/pages/EditItems";
 // import WholeNavs from "./components/wholeNavs";
 
 function App() {
@@ -62,11 +64,8 @@ function App() {
           element={<PrivateRoute element={<AddItem />} />}
         />
         <Route path="/invoice/:id" element={<Invoice />} />
-        <Route
-          path="/edit-invoice/:invoiceNumber"
-          element={<EditSalesForm />}
-        />
-        <Route path="/edit-item/:product" element={<EditAddItemForm />} />
+        <Route path="/edit-invoice/:invoiceNumber" element={<EditSales />} />
+        <Route path="/edit-item/:product" element={<EditItems />} />
       </Routes>
 
       {/* <WholeNavs /> */}
