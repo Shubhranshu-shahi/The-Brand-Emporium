@@ -67,8 +67,10 @@ const login = async (req, res) => {
 };
 
 const privacyAuthPass = async (req, res) => {
+  console.log("Checking");
   try {
     const { name, password } = req.body;
+
     const user = await UserModal.findOne({ name });
     const errMessage = "Authentication failed, password is incorrect";
     if (!user) {
@@ -82,19 +84,11 @@ const privacyAuthPass = async (req, res) => {
     if (!isPass) {
       return res.status(403).json({ message: errMessage, success: false });
     }
-    const jwtToken = jwt.sign(
-      {
-        email: user.email,
-        _id: user._id,
-      },
-      process.env.JWT_SECRET,
-      { expiresIn: "24h" }
-    );
+    console.log("user", user);
+
     res.status(200).json({
-      message: "login Successfully",
+      message: "Password is correct",
       success: true,
-      jwtToken,
-      email,
       name: user.name,
     });
   } catch (err) {

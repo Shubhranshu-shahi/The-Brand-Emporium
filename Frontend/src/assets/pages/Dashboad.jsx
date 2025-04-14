@@ -14,7 +14,7 @@ function Dashboard() {
         <Cards />
       </div> */}
 
-      <div className="mb-4 ml-4">
+      <div className="overflow-hidden">
         {/* <Graph /> */}
         <RevenueGraphWithSummary />
         {/* <RevenueCostGraph /> */}

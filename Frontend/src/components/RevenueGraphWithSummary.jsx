@@ -108,7 +108,7 @@ export default function RevenueGraphWithSummary() {
   };
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="p-3 sm:p-6 max-w-7xl mx-auto">
       {/* Summary Cards */}
       {showSummary && (
         <motion.div

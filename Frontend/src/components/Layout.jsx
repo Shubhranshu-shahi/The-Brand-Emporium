@@ -2,11 +2,14 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import HeaderNav from "./HeaderNav";
 import SideNavTest from "./SideNavTest";
+import axios from "axios";
+import { privacyVerf } from "../assets/helper/PrivacyVerfication";
 
 export default function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(null); // null initially
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [contentHidden, setContentHidden] = useState(false);
+  const [password, setPassword] = useState("");
 
   // Detect screen size and sync with localStorage
   useEffect(() => {
@@ -40,6 +43,24 @@ export default function Layout({ children }) {
   // Prevent rendering until we know `collapsed`
   if (collapsed === null) return null;
 
+  const privercyVefication = async () => {
+    try {
+      const user = {
+        name: localStorage.getItem("loggedInUser"),
+        password,
+      };
+      const res = await privacyVerf(user);
+      if (res && res.success) {
+        setContentHidden(false);
+      } else {
+        alert("Wrong password");
+      }
+    } catch (error) {
+    } finally {
+      setPassword("");
+    }
+  };
+
   return (
     <div className="flex h-screen relative">
       <HeaderNav
@@ -57,11 +78,19 @@ export default function Layout({ children }) {
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-50 bg-black bg-opacity-100 flex justify-center items-center"
         >
+          <input
+            type="password"
+            placeholder="Password"
+            className=" border text-white rounded-lg mr-2 p-2"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
           <button
-            onClick={() => setContentHidden(false)}
-            className="bg-white text-black px-4 py-2 rounded shadow-md"
+            onClick={privercyVefication}
+            className="bg-white text-black px-4 py-2 rounded-lg shadow-md"
           >
-            Show Content
+            {" "}
+            Show
           </button>
         </motion.div>
       )}

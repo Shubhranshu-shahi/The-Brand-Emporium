@@ -7,6 +7,7 @@ const ProductRouter = require("./Routes/ProductRouter");
 const CustomerRouter = require("./Routes/CustomerRouter");
 const InvoiceRouter = require("./Routes/InvoiceRouter");
 const CategoryRouter = require("./Routes/CategoryRouter");
+
 require("dotenv").config();
 
 require("./Modals/db");
