@@ -220,8 +220,8 @@ function ReportComponent() {
   };
 
   return (
-    <div className="p-4 space-y-4 rounded-2xl shadow-md">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="p-4 space-y-4 max-w-full rounded-2xl shadow-md">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
           {
             title: "Total Invoices",
@@ -262,15 +262,15 @@ function ReportComponent() {
           </motion.div>
         ))}
       </div>
+      {/* <Search className="absolute left-3 top-2.5 text-gray-400" size={18} /> */}
       <div className="flex flex-wrap gap-4 items-center rounded-2xl p-4 shadow-md">
         <div className="relative">
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
           <input
             type="text"
             placeholder="Search..."
             value={globalFilter ?? ""}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="pl-10 pr-4 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            className="pl-10 pr-4 py-2 sm:w-full w-full border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
         <div className="flex items-center gap-2">
@@ -279,7 +279,7 @@ function ReportComponent() {
             selected={startDate}
             onChange={(date) => setStartDate(date)}
             dateFormat="dd/MM/yyyy"
-            className="px-3 py-2 border rounded-md"
+            className="px-3 py-2 border sm:w-full w-full rounded-md"
           />
           <span className="text-gray-500">to</span>
           <DatePicker
@@ -287,7 +287,7 @@ function ReportComponent() {
             selected={endDate}
             onChange={(date) => setEndDate(date)}
             dateFormat="dd/MM/yyyy"
-            className="px-3 py-2 border rounded-md"
+            className="px-3 py-2 border sm:w-full w-full rounded-md"
           />
         </div>
         <DownloadTableExcel
@@ -306,64 +306,67 @@ function ReportComponent() {
           Export PDF
         </button>
       </div>
-
-      <table
-        ref={tableRef}
-        className="w-full  text-sm text-left border border-gray-200 shadow-md rounded-lg overflow-hidden transition-all duration-300"
-      >
-        <thead className="bg-gray-100 text-gray-700">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} className="p-3 font-semibold">
-                  <div
-                    {...{
-                      className: header.column.getCanSort()
-                        ? "cursor-pointer select-none flex items-center"
-                        : "",
-                      onClick: header.column.getToggleSortingHandler(),
-                    }}
-                  >
-                    {flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                    {header.column.getCanSort() && (
-                      <ArrowUpDown className="ml-2 text-gray-400" size={14} />
-                    )}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          <AnimatePresence mode="wait">
-            {table.getRowModel().rows.map((row) => (
-              <motion.tr
-                key={row.id}
-                layout
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.35, ease: "easeInOut" }}
-                className={`hover:bg-indigo-50 transition-colors border-t ${
-                  deletingId === row.original._id
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }`}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td key={cell.id} className="p-4 text-sm text-gray-600">
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
+      <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200">
+        <table
+          ref={tableRef}
+          className="w-full  text-sm text-left border border-gray-200 shadow-md rounded-lg overflow-hidden transition-all duration-300"
+        >
+          <thead className="bg-gray-100 text-gray-700">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} className="p-3 font-semibold">
+                    <div
+                      {...{
+                        className: header.column.getCanSort()
+                          ? "cursor-pointer select-none flex items-center"
+                          : "",
+                        onClick: header.column.getToggleSortingHandler(),
+                      }}
+                    >
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                      {header.column.getCanSort() && (
+                        <ArrowUpDown className="ml-2 text-gray-400" size={14} />
+                      )}
+                    </div>
+                  </th>
                 ))}
-              </motion.tr>
+              </tr>
             ))}
-          </AnimatePresence>
-        </tbody>
-      </table>
-
+          </thead>
+          <tbody>
+            <AnimatePresence mode="wait">
+              {table.getRowModel().rows.map((row) => (
+                <motion.tr
+                  key={row.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.35, ease: "easeInOut" }}
+                  className={`hover:bg-indigo-50 transition-colors border-t ${
+                    deletingId === row.original._id
+                      ? "pointer-events-none opacity-50"
+                      : ""
+                  }`}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td key={cell.id} className="p-4 text-sm text-gray-600">
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </motion.tr>
+              ))}
+            </AnimatePresence>
+          </tbody>
+        </table>
+      </div>
       {/* Hidden table for Excel export */}
       <table ref={exportRef} className="hidden">
         <thead>

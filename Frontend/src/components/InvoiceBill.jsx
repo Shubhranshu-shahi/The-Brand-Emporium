@@ -3,6 +3,7 @@ import { numberToWords } from "../assets/helper/Helpers";
 import { invoiceGenrate } from "../assets/helper/InvoiceApi";
 import logo from "../img/logo.jpeg";
 import sign from "../img/sign.jpeg";
+import instaScnan from "../img/instaScan.jpg";
 import { Mail, MapPin, PhoneCall } from "lucide-react";
 
 function InvoiceBill({ id, pdf }) {
@@ -60,11 +61,6 @@ function InvoiceBill({ id, pdf }) {
       console.error("Error fetching invoice:", error);
     }
   };
-
-  React.useEffect(() => {
-    getinvoice();
-    console.log(inv, "----inv");
-  }, [id]);
 
   React.useEffect(() => {
     if (inv.rows.length > 0) {
@@ -137,7 +133,9 @@ function InvoiceBill({ id, pdf }) {
             </p>
             <p>
               <strong>Date:</strong>{" "}
-              {new Date(inv.customerAndInvoice.invoiceDate).toDateString()}
+              {inv.customerAndInvoice.invoiceDate
+                ? new Date(inv.customerAndInvoice.invoiceDate).toDateString()
+                : "N/A"}
             </p>
             {inv.totalDetails.type && (
               <p>
@@ -219,61 +217,114 @@ function InvoiceBill({ id, pdf }) {
           </table>
         </div>
         {/* Summary Section */}
-        <div className="mt-4 p-4 border bg-gray-100 text-sm md:text-right text-center  md:text-base">
-          <p>
-            <strong>Sub Total:</strong> ₹ {inv.totalDetails.total}
-          </p>
-          <p>
-            <strong>Discount:</strong> ₹ {discountAm}
-          </p>
-          <p>
-            <strong>SGST :</strong> ₹ {sgst}
-          </p>
-          <p>
-            <strong>CGST :</strong> ₹ {cgst}
-          </p>
-          <p>
-            <strong>Round Off:</strong> ₹ {inv.totalDetails.roundOff}
-          </p>
-          <p className="pt-1 pb-1 text-xl font-bold text-blue-700">
-            <strong>Total: ₹ {inv.totalDetails.roundOff} </strong>
-          </p>
-          <p>
-            <strong>Received:</strong> ₹ {inv.totalDetails.receive}
-          </p>
-          <p>
-            <strong>Balance:</strong> ₹{" "}
-            {inv.totalDetails.roundOff - inv.totalDetails.receive}
-          </p>
-          <p className="text-green-600 font-bold">
-            <strong>You Saved:</strong> ₹ {discountAm}
-          </p>
+        <div className="mt-4 overflow-x-auto">
+          <div className="flex flex-col md:flex-row justify-between">
+            {/* Insta Scan QR */}
+            <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
+              <p className="text-sm md:text-base font-semibold mb-2">
+                Follow us
+              </p>
+              <img
+                src={instaScnan}
+                alt="Insta QR"
+                className="w-24 h-24 sm:w-28 sm:h-48 md:w-48 md:h-48 object-contain"
+              />
+            </div>
+
+            {/* Summary Table */}
+            <div className="w-full md:w-1/3">
+              <table className="w-full border text-sm md:text-base">
+                <tbody>
+                  <tr>
+                    <td className="border px-3 py-2 font-semibold">
+                      Sub Total
+                    </td>
+                    <td className="border px-3 py-2 text-right">
+                      ₹ {inv.totalDetails.total}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border px-3 py-2 font-semibold">Discount</td>
+                    <td className="border px-3 py-2 text-right">
+                      ₹ {discountAm}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border px-3 py-2 font-semibold">SGST</td>
+                    <td className="border px-3 py-2 text-right">₹ {sgst}</td>
+                  </tr>
+                  <tr>
+                    <td className="border px-3 py-2 font-semibold">CGST</td>
+                    <td className="border px-3 py-2 text-right">₹ {cgst}</td>
+                  </tr>
+                  <tr>
+                    <td className="border px-3 py-2 font-semibold">
+                      Round Off
+                    </td>
+                    <td className="border px-3 py-2 text-right">
+                      ₹ {inv.totalDetails.roundOff}
+                    </td>
+                  </tr>
+                  <tr className="bg-blue-100 font-bold text-blue-700">
+                    <td className="border px-3 py-2">Total</td>
+                    <td className="border px-3 py-2 text-right">
+                      ₹ {inv.totalDetails.roundOff}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td className="border px-3 py-2 font-semibold">Received</td>
+                    <td className="border px-3 py-2 text-right">
+                      ₹ {inv.totalDetails.receive}
+                    </td>
+                  </tr>
+                  <tr className="bg-blue-100 font-bold text-red-700">
+                    <td className="border px-3  py-2 font-semibold">Balance</td>
+                    <td className="border px-3 py-2 text-right">
+                      ₹ {inv.totalDetails.roundOff - inv.totalDetails.receive}
+                    </td>
+                  </tr>
+                  <tr className="text-green-600 font-bold">
+                    <td className="border px-3 py-2">You Saved</td>
+                    <td className="border px-3 py-2 text-right">
+                      ₹ {discountAm}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
+
         {/* Invoice Amount In Words */}
-        <div className="mt-4 p-4">
+        {/* Invoice Amount In Words */}
+        <div className="mt-4 p-4 text-center md:text-left">
           <p>
             <strong className="text-red-600">Invoice Amount In Words:</strong>
           </p>
           <p>
             {inv.totalDetails.roundOff
               ? numberToWords(parseInt(inv.totalDetails.roundOff))
-              : "N/A"}{" "}
+              : "N/A"}
           </p>
         </div>
+
         {/* Terms and Conditions */}
-        <div className="mt-4 p-4 border-t">
+        <div className="mt-4 p-4 border-t text-center md:text-left">
           <p className="font-bold text-red-600">Terms And Conditions</p>
           <p>No return nor refund.</p>
         </div>
+
         {/* Footer */}
-        <div className="mt-8 flex justify-end items-end flex-col text-right">
+        <div className="mt-8 flex flex-col justify-end items-center md:items-end text-center md:text-right">
           <p className="mb-1">For: The Brand Emporium Enterprise</p>
           <img src={sign} alt="Authorized Sign" className="h-16 mb-1" />
           <p className="font-bold">Authorized Signatory</p>
         </div>
-        <div className="mt-4 p-4 text-left">
-          <button onClick={pdf} className="hover:text-blue-600">
-            Download invoice
+
+        {/* Download Button */}
+        <div className="mt-4 p-4 text-center md:text-left">
+          <button onClick={pdf} className="hover:text-blue-600 font-semibold">
+            Download Invoice
           </button>
         </div>
       </div>
