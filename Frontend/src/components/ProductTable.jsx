@@ -130,7 +130,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
       show: false,
       purchasedPrice: "",
       discountAmount: "",
-      purchasedWithQty,
+      purchasedWithQty: "",
     };
     setRows([...rows, newRow]);
 
