@@ -84,6 +84,7 @@ export const AddPartyModal = ({ isOpen, onClose, onSave }) => {
               })}
               className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
               placeholder="Enter phone number"
+              maxLength={10}
             />
             {errors.phone && (
               <p className="text-sm text-red-500">{errors.phone.message}</p>

@@ -49,7 +49,11 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
           });
         }
       } else {
-        if (["discountSale", "taxSale", "mrp", "qty"].includes(key)) {
+        if (
+          ["discountSale", "taxSale", "mrp", "qty", "purchasedPrice"].includes(
+            key
+          )
+        ) {
           newRows = updateRowCalculations(newRows, index);
         }
         newRows = newRows.map((r, i) => ({ ...r, items: i + 1 }));

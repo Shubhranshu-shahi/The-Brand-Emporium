@@ -57,11 +57,11 @@ export default function RevenueGraphWithSummary() {
 
       invoice.rows.forEach((item) => {
         group[date].revenue += parseFloat(item.sellingPrice || 0);
-        group[date].cost += parseFloat(item.purchasedPrice || 0);
+        group[date].cost += parseFloat(item.purchasedWithQty || 0);
       });
     });
 
-    return Object.entries(group)
+    return Object.entries(group)  
       .map(([label, values]) => ({ label, ...values }))
       .sort((a, b) => new Date(a.label) - new Date(b.label));
   };

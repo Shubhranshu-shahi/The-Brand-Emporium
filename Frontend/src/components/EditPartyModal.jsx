@@ -32,8 +32,13 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
 
   const onSubmit = async (data) => {
     try {
-      await customerUpdate(party.id, data);
-      onSave({ ...party, ...data });
+      const updatedData = {
+        ...data,
+        email: data.email?.trim() === "" ? "N/A" : data.email,
+      };
+
+      await customerUpdate(party.id, updatedData);
+      onSave({ ...party, ...updatedData });
       onClose();
     } catch (error) {
       handleError("Update failed");
@@ -50,21 +55,6 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
         </h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Party Name
-            </label>
-            <input
-              {...register("name", { required: "Name is required" })}
-              className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
-              placeholder="Enter party name"
-            />
-            {errors.name && (
-              <p className="text-sm text-red-500">{errors.name.message}</p>
-            )}
-          </div>
-
           {/* Phone */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -80,9 +70,24 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
               })}
               className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
               placeholder="Enter phone number"
+              maxLength={10}
             />
             {errors.phone && (
               <p className="text-sm text-red-500">{errors.phone.message}</p>
+            )}
+          </div>
+          {/* Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Party Name
+            </label>
+            <input
+              {...register("name", { required: "Name is required" })}
+              className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
+              placeholder="Enter party name"
+            />
+            {errors.name && (
+              <p className="text-sm text-red-500">{errors.name.message}</p>
             )}
           </div>
 
