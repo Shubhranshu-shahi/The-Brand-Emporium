@@ -14,6 +14,7 @@ import PartyDetails from "./PartyDetails";
 import { customerDelete, getAllCustomer } from "../assets/helper/customerApi";
 import { EditPartyModal } from "./EditPartyModal";
 import { handleSuccess } from "../assets/helper/utils";
+import { AddPartyModal } from "./AddPartyModal";
 
 const PartiesInvoice = lazy(() => import("./PartiesInvoice"));
 
@@ -25,7 +26,17 @@ function PartiesList() {
 
   const [selectedRowId, setSelectedRowId] = useState("");
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [addPartyModalOpen, setAddPartyModalOpen] = useState(false);
   const [editPartyData, setEditPartyData] = useState(null);
+
+  const [addPartyData, setAddPartyData] = useState({
+    customerName: "",
+    phone: "",
+    email: "",
+    CustomerGstin: "",
+    invoiceNumber: [],
+    invoiceDate: [],
+  });
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -120,6 +131,10 @@ function PartiesList() {
     setEditModalOpen(true);
   };
 
+  const handleAdd = () => {
+    setAddPartyModalOpen(true);
+  };
+
   const handleSaveEdit = (updatedParty) => {
     setCustomers((prev) =>
       prev.map((cust) => (cust.id === updatedParty.id ? updatedParty : cust))
@@ -129,6 +144,17 @@ function PartiesList() {
     if (selectedCustomer?.id === updatedParty.id) {
       SetSelectedCustomer(updatedParty);
     }
+  };
+
+  const handleSaveadd = (updatedParty) => {
+    console.log("updatedParty", updatedParty);
+    allCustomers();
+    // setCustomers((prev) => [...prev, updatedParty]);
+
+    // // Optional: update selected customer if same party is open
+    // if (selectedCustomer?.id === updatedParty.id) {
+    //   SetSelectedCustomer(updatedParty);
+    // }
   };
 
   const handleDelete = async (row) => {
@@ -160,6 +186,12 @@ function PartiesList() {
               Parties List
             </h2>
 
+            <button
+              className="w-full mb-4 px-4 py-3 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl shadow-md transition duration-300 ease-in-out"
+              onClick={handleAdd}
+            >
+              + Add Party
+            </button>
             <input
               type="text"
               placeholder="Search parties..."
@@ -247,15 +279,6 @@ function PartiesList() {
 
         {/* Right Column - Party Details & Invoices */}
         <div className="lg:col-span-8 flex flex-col gap-6">
-          {/* <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white rounded-2xl shadow-md p-4"
-          >
-            <PartyDetails selectedCustomer={selectedCustomer} />
-          </motion.div> */}
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -277,6 +300,12 @@ function PartiesList() {
         onClose={() => setEditModalOpen(false)}
         onSave={handleSaveEdit}
         party={editPartyData}
+      />
+      <AddPartyModal
+        isOpen={addPartyModalOpen}
+        onClose={() => setAddPartyModalOpen(false)}
+        onSave={handleSaveadd}
+        party={addPartyData}
       />
     </div>
   );

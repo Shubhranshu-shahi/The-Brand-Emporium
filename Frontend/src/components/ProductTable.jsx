@@ -64,6 +64,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
     const qty = parseFloat(row.qty) || 1;
     const newMrp = prod.mrp * qty;
     const discountAmount = newMrp * (prod.discountSale / 100);
+    const purchasedWithQty = (prod.purchasedPrice || 0) * qty;
 
     return {
       ...row,
@@ -78,6 +79,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
       itemCode: prod.itemCode,
       purchasedPrice: prod.purchasedPrice,
       discountAmount,
+      purchasedWithQty,
     };
   };
 
@@ -93,6 +95,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
     const discountAmount = newMrp - sellingPrice;
     const taxAmount = sellingPrice * (taxSale / 100);
     const salePrice = sellingPrice - taxAmount;
+    const purchasedWithQty = (row.purchasedPrice || 0) * qty;
 
     rows[index] = {
       ...row,
@@ -101,6 +104,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
       taxAmount,
       salePrice,
       discountAmount,
+      purchasedWithQty,
     };
 
     return rows;
@@ -122,6 +126,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
       show: false,
       purchasedPrice: "",
       discountAmount: "",
+      purchasedWithQty,
     };
     setRows([...rows, newRow]);
 
@@ -254,17 +259,36 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 <td className="px-4 py-3 font-semibold text-center border">
                   {row.sellingPrice}
                 </td>
-                <td className="px-4 py-3 text-center border">
-                  <button
-                    onClick={() => toggleShow(index)}
-                    className={`w-10 h-8 rounded-lg flex items-center justify-center ${
-                      row.show
-                        ? "bg-gray-300 text-gray-700 hover:bg-gray-400"
-                        : "bg-blue-600 text-white hover:bg-blue-700"
-                    }`}
-                  >
-                    {row.show ? row.purchasedPrice : <Eye size={16} />}
-                  </button>
+                <td className="px-4 py-3 border w-32 text-center">
+                  {row.show ? (
+                    <div className="flex flex-col space-y-2">
+                      <input
+                        className="w-full p-2 border rounded-lg"
+                        type="number"
+                        value={row.purchasedPrice}
+                        onChange={(e) =>
+                          handleInputChange(
+                            index,
+                            "purchasedPrice",
+                            e.target.value
+                          )
+                        }
+                      />
+                      <button
+                        onClick={() => toggleShow(index)}
+                        className="text-sm bg-gray-200 hover:bg-gray-300 px-2 py-1 rounded-md"
+                      >
+                        Hide
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => toggleShow(index)}
+                      className="w-full h-10 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center justify-center"
+                    >
+                      <Eye size={16} />
+                    </button>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-center border">
                   {rows.length > 1 && index !== 0 && (

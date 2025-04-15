@@ -90,6 +90,9 @@ const InvoiceSchema = new Schema(
         discountAmount: {
           type: String,
         },
+        purchasedWithQty: {
+          type: String,
+        },
       },
     ],
     totalDetails: {

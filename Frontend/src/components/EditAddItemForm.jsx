@@ -34,8 +34,7 @@ const BarcodeModal = ({ itemCode, isOpen, onClose }) => {
   );
 };
 
-function EditAddItemForm({state}) {
-  
+function EditAddItemForm({ state }) {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,8 +52,9 @@ function EditAddItemForm({state}) {
     const taxSale = parseFloat(formData.taxSale) || 0;
     const taxPurchase = parseFloat(formData.taxPurchase) || 0;
     const purchasePrice = parseFloat(formData.purchasePrice) || 0;
-    const discountAmount = mrp - mrp;
+
     const discountedPrice = mrp - (mrp * discount) / 100;
+    const discountAmount = mrp - discountedPrice;
     const salePrc = mrp - (mrp * discount) / 100;
     const sellingPrice = discountedPrice - (discountedPrice * taxSale) / 100;
     const purchasedPrice = purchasePrice + (purchasePrice * taxPurchase) / 100;
@@ -64,6 +64,7 @@ function EditAddItemForm({state}) {
       // salePrice: discountedPrice.toFixed(2),
       salePrice: sellingPrice,
       sellingPrice: salePrc,
+      discountAmount: discountAmount.toFixed(2),
       // sellingPrice: sellingPrice.toFixed(2),
       purchasedPrice: purchasedPrice.toFixed(2),
     }));

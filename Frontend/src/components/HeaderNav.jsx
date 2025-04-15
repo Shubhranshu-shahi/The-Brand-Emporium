@@ -12,6 +12,8 @@ import logo from "../img/logo.jpeg";
 import { useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { handleSuccess } from "../assets/helper/utils";
+import admin from "../img/admin.jpg";
+import user2 from "../img/user2.jpeg";
 
 export default function HeaderNav({
   setContentHidden,
@@ -60,7 +62,14 @@ export default function HeaderNav({
         </Link>
         <div className="relative">
           <img
-            src="src/assets/img/logo-transp.png"
+            src={
+              loggedInUser === "admin" ||
+              loggedInUser === "Admin" ||
+              loggedInUser === "yash" ||
+              loggedInUser === "Yash"
+                ? admin
+                : user2
+            }
             alt="User"
             className="rounded-full w-10 h-10 cursor-pointer"
             onClick={() => setDropdownOpen(!dropdownOpen)}

@@ -1,16 +1,14 @@
-import { Barcode, Download, DownloadIcon, Pen, Search } from "lucide-react";
-import React, { useCallback, useEffect, useState } from "react";
+import { Barcode, Pen, Search } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 import BarcodeImage from "./BarcodeImage";
-import axios from "axios";
-import { getAllProduct, productInsert } from "../assets/helper/productApi";
-import { handleSuccess } from "../assets/helper/utils";
+import { productInsert } from "../assets/helper/productApi";
 import { genrateBarcode } from "../assets/helper/Helpers";
 import { categoryInsert, getAllCategory } from "../assets/helper/category";
 
 const BarcodeModal = ({ itemCode, isOpen, onClose }) => {
   if (!isOpen) return null;
-
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
       <div className="max-w-md p-6 bg-white rounded-lg shadow-lg">
@@ -46,336 +44,273 @@ function AddItemForm() {
     purchasedPrice: "",
     discountAmount: "",
   };
-  const [formData, setFormData] = useState(initialFormState);
-  const [isGenerated, setIsGenerated] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({ defaultValues: initialFormState });
+
   const [categories, setCategories] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [isGenerated, setIsGenerated] = useState(false);
+
+  const mrp = parseFloat(watch("mrp") || 0);
+  const discount = parseFloat(watch("discountSale") || 0);
+  const taxSale = parseFloat(watch("taxSale") || 0);
+  const taxPurchase = parseFloat(watch("taxPurchase") || 0);
+  const purchasePrice = parseFloat(watch("purchasePrice") || 0);
 
   useEffect(() => {
-    const mrp = parseFloat(formData.mrp) || 0;
-    const discount = parseFloat(formData.discountSale) || 0;
-    const taxSale = parseFloat(formData.taxSale) || 0;
-    const taxPurchase = parseFloat(formData.taxPurchase) || 0;
-    const purchasePrice = parseFloat(formData.purchasePrice) || 0;
-    const discountAmount = mrp - mrp;
     const discountedPrice = mrp - (mrp * discount) / 100;
-    const salePrc = mrp - (mrp * discount) / 100;
     const sellingPrice = discountedPrice - (discountedPrice * taxSale) / 100;
     const purchasedPrice = purchasePrice + (purchasePrice * taxPurchase) / 100;
 
-    setFormData((prev) => ({
-      ...prev,
-      // salePrice: discountedPrice.toFixed(2),
-      salePrice: sellingPrice,
-      sellingPrice: salePrc,
-      // sellingPrice: sellingPrice.toFixed(2),
-      purchasedPrice: purchasedPrice.toFixed(2),
-    }));
-  }, [
-    formData.mrp,
-    formData.discountSale,
-    formData.taxSale,
-    formData.purchasePrice,
-    formData.taxPurchase,
-  ]);
+    setValue("salePrice", sellingPrice.toFixed(2));
+    setValue("sellingPrice", discountedPrice.toFixed(2));
+    setValue("discountAmount", (mrp - discountedPrice).toFixed(2));
+    setValue("purchasedPrice", purchasedPrice.toFixed(2));
+  }, [mrp, discount, taxSale, purchasePrice, taxPurchase, setValue]);
 
   useEffect(() => {
-    getCategory();
-  }, []);
-
-  //get all category
-  const getCategory = async () => {
-    try {
-      const res = await getAllCategory();
+    getAllCategory().then((res) => {
       const names = res.map((cat) => cat.categoryName);
       setCategories(names);
-      console.log(names, "----------category names");
-    } catch (err) {
-      console.error("Error loading categories:", err);
-    }
-  };
+    });
+  }, []);
 
-  //catgory insert
   const catInsert = async (categoryName) => {
-    console.log(categories, "-------------");
-    const exists = categories.includes(categoryName.categoryName);
-    console.log(exists, "---exits");
-    if (!exists) {
-      console.log("Category not found. Inserting...");
+    if (!categories.includes(categoryName.categoryName)) {
       await categoryInsert(categoryName);
     }
   };
 
-  // Handle form input changes
-
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value || "",
-    }));
-  };
-  // Generate Barcode Handler
-  const barCodeHandler = useCallback(() => {
-    setFormData((prev) => ({ ...prev, itemCode: genrateBarcode() }));
-    setIsGenerated(true);
-  }, []);
-
-  //save handle
-
-  const handleSave = async () => {
-    await catInsert({ categoryName: formData.category });
-    await productInsert(formData);
-    console.log("Saved Data:", formData);
+  const onSubmit = async (data) => {
+    await catInsert({ categoryName: data.category });
+    await productInsert(data);
     alert("Item Saved Successfully!");
   };
 
-  // Save & Reset Form
-  const handleSaveNew = async () => {
-    console.log("Saved Data:", formData);
-    await catInsert({ categoryName: formData.category });
-    await productInsert(formData);
+  const handleSaveNew = async (data) => {
+    await catInsert({ categoryName: data.category });
+    await productInsert(data);
     alert("Item Saved & Ready for New Entry!");
-    setFormData(initialFormState); // Reset form fields
-    setIsGenerated(false); // Reset barcode status
+    reset();
+    const refreshedCategories = await getAllCategory();
+    const names = refreshedCategories.map((cat) => cat.categoryName);
+    setCategories(names);
+    setIsGenerated(false);
   };
 
-  const handleNumericChange = (e) => {
-    let value = e.target.value.replace(/[^0-9.]/g, ""); // Allow only numbers and dots
-    if (parseFloat(value) < 0) value = "0"; // Prevent negative values
-    setFormData((prev) => ({ ...prev, [e.target.name]: value }));
+  const barCodeHandler = () => {
+    const newCode = genrateBarcode();
+    setValue("itemCode", newCode);
+    setIsGenerated(true);
   };
 
   return (
-    <div class="flex-1 p-3">
-      {/* <!-- Add Item Section --> */}
-      <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold mb-4 text-gray-700">Add Item</h3>
-        {/* <!-- Additional Forms from Second Image --> */}
-        <div class="grid bg-white p-6 max-w-full rounded-2xl overflow-hidden  shadow-lg grid-cols-2 gap-4 mb-4 text-gray-600">
-          <input
-            type="text"
-            placeholder="Item Name *"
-            name="itemName"
-            value={formData.itemName}
-            onChange={handleChange}
-            class="w-full p-2 border rounded"
+    <div className="flex-1 p-3">
+      <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+        <h3 className="text-xl font-semibold mb-4 text-gray-700">Add Item</h3>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="grid bg-white p-6 rounded-2xl shadow-lg grid-cols-2 gap-4 mb-4 text-gray-600">
+            <div>
+              <input
+                type="text"
+                placeholder="Item Name *"
+                className="w-full p-2 border rounded"
+                {...register("itemName", { required: "Item Name is required" })}
+              />
+              {errors.itemName && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.itemName.message}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  placeholder="Item HSN"
+                  className="w-full p-2 border rounded"
+                  {...register("itemHSN")}
+                />
+                <button
+                  type="button"
+                  className="bg-blue-500 text-white px-3 py-2 rounded"
+                >
+                  <Search />
+                </button>
+              </div>
+            </div>
+            <div>
+              <input
+                list="category-list"
+                placeholder="Category"
+                {...register("category", { required: "Category is required" })}
+                className="w-full p-2 border rounded"
+              />
+              {errors.category && (
+                <p className="text-red-500 text-sm">
+                  {errors.category.message}
+                </p>
+              )}
+              <datalist id="category-list">
+                {categories.map((cat) => (
+                  <option key={cat} value={cat} />
+                ))}
+              </datalist>
+            </div>
+            <div className="flex flex-col">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="text"
+                  placeholder="Item Code"
+                  {...register("itemCode", {
+                    required: "Item Code is required",
+                    minLength: {
+                      value: 8,
+                      message: "Item Code must be at least 8 characters",
+                    },
+                  })}
+                  className={`w-full p-2 border rounded${
+                    errors.itemCode ? "border-red-500" : ""
+                  }`}
+                />
+                <button
+                  type="button"
+                  className="bg-blue-500 text-white px-3 py-2 rounded"
+                  onClick={barCodeHandler}
+                  disabled={watch("itemCode") !== ""}
+                >
+                  <Barcode />
+                </button>
+                {isGenerated && (
+                  <button
+                    type="button"
+                    className="px-3 py-2 bg-blue-500 text-white rounded"
+                    onClick={() => setModalOpen(true)}
+                  >
+                    <Pen />
+                  </button>
+                )}
+              </div>
+              {errors.itemCode && (
+                <p className="text-red-500 text-sm">
+                  {errors.itemCode.message}
+                </p>
+              )}
+            </div>
+          </div>
+          <BarcodeModal
+            itemCode={watch("itemCode")}
+            isOpen={modalOpen}
+            onClose={() => setModalOpen(false)}
           />
-          <div class="flex items-center space-x-2">
-            <input
-              type="text"
-              placeholder="Item HSN"
-              name="itemHSN"
-              value={formData.itemHSN}
-              onChange={handleChange}
-              class="w-full p-2 border rounded"
-            />
-            <button class="bg-blue-500 text-white px-3 py-2 rounded">
-              <Search />
+
+          {/* Pricing Section */}
+          <div className="mb-4">
+            <button className="text-red-500 border-b-2 border-red-500 px-4 py-2">
+              Pricing
             </button>
           </div>
 
-          <input
-            class="w-full p-2 border rounded"
-            list="category-list"
-            id="icategoryId"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            placeholder="Category"
-          />
+          <div className="grid grid-cols-3 mb-4 gap-4 rounded-2xl shadow-lg bg-white p-6 text-gray-700">
+            <div>
+              <input
+                type="text"
+                {...register("mrp", { required: "MRP is required" })}
+                placeholder="MRP"
+                className="w-full p-2 border rounded"
+              />
+              {errors.mrp && (
+                <p className="text-red-500 text-sm col-span-3">
+                  {errors.mrp.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <input
+                type="text"
+                {...register("discountSale")}
+                placeholder="Disc. on MRP"
+                className="w-full p-2 border rounded"
+              />
+            </div>
+          </div>
 
-          <datalist id="category-list">
-            {categories.map((cat) => (
-              <option key={cat} value={cat}></option>
-            ))}
-          </datalist>
-          <div class="flex items-center space-x-2">
+          <div className="grid grid-cols-3 gap-4 mb-4 rounded-2xl shadow-lg bg-white p-6 text-gray-700">
             <input
               type="text"
-              placeholder="Item Code"
-              name="itemCode"
-              value={formData.itemCode}
-              onChange={handleChange}
-              class="w-full p-2 border rounded"
-            />
-
-            <button
-              class="bg-blue-500 text-white px-3 py-2 rounded"
-              onClick={barCodeHandler}
-            >
-              {/* <Link to="myRoute" params={myParams} target="_blank"></Link> */}
-              <Barcode />
-            </button>
-            {isGenerated && (
-              <button
-                type="button"
-                className="px-3 py-2 bg-blue-500 text-white rounded"
-                onClick={() => setModalOpen(true)}
-              >
-                <Pen />
-              </button>
-            )}
-          </div>
-        </div>
-        <BarcodeModal
-          itemCode={formData.itemCode}
-          isOpen={modalOpen}
-          onClose={() => setModalOpen(false)}
-        />
-        {/* <!-- Pricing & Stock Tabs --> */}
-        <div class="mb-4">
-          <button class="text-red-500 border-b-2 border-red-500 px-4 py-2">
-            Pricing
-          </button>
-        </div>
-        <div></div>
-        <div class="grid grid-cols-3 mb-4 gap-4 max-w-full rounded-2xl overflow-hidden shadow-lg bg-white p-6 text-gray-700">
-          <div>
-            <label class="block text-gray-700 mt-2 font-bold">MRP</label>
-          </div>
-          <div>
-            <label class="block text-gray-700  mt-2 font-bold">
-              Percentage
-            </label>
-          </div>
-          <div></div>
-          <div>
-            <input
-              type="text"
-              class="w-full p-2 border rounded"
-              name="mrp"
-              value={formData.mrp}
-              onChange={handleNumericChange}
-              placeholder="MRP"
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              class="w-full p-2 border rounded"
-              name="discountSale"
-              value={formData.discountSale}
-              onChange={handleNumericChange}
-              placeholder="Disc. on MRP"
-            />
-          </div>
-          <div></div>
-        </div>
-        <div class="grid grid-cols-3 gap-4 mb-4 max-w-full rounded-2xl overflow-hidden  shadow-lg bg-white p-6 text-gray-700">
-          <label class="block text-gray-700 font-bold mt-2">Sale Price</label>
-          <div>
-            <label class="block text-gray-700  mt-2 font-bold">
-              Tax on Sale Price
-            </label>
-          </div>
-          <div>
-            <label class="block text-gray-700  mt-2 font-bold">Sell At</label>
-          </div>
-          <div>
-            <input
-              type="text"
-              class="w-full p-2 border rounded"
-              name="salePrice"
-              value={formData.salePrice}
-              onChange={handleNumericChange}
+              {...register("salePrice")}
               placeholder="Sale Price"
+              className="w-full p-2 border rounded"
             />
-          </div>
-          <div>
             <select
-              class="w-full text-gray-700 p-2 h-10 border rounded"
-              name="taxSale"
-              value={formData.taxSale}
-              onChange={handleChange}
+              {...register("taxSale")}
+              className="w-full text-gray-700 p-2 h-10 border rounded"
             >
-              <option>0</option>
-              <option>5</option>
-              <option>12</option>
-              <option>18</option>
-              <option>28</option>
+              <option value="0">0</option>
+              <option value="5">5</option>
+              <option value="12">12</option>
+              <option value="18">18</option>
+              <option value="28">28</option>
             </select>
-          </div>
-          <div>
             <input
               type="text"
-              class="w-full p-2 border rounded"
-              name="sellingPrice"
               readOnly
-              value={formData.sellingPrice}
-              placeholder="Sale Price"
+              {...register("sellingPrice")}
+              placeholder="Sell At"
+              className="w-full p-2 border rounded"
             />
           </div>
-        </div>
-        <div class="grid grid-cols-3 gap-4 mb-4 max-w-full rounded-2xl overflow-hidden  shadow-lg bg-white p-6 text-gray-700">
-          <div>
-            <label class="block text-gray-700 font-bold mt-1">
-              Purchase Price
-            </label>
-          </div>
-          <div>
-            <label class="block text-gray-700 font-bold mt-1">
-              Tax on Purchase
-            </label>
-          </div>
-          <div>
-            <label class="block text-gray-700 font-bold mt-1">
-              Purchased At
-            </label>
-          </div>
-          <div>
+
+          <div className="grid grid-cols-3 gap-4 mb-4 rounded-2xl shadow-lg bg-white p-6 text-gray-700">
             <input
               type="text"
-              class="w-full p-2 border rounded"
-              name="purchasePrice"
-              value={formData.purchasePrice}
-              onChange={handleNumericChange}
+              {...register("purchasePrice")}
               placeholder="Purchase Price"
+              className="w-full p-2 border rounded"
             />
-          </div>
-          <div>
             <select
-              class="w-full h-10 p-2 border rounded text-gray-600"
-              name="taxPurchase"
-              value={formData.taxPurchase}
-              onChange={handleChange}
+              {...register("taxPurchase")}
+              className="w-full text-gray-700 p-2 h-10 border rounded"
             >
-              <option>0</option>
-              <option>5</option>
-              <option>12</option>
-              <option>16</option>
-              <option>18</option>
-              <option>22</option>
+              <option value="0">0</option>
+              <option value="5">5</option>
+              <option value="12">12</option>
+              <option value="16">16</option>
+              <option value="18">18</option>
+              <option value="22">22</option>
             </select>
-          </div>
-          <div>
             <input
               type="text"
-              class="w-full p-2 border rounded"
-              name="purchasedPrice"
-              value={formData.purchasedPrice}
               readOnly
-              placeholder="Purchased Price"
+              {...register("purchasedPrice")}
+              placeholder="Purchased At"
+              className="w-full p-2 border rounded"
             />
           </div>
-        </div>
 
-        <div class="mt-4 text-right">
-          <button
-            type="button"
-            class="bg-gray-500 text-white px-4 py-2 rounded mr-2"
-            onClick={handleSaveNew}
-          >
-            Save & New
-          </button>
-          <button
-            type="button"
-            class="bg-blue-500 text-white px-4 py-2 rounded"
-            onClick={handleSave}
-            disabled={!formData.itemName || !formData.mrp}
-          >
-            Save
-          </button>
-        </div>
+          <div className="mt-4 text-right">
+            <button
+              type="button"
+              className="bg-gray-500 text-white px-4 py-2 rounded mr-2"
+              onClick={handleSubmit(handleSaveNew)}
+            >
+              Save & New
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Save
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

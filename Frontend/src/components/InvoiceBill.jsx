@@ -84,7 +84,7 @@ function InvoiceBill({ id, pdf }) {
   }
 
   return (
-    <div className="bg-gray-100 p-6 text-black">
+    <div className="bg-gray-100 px-6 text-black">
       <div className="max-w-6xl mt-8 mx-auto bg-white p-6 rounded-lg shadow-md">
         {/* Header Section */}
         <div className="flex flex-wrap  text-sm md:text-base">
@@ -191,12 +191,12 @@ function InvoiceBill({ id, pdf }) {
             </tbody>
             <tfoot className="bg-gray-100 font-semibold">
               <tr>
-                <td colSpan="3" className="border p-2 text-left">
+                <td colSpan="4" className="border p-2 text-left">
                   Total:
                 </td>
-                <td colSpan="1" className="border p-2 text-right">
+                {/* <td colSpan="1" className="border p-2 text-right">
                   ₹ {inv.rows.reduce((sum, row) => sum + Number(row.mrp), 0)}
-                </td>
+                </td> */}
                 <td className="border p-2 text-right">
                   {inv.rows.reduce((sum, row) => sum + Number(row.qty || 0), 0)}
                 </td>
@@ -257,27 +257,28 @@ function InvoiceBill({ id, pdf }) {
                     <td className="border px-3 py-2 font-semibold">CGST</td>
                     <td className="border px-3 py-2 text-right">₹ {cgst}</td>
                   </tr>
-                  <tr>
-                    <td className="border px-3 py-2 font-semibold">
-                      Round Off
-                    </td>
-                    <td className="border px-3 py-2 text-right">
-                      ₹ {inv.totalDetails.roundOff}
-                    </td>
-                  </tr>
-                  <tr className="bg-blue-100 font-bold text-blue-700">
+
+                  <tr className="bg-gray-100 font-bold text-blue-700">
                     <td className="border px-3 py-2">Total</td>
                     <td className="border px-3 py-2 text-right">
                       ₹ {inv.totalDetails.roundOff}
                     </td>
                   </tr>
                   <tr>
+                    <td className="border px-3 py-2 font-semibold">
+                      Round Off
+                    </td>
+                    <td className="border px-3 py-2 text-right font-semibold">
+                      ₹ {inv.totalDetails.roundOff}
+                    </td>
+                  </tr>
+                  <tr>
                     <td className="border px-3 py-2 font-semibold">Received</td>
-                    <td className="border px-3 py-2 text-right">
+                    <td className="border px-3 py-2 text-right font-semibold">
                       ₹ {inv.totalDetails.receive}
                     </td>
                   </tr>
-                  <tr className="bg-blue-100 font-bold text-red-700">
+                  <tr className="bg-gray-100 font-bold text-red-700">
                     <td className="border px-3  py-2 font-semibold">Balance</td>
                     <td className="border px-3 py-2 text-right">
                       ₹ {inv.totalDetails.roundOff - inv.totalDetails.receive}

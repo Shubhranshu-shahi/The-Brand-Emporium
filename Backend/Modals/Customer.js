@@ -15,13 +15,14 @@ const CustomerSchema = new Schema({
     unique: true,
   },
   invoiceNumber: {
-    type: mongoose.Schema.Types.Array,
+    type: [String],
     required: true,
-    unique: true,
+    default: [],
   },
   invoiceDate: {
-    type: mongoose.Schema.Types.Array,
+    type: [String],
     required: true,
+    default: [],
   },
   email: {
     type: String,

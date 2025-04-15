@@ -48,9 +48,18 @@ export default function EditSalesForm({ invoiceNumber }) {
   }, [invoiceNumber]);
 
   const handleUpdate = async () => {
+    const sanitizedRows = rows.map((row) => {
+      const { purchasedPrice = 0, qty = 1 } = row;
+      const purchasedWithQty = row.purchasedWithQty ?? purchasedPrice * qty;
+
+      return {
+        ...row,
+        purchasedWithQty,
+      };
+    });
     const formData = {
       customerAndInvoice,
-      rows,
+      rows: sanitizedRows,
       totalDetails: {
         total: totalAmount,
         roundOff,

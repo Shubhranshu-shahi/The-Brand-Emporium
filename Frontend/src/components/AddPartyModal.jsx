@@ -1,43 +1,64 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { customerUpdate } from "../assets/helper/customerApi";
+import { customerByPhone, customerInsert } from "../assets/helper/customerApi";
 import { handleError } from "../assets/helper/utils";
 
-export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
+export const AddPartyModal = ({ isOpen, onClose, onSave }) => {
   const {
     register,
     handleSubmit,
     setValue,
+    watch,
     reset,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: "",
+      customerName: "",
       phone: "",
       email: "",
-      gstin: "",
+      CustomerGstin: "",
     },
   });
 
+  const phone = watch("phone");
+
   useEffect(() => {
-    if (isOpen && party) {
-      reset({
-        name: party.name || "",
-        phone: party.phone || "",
-        email: party.email || "",
-        gstin: party.gstin || "",
-      });
+    if (isOpen) {
+      reset();
     }
-  }, [isOpen, party, reset]);
+  }, [isOpen, reset]);
+
+  useEffect(() => {
+    const checkPhone = async () => {
+      if (/^\d{10}$/.test(phone)) {
+        const cust = await customerByPhone(phone);
+        if (cust) {
+          handleError("Customer exists");
+          setValue("customerName", cust.customerName || "");
+          setValue("email", cust.email || "");
+          setValue("CustomerGstin", cust.CustomerGstin || "");
+        }
+      }
+    };
+    checkPhone();
+  }, [phone, setValue]);
 
   const onSubmit = async (data) => {
-    try {
-      await customerUpdate(party.id, data);
-      onSave({ ...party, ...data });
-      onClose();
-    } catch (error) {
-      handleError("Update failed");
+    const cust = await customerByPhone(data.phone);
+    if (cust) {
+      handleError("Customer already exists");
+      return;
     }
+
+    const safeData = {
+      ...data,
+      invoiceNumber: [],
+      invoiceDate: [],
+    };
+
+    const inserted = await customerInsert(safeData);
+    onSave(inserted);
+    onClose();
   };
 
   if (!isOpen) return null;
@@ -45,27 +66,10 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
       <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">
-          Edit Party Details
-        </h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800">Add Party</h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Party Name
-            </label>
-            <input
-              {...register("name", { required: "Name is required" })}
-              className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
-              placeholder="Enter party name"
-            />
-            {errors.name && (
-              <p className="text-sm text-red-500">{errors.name.message}</p>
-            )}
-          </div>
-
-          {/* Phone */}
+          {/* Phone Field */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Phone Number
@@ -75,7 +79,7 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
                 required: "Phone is required",
                 pattern: {
                   value: /^\d{10}$/,
-                  message: "Enter a valid 10-digit phone number",
+                  message: "Enter a valid 10-digit phone",
                 },
               })}
               className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
@@ -83,6 +87,25 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
             />
             {errors.phone && (
               <p className="text-sm text-red-500">{errors.phone.message}</p>
+            )}
+          </div>
+
+          {/* Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Party Name
+            </label>
+            <input
+              {...register("customerName", {
+                required: "Party name is required",
+              })}
+              className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
+              placeholder="Enter party name"
+            />
+            {errors.customerName && (
+              <p className="text-sm text-red-500">
+                {errors.customerName.message}
+              </p>
             )}
           </div>
 
@@ -95,7 +118,7 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
               {...register("email", {
                 pattern: {
                   value: /^\S+@\S+\.\S+$/,
-                  message: "Enter a valid email",
+                  message: "Enter a valid email address",
                 },
               })}
               className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
@@ -112,13 +135,13 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
               GSTIN
             </label>
             <input
-              {...register("gstin")}
+              {...register("CustomerGstin")}
               className="w-full mt-1 px-4 py-2 border rounded-lg text-sm"
               placeholder="Enter GSTIN"
             />
           </div>
 
-          {/* Buttons */}
+          {/* Action Buttons */}
           <div className="flex justify-end mt-6 space-x-3">
             <button
               type="button"
@@ -131,7 +154,7 @@ export const EditPartyModal = ({ isOpen, onClose, onSave, party }) => {
               type="submit"
               className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
             >
-              Save Changes
+              Add
             </button>
           </div>
         </form>
