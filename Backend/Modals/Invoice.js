@@ -31,6 +31,13 @@ const InvoiceSchema = new Schema(
         type: Date,
         required: true,
       },
+      billedBy: {
+        type: String,
+        required: true,
+      },
+      updatedBy: {
+        type: String,
+      },
     },
     rows: [
       {

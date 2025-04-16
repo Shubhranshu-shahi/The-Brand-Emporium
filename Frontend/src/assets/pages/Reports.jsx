@@ -1,5 +1,4 @@
 import React from "react";
-import "./sales.css";
 
 import ReportComponent from "../../components/ReportComponent";
 

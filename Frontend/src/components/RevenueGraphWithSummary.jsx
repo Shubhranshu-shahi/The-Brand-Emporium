@@ -61,7 +61,7 @@ export default function RevenueGraphWithSummary() {
       });
     });
 
-    return Object.entries(group)  
+    return Object.entries(group)
       .map(([label, values]) => ({ label, ...values }))
       .sort((a, b) => new Date(a.label) - new Date(b.label));
   };

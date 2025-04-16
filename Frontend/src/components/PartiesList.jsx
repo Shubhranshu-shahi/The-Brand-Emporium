@@ -10,7 +10,7 @@ import {
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Pencil, X } from "lucide-react";
-import PartyDetails from "./PartyDetails";
+
 import { customerDelete, getAllCustomer } from "../assets/helper/customerApi";
 import { EditPartyModal } from "./EditPartyModal";
 import { handleSuccess } from "../assets/helper/utils";

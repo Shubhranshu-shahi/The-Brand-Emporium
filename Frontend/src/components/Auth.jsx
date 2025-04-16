@@ -1,8 +1,6 @@
-import React, { useState } from "react";
-import "../assets/css/auth.css";
-import { Route, useLocation, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
 import { handleError, handleSuccess } from "../assets/helper/utils";
 
 function Auth() {
@@ -13,58 +11,53 @@ function Auth() {
     password: "",
   });
 
-  // const [pathName, setPathName] = useState(false)
-  // const location = useLocation();
-  // const { pathname } = location;
+  const navigate = useNavigate();
 
-  //for forms value changes
+  // Redirect logged-in users away from the login page
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [navigate]);
+
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name, value);
     const copyAuthvals = { ...authvals };
     copyAuthvals[name] = value;
     setAuthVals(copyAuthvals);
-    console.log(authvals);
   };
-  //navigate
-  const navigate = useNavigate();
-  // for submiting the form to the db
+
+  // Handle form submission
   const submitHandle = async (e) => {
     e.preventDefault();
 
     if (isLogin) {
       try {
         const url = "http://localhost:8080/auth/login";
-
         const res = await axios.post(url, {
           email: authvals.email,
           password: authvals.password,
         });
-        console.log(res);
+
         if (res.data.success) {
-          handleSuccess("Login Successfull");
+          handleSuccess("Login Successful");
           localStorage.setItem("token", res.data.jwtToken);
-          localStorage.setItem('loggedInUser', res.data.name);
+          localStorage.setItem("loggedInUser", res.data.name);
           setTimeout(() => {
             navigate("/dashboard");
           }, 2000);
         }
       } catch (err) {
-        if (err.response.data.hasOwnProperty("error")) {
-          
-          console.log(err.response.data.error?.details[0].message);
-          handleError(err.response.data.error?.details[0].message);
+        if (err.response?.data?.error) {
+          handleError(err.response.data.error.details[0].message);
         } else {
-          console.log(err.response.data);
-
-          handleError(err.response.data.message);
+          handleError(err.response?.data?.message || "Login failed.");
         }
-        
       }
     } else {
       try {
         const url = "http://localhost:8080/auth/signup";
-        // const res = await axios.post(url, authvals);
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -73,26 +66,22 @@ function Auth() {
           body: JSON.stringify(authvals),
         });
         const result = await response.json();
-        const { success, message, error } = result;
-        if (success) {
-          console.log(result);
-          handleSuccess("Sign Up Successfull");
-        } else if (error) {
-          const details = error?.details[0].message;
-          handleError(details);
-        } else if (!success) {
-          handleError(message);
+
+        if (result.success) {
+          handleSuccess("Sign Up Successful");
+        } else if (result.error) {
+          handleError(result.error.details[0].message);
+        } else {
+          handleError(result.message);
         }
-        
       } catch (err) {
-        console.log(err);
-        handleError(err);
+        handleError("An error occurred. Please try again.");
       }
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white " >
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
       <div className="w-full max-w-md p-8 space-y-4 bg-gray-800 rounded-xl shadow-lg">
         <h2 className="text-2xl font-bold text-center">
           {isLogin ? "Login" : "Sign Up"}

@@ -1,6 +1,4 @@
 import React, { useContext } from "react";
-import "./sales.css";
-
 import Layout from "../../components/Layout";
 import ItemsList from "../../components/ItemsList";
 

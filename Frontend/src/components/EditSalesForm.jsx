@@ -46,7 +46,7 @@ export default function EditSalesForm({ invoiceNumber }) {
 
     fetchInvoice();
   }, [invoiceNumber]);
-
+  const updatedBy = localStorage.getItem("loggedInUser");
   const handleUpdate = async () => {
     const sanitizedRows = rows.map((row) => {
       const { purchasedPrice = 0, qty = 1 } = row;
@@ -58,7 +58,10 @@ export default function EditSalesForm({ invoiceNumber }) {
       };
     });
     const formData = {
-      customerAndInvoice,
+      customerAndInvoice: {
+        ...customerAndInvoice,
+        updatedBy,
+      },
       rows: sanitizedRows,
       totalDetails: {
         total: totalAmount,

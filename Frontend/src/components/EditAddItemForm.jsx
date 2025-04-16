@@ -142,36 +142,36 @@ function EditAddItemForm({ state }) {
   };
 
   return (
-    <div class="flex-1 p-3">
+    <div className="flex-1 p-3">
       {/* <!-- Add Item Section --> */}
-      <div class="bg-gray-50 p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold mb-4 text-gray-700">Add Item</h3>
+      <div className="bg-gray-50 p-6 rounded-lg shadow-md">
+        <h3 className="text-xl font-semibold mb-4 text-gray-700">Add Item</h3>
         {/* <!-- Additional Forms from Second Image --> */}
-        <div class="grid bg-white p-6 max-w-full rounded-2xl overflow-hidden  shadow-lg grid-cols-2 gap-4 mb-4 text-gray-600">
+        <div className="grid bg-white p-6 max-w-full rounded-2xl overflow-hidden  shadow-lg grid-cols-2 gap-4 mb-4 text-gray-600">
           <input
             type="text"
             placeholder="Item Name *"
             name="itemName"
             value={formData.itemName}
             onChange={handleChange}
-            class="w-full p-2 border rounded"
+            className="w-full p-2 border rounded"
           />
-          <div class="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
             <input
               type="text"
               placeholder="Item HSN"
               name="itemHSN"
               value={formData.itemHSN}
               onChange={handleChange}
-              class="w-full p-2 border rounded"
+              className="w-full p-2 border rounded"
             />
-            <button class="bg-blue-500 text-white px-3 py-2 rounded">
+            <button className="bg-blue-500 text-white px-3 py-2 rounded">
               <Search />
             </button>
           </div>
 
           <input
-            class="w-full p-2 border rounded"
+            className="w-full p-2 border rounded"
             list="category-list"
             id="icategoryId"
             name="category"
@@ -185,18 +185,18 @@ function EditAddItemForm({ state }) {
               <option key={cat} value={cat}></option>
             ))}
           </datalist>
-          <div class="flex items-center space-x-2">
+          <div className="flex items-center space-x-2">
             <input
               type="text"
               placeholder="Item Code"
               name="itemCode"
               value={formData.itemCode}
               onChange={handleChange}
-              class="w-full p-2 border rounded"
+              className="w-full p-2 border rounded"
             />
 
             <button
-              class="bg-blue-500 text-white px-3 py-2 rounded"
+              className="bg-blue-500 text-white px-3 py-2 rounded"
               onClick={barCodeHandler}
             >
               {/* <Link to="myRoute" params={myParams} target="_blank"></Link> */}
@@ -219,18 +219,18 @@ function EditAddItemForm({ state }) {
           onClose={() => setModalOpen(false)}
         />
         {/* <!-- Pricing & Stock Tabs --> */}
-        <div class="mb-4">
-          <button class="text-red-500 border-b-2 border-red-500 px-4 py-2">
+        <div className="mb-4">
+          <button className="text-red-500 border-b-2 border-red-500 px-4 py-2">
             Pricing
           </button>
         </div>
         <div></div>
-        <div class="grid grid-cols-3 mb-4 gap-4 max-w-full rounded-2xl overflow-hidden shadow-lg bg-white p-6 text-gray-700">
+        <div className="grid grid-cols-3 mb-4 gap-4 max-w-full rounded-2xl overflow-hidden shadow-lg bg-white p-6 text-gray-700">
           <div>
-            <label class="block text-gray-700 mt-2 font-bold">MRP</label>
+            <label className="block text-gray-700 mt-2 font-bold">MRP</label>
           </div>
           <div>
-            <label class="block text-gray-700  mt-2 font-bold">
+            <label className="block text-gray-700  mt-2 font-bold">
               Percentage
             </label>
           </div>
@@ -238,7 +238,7 @@ function EditAddItemForm({ state }) {
           <div>
             <input
               type="text"
-              class="w-full p-2 border rounded"
+              className="w-full p-2 border rounded"
               name="mrp"
               value={formData.mrp}
               onChange={handleNumericChange}
@@ -248,7 +248,7 @@ function EditAddItemForm({ state }) {
           <div>
             <input
               type="text"
-              class="w-full p-2 border rounded"
+              className="w-full p-2 border rounded"
               name="discountSale"
               value={formData.discountSale}
               onChange={handleNumericChange}
@@ -257,20 +257,24 @@ function EditAddItemForm({ state }) {
           </div>
           <div></div>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-4 max-w-full rounded-2xl overflow-hidden  shadow-lg bg-white p-6 text-gray-700">
-          <label class="block text-gray-700 font-bold mt-2">Sale Price</label>
+        <div className="grid grid-cols-3 gap-4 mb-4 max-w-full rounded-2xl overflow-hidden  shadow-lg bg-white p-6 text-gray-700">
+          <label className="block text-gray-700 font-bold mt-2">
+            Sale Price
+          </label>
           <div>
-            <label class="block text-gray-700  mt-2 font-bold">
+            <label className="block text-gray-700  mt-2 font-bold">
               Tax on Sale Price
             </label>
           </div>
           <div>
-            <label class="block text-gray-700  mt-2 font-bold">Sell At</label>
+            <label className="block text-gray-700  mt-2 font-bold">
+              Sell At
+            </label>
           </div>
           <div>
             <input
               type="text"
-              class="w-full p-2 border rounded"
+              className="w-full p-2 border rounded"
               name="salePrice"
               value={formData.salePrice}
               onChange={handleNumericChange}
@@ -279,7 +283,7 @@ function EditAddItemForm({ state }) {
           </div>
           <div>
             <select
-              class="w-full text-gray-700 p-2 h-10 border rounded"
+              className="w-full text-gray-700 p-2 h-10 border rounded"
               name="taxSale"
               value={formData.taxSale}
               onChange={handleChange}
@@ -294,7 +298,7 @@ function EditAddItemForm({ state }) {
           <div>
             <input
               type="text"
-              class="w-full p-2 border rounded"
+              className="w-full p-2 border rounded"
               name="sellingPrice"
               readOnly
               value={formData.sellingPrice}
@@ -302,26 +306,26 @@ function EditAddItemForm({ state }) {
             />
           </div>
         </div>
-        <div class="grid grid-cols-3 gap-4 mb-4 max-w-full rounded-2xl overflow-hidden  shadow-lg bg-white p-6 text-gray-700">
+        <div className="grid grid-cols-3 gap-4 mb-4 max-w-full rounded-2xl overflow-hidden  shadow-lg bg-white p-6 text-gray-700">
           <div>
-            <label class="block text-gray-700 font-bold mt-1">
+            <label className="block text-gray-700 font-bold mt-1">
               Purchase Price
             </label>
           </div>
           <div>
-            <label class="block text-gray-700 font-bold mt-1">
+            <label className="block text-gray-700 font-bold mt-1">
               Tax on Purchase
             </label>
           </div>
           <div>
-            <label class="block text-gray-700 font-bold mt-1">
+            <label className="block text-gray-700 font-bold mt-1">
               Purchased At
             </label>
           </div>
           <div>
             <input
               type="text"
-              class="w-full p-2 border rounded"
+              className="w-full p-2 border rounded"
               name="purchasePrice"
               value={formData.purchasePrice}
               onChange={handleNumericChange}
@@ -330,7 +334,7 @@ function EditAddItemForm({ state }) {
           </div>
           <div>
             <select
-              class="w-full h-10 p-2 border rounded text-gray-600"
+              className="w-full h-10 p-2 border rounded text-gray-600"
               name="taxPurchase"
               value={formData.taxPurchase}
               onChange={handleChange}
@@ -346,7 +350,7 @@ function EditAddItemForm({ state }) {
           <div>
             <input
               type="text"
-              class="w-full p-2 border rounded"
+              className="w-full p-2 border rounded"
               name="purchasedPrice"
               value={formData.purchasedPrice}
               readOnly
@@ -355,10 +359,10 @@ function EditAddItemForm({ state }) {
           </div>
         </div>
 
-        <div class="mt-4 text-right">
+        <div className="mt-4 text-right">
           <button
             type="button"
-            class="bg-blue-500 text-white px-4 py-2 rounded"
+            className="bg-blue-500 text-white px-4 py-2 rounded"
             onClick={handleUpdate}
             disabled={!formData.itemName || !formData.mrp}
           >

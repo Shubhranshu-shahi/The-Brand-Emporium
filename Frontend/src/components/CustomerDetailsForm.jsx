@@ -1,11 +1,9 @@
 import React from "react";
 import { customerByPhone } from "../assets/helper/customerApi";
 
-function CustomerDetailsForm({customerAndInvoice
-            ,setCustomerAndInvoice}) {
+function CustomerDetailsForm({ customerAndInvoice, setCustomerAndInvoice }) {
   //check get customer by number
-    const getCustomerByPhone = async (phone) => {
-      
+  const getCustomerByPhone = async (phone) => {
     const cust = await customerByPhone(phone);
 
     setCustomerAndInvoice((prevState) => ({

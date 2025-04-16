@@ -58,6 +58,8 @@ function ReportComponent() {
           receive: entry.totalDetails.receive,
           remaining: entry.totalDetails.remaining,
           _id: entry._id,
+          billedBy: entry.customerAndInvoice.billedBy,
+          updatedBy: entry.customerAndInvoice.updatedBy,
         }));
         setData(formatted);
         setFilteredData(formatted);
@@ -82,7 +84,9 @@ function ReportComponent() {
     }
   }, [startDate, endDate, data]);
 
-  const columns = [
+  const isAdmin = localStorage.getItem("loggedInUser") === "shubh";
+  console.log(isAdmin);
+  const baseColumns = [
     columnHelper.accessor("#", { header: "#" }),
     columnHelper.accessor("customerName", { header: "Customer Name" }),
     columnHelper.accessor("phone", { header: "Phone" }),
@@ -102,55 +106,62 @@ function ReportComponent() {
         </span>
       ),
     }),
-    columnHelper.display({
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const rowData = row.original;
-        return (
-          <div className="flex gap-3">
-            <button
-              onClick={() =>
-                window.open(`/invoice/${rowData.invoiceNumber}`, "_blank")
-              }
-              className="text-blue-600 hover:underline"
-            >
-              View
-            </button>
-            <button
-              onClick={() => {
-                console.log(rowData);
-                handleUpdate(rowData);
-              }}
-              className="text-blue-600 hover:underline"
-              title="Edit"
-            >
-              Edit
-            </button>
-            <button
-              onClick={async () => {
-                setDeletingId(rowData._id);
-                setTimeout(async () => {
-                  await invoiceDelete(rowData._id);
-                  setFilteredData((prev) =>
-                    prev.filter((item) => item._id !== rowData._id)
-                  );
-                  setData((prev) =>
-                    prev.filter((item) => item._id !== rowData._id)
-                  );
-                  setDeletingId(null);
-                }, 300);
-                handleSuccess("invoice Deleted");
-              }}
-              className="text-red-600 hover:underline"
-            >
-              Delete
-            </button>
-          </div>
-        );
-      },
-    }),
   ];
+
+  const adminColumns = [
+    columnHelper.accessor("billedBy", { header: "Billed By" }),
+    columnHelper.accessor("updatedBy", { header: "Updated By" }),
+  ];
+
+  const actionColumn = columnHelper.display({
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const rowData = row.original;
+      return (
+        <div className="flex gap-3">
+          <button
+            onClick={() =>
+              window.open(`/invoice/${rowData.invoiceNumber}`, "_blank")
+            }
+            className="text-blue-600 hover:underline"
+          >
+            View
+          </button>
+          <button
+            onClick={() => handleUpdate(rowData)}
+            className="text-blue-600 hover:underline"
+            title="Edit"
+          >
+            Edit
+          </button>
+          <button
+            onClick={async () => {
+              setDeletingId(rowData._id);
+              setTimeout(async () => {
+                await invoiceDelete(rowData._id);
+                setFilteredData((prev) =>
+                  prev.filter((item) => item._id !== rowData._id)
+                );
+                setData((prev) =>
+                  prev.filter((item) => item._id !== rowData._id)
+                );
+                setDeletingId(null);
+              }, 300);
+              handleSuccess("Invoice Deleted");
+            }}
+            className="text-red-600 hover:underline"
+          >
+            Delete
+          </button>
+        </div>
+      );
+    },
+  });
+
+  const columns = isAdmin
+    ? [...baseColumns, ...adminColumns, actionColumn]
+    : [...baseColumns, actionColumn];
 
   const handleUpdate = (row) => {
     navigate(`/edit-invoice/${row.invoiceNumber}`);

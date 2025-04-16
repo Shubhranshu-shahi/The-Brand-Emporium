@@ -47,6 +47,8 @@ function SalesFormMain() {
     CustomerGstin: "",
     email: "",
     customerId: "",
+    billedBy: localStorage.getItem("loggedInUser"),
+    updatedBy: "",
     invoiceNumber: currentDateAndTime(),
     invoiceDate: currentDate(),
   });

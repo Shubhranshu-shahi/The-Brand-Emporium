@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import HeaderNav from "./HeaderNav";
-import SideNavTest from "./SideNavTest";
+import SideNavTest from "./SideNav";
 import axios from "axios";
 import { privacyVerf } from "../assets/helper/PrivacyVerfication";
 
