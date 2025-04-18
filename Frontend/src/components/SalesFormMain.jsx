@@ -74,7 +74,7 @@ function SalesFormMain() {
   }, [rows.itemCode]);
 
   useEffect(() => {
-    const newRoundOff = totalAmount;
+    const newRoundOff = parseInt(totalAmount);
     setRoundOff(newRoundOff);
     setRemaining(newRoundOff - receive);
   }, [rows, totalAmount]);

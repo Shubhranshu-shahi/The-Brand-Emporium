@@ -24,14 +24,14 @@ const Invoice = () => {
       <div ref={targetRef} className="bg-white p-4">
         <InvoiceBill id={id} pdf={toPDF} />
       </div>
-      <div className="flex justify-end pt-2">
+      {/* <div className="flex justify-end pt-2">
         <button
           onClick={toPDF}
           className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
         >
           Download PDF
         </button>
-      </div>
+      </div> */}
     </>
   );
 };

@@ -67,7 +67,9 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
   const createNewRowData = (row, prod) => {
     const qty = parseFloat(row.qty) || 1;
     const newMrp = prod.mrp * qty;
-    const discountAmount = newMrp * (prod.discountSale / 100);
+    const discountAmount = parseFloat(
+      newMrp * (prod.discountSale / 100)
+    ).toFixed(2);
     const purchasedWithQty = (prod.purchasedPrice || 0) * qty;
 
     return {
@@ -96,7 +98,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
 
     const newMrp = mrp * qty;
     const sellingPrice = newMrp - newMrp * discount;
-    const discountAmount = newMrp - sellingPrice;
+    const discountAmount = parseFloat(newMrp - sellingPrice).toFixed(2);
     const taxAmount = sellingPrice * (taxSale / 100);
     const salePrice = sellingPrice - taxAmount;
     const purchasedWithQty = (row.purchasedPrice || 0) * qty;
