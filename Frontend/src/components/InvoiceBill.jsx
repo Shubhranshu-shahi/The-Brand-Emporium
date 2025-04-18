@@ -84,7 +84,7 @@ function InvoiceBill({ id, pdf }) {
   }
 
   return (
-    <div className="bg-gray-100 px-6 text-black">
+    <div className="bg-gray-100 p-6 text-black">
       <div className="max-w-6xl mt-8 mx-auto bg-white p-6 rounded-lg shadow-md">
         {/* Header Section */}
         <div className="flex flex-wrap  text-sm md:text-base">
@@ -172,9 +172,11 @@ function InvoiceBill({ id, pdf }) {
                   <td className="border p-2"></td>
                   <td className="border p-2 text-right">₹ {item.mrp}</td>
                   <td className="border p-2 text-right">{item.qty}</td>
-                  <td className="border p-2 text-right">₹ {item.salePrice}</td>
                   <td className="border p-2 text-right">
-                    ₹ {item.discountAmount}
+                    ₹ {Number(item.salePrice).toFixed(2)}
+                  </td>
+                  <td className="border p-2 text-right">
+                    ₹ {Number(item.discountAmount).toFixed(2)}
                   </td>
                   <td className="border p-2 text-right">
                     ₹ {item.discountSale} %
@@ -184,7 +186,7 @@ function InvoiceBill({ id, pdf }) {
                     ₹ {(item.taxSale / 100) * item.sellingPrice}
                   </td>
                   <td className="border p-2 text-right font-bold">
-                    ₹ {item.sellingPrice}
+                    ₹ {Number(item.sellingPrice).toFixed(2)}
                   </td>
                 </tr>
               ))}
@@ -281,7 +283,11 @@ function InvoiceBill({ id, pdf }) {
                   <tr className="bg-gray-100 font-bold text-red-700">
                     <td className="border px-3  py-2 font-semibold">Balance</td>
                     <td className="border px-3 py-2 text-right">
-                      ₹ {inv.totalDetails.roundOff - inv.totalDetails.receive}
+                      ₹{" "}
+                      {Number(
+                        parseInt(inv.totalDetails.roundOff) -
+                          Number(inv.totalDetails.receive)
+                      ).toFixed(2)}
                     </td>
                   </tr>
                   <tr className="text-green-600 font-bold">
@@ -323,8 +329,20 @@ function InvoiceBill({ id, pdf }) {
         </div>
 
         {/* Download Button */}
-        <div className="mt-4 p-4 text-center md:text-left">
-          <button onClick={pdf} className="hover:text-blue-600 font-semibold">
+        <div className="mt-4 p-4 text-center md:text-left" id="download-button">
+          <button
+            onClick={() => {
+              console.log("Download button clicked");
+              const downloadBtn = document.getElementById("download-button");
+              console.log("Download button element:", downloadBtn);
+              downloadBtn.classList.add("hidden");
+              setTimeout(() => {
+                pdf();
+                downloadBtn.classList.remove("hidden");
+              }, 300);
+            }}
+            className="hover:text-blue-600 font-semibold"
+          >
             Download Invoice
           </button>
         </div>

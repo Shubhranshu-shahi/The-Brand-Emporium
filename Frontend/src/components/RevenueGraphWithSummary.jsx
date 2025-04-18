@@ -192,10 +192,12 @@ export default function RevenueGraphWithSummary() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-white p-4 rounded-xl shadow-lg overflow-x-auto"
+        className="bg-white p-4 rounded-xl shadow-lg"
       >
-        <div className="min-w-[500px]">
-          <Line key={view} data={data} options={options} />
+        <div className="w-full overflow-x-auto">
+          <div className="w-full">
+            <Line key={view} data={data} options={options} />
+          </div>
         </div>
       </motion.div>
     </div>

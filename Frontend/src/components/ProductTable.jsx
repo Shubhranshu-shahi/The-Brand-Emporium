@@ -216,7 +216,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                     }
                   />
                 </td>
-                <td className="px-4 py-3 border w-24">
+                <td className="px-4 py-3 border min-w-24">
                   <input
                     className="w-full p-2 border rounded-lg text-center"
                     type="number"
@@ -239,7 +239,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 <td className="px-4 py-3 text-center border">
                   {row.discountAmount}
                 </td>
-                <td className="px-4 py-3 border w-28">
+                <td className="px-4 py-3 border min-w-28">
                   <select
                     className="w-full p-2 border rounded-lg text-center"
                     value={row.taxSale}
@@ -263,7 +263,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 <td className="px-4 py-3 font-semibold text-center border">
                   {row.sellingPrice}
                 </td>
-                <td className="px-4 py-3 border w-32 text-center">
+                <td className="px-4 py-3 border min-w-32 text-center">
                   {row.show ? (
                     <div className="flex flex-col space-y-2">
                       <input
@@ -298,7 +298,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                   {rows.length > 1 && index !== 0 && (
                     <button
                       onClick={() => deleteRow(index)}
-                      className="w-8 h-8 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center"
+                      className="min-w-8 min-h-8 bg-red-600 hover:bg-red-700 text-white rounded-full flex items-center justify-center"
                       title="Delete Row"
                     >
                       <X size={16} />
