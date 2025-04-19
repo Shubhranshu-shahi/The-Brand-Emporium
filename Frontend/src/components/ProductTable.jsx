@@ -50,11 +50,16 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
         }
       } else {
         if (
-          ["discountSale", "taxSale", "mrp", "qty", "purchasedPrice"].includes(
-            key
-          )
+          [
+            "discountSale",
+            "taxSale",
+            "mrp",
+            "qty",
+            "purchasedPrice",
+            "sellingPrice",
+          ].includes(key)
         ) {
-          newRows = updateRowCalculations(newRows, index);
+          newRows = updateRowCalculations(newRows, index, key);
         }
         newRows = newRows.map((r, i) => ({ ...r, items: i + 1 }));
         setRows(newRows);
@@ -89,27 +94,81 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
     };
   };
 
-  const updateRowCalculations = (rows, index) => {
+  // const updateRowCalculations = (rows, index) => {
+  //   let row = rows[index];
+  //   const qty = parseFloat(row.qty) || 1;
+  //   const mrp = parseFloat(row.mrp) || 0;
+  //   const discount = parseFloat(row.discountSale) / 100 || 0;
+  //   const taxSale = parseFloat(row.taxSale) || 0;
+
+  //   const newMrp = mrp * qty;
+  //   const sellingPrice = newMrp - newMrp * discount;
+  //   const discountAmount = parseFloat(newMrp - sellingPrice).toFixed(2);
+  //   const taxAmount = sellingPrice * (taxSale / 100);
+  //   const salePrice = sellingPrice - taxAmount;
+  //   const purchasedWithQty = (row.purchasedPrice || 0) * qty;
+
+  //   rows[index] = {
+  //     ...row,
+  //     productId: rows[index].productId || generateProductId(),
+  //     sellingPrice,
+  //     taxAmount,
+  //     salePrice,
+  //     discountAmount,
+  //     purchasedWithQty,
+  //   };
+
+  //   return rows;
+  // };
+
+  const updateRowCalculations = (rows, index, changedKey = "") => {
     let row = rows[index];
     const qty = parseFloat(row.qty) || 1;
     const mrp = parseFloat(row.mrp) || 0;
-    const discount = parseFloat(row.discountSale) / 100 || 0;
     const taxSale = parseFloat(row.taxSale) || 0;
+    const baseMrpTotal = mrp * qty;
 
-    const newMrp = mrp * qty;
-    const sellingPrice = newMrp - newMrp * discount;
-    const discountAmount = parseFloat(newMrp - sellingPrice).toFixed(2);
-    const taxAmount = sellingPrice * (taxSale / 100);
-    const salePrice = sellingPrice - taxAmount;
-    const purchasedWithQty = (row.purchasedPrice || 0) * qty;
+    let sellingPrice = baseMrpTotal;
+    let discountSale = parseFloat(row.discountSale) || 0;
+    let discountAmount = 0;
+    let isManual = row.isSellingPriceManual;
+
+    // 👇 If user changed sellingPrice, flag it as manual
+    if (changedKey === "sellingPrice") {
+      isManual = true;
+    }
+
+    // 👇 Reset manual mode if qty/mrp/discountSale is changed
+    if (["qty", "mrp", "discountSale"].includes(changedKey)) {
+      isManual = false;
+    }
+
+    if (isManual) {
+      sellingPrice = parseFloat(row.sellingPrice) || 0;
+      discountAmount = parseFloat((baseMrpTotal - sellingPrice).toFixed(2));
+      discountSale = parseFloat(
+        ((discountAmount / baseMrpTotal) * 100).toFixed(2)
+      );
+    } else {
+      discountAmount = parseFloat(
+        (baseMrpTotal * (discountSale / 100)).toFixed(2)
+      );
+      sellingPrice = parseFloat((baseMrpTotal - discountAmount).toFixed(2));
+    }
+
+    const taxAmount = parseFloat((sellingPrice * (taxSale / 100)).toFixed(2));
+    const salePrice = parseFloat((sellingPrice - taxAmount).toFixed(2));
+    const purchasedWithQty = (parseFloat(row.purchasedPrice) || 0) * qty;
 
     rows[index] = {
       ...row,
-      productId: rows[index].productId || generateProductId(),
+      productId: row.productId || generateProductId(),
+      isSellingPriceManual: isManual,
+      discountAmount,
+      discountSale,
       sellingPrice,
       taxAmount,
       salePrice,
-      discountAmount,
       purchasedWithQty,
     };
 
@@ -263,7 +322,14 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                   {row.salePrice}
                 </td>
                 <td className="px-4 py-3 font-semibold text-center border">
-                  {row.sellingPrice}
+                  <input
+                    className="w-full p-2 border rounded-lg"
+                    placeholder="0"
+                    value={row.sellingPrice}
+                    onChange={(e) =>
+                      handleInputChange(index, "sellingPrice", e.target.value)
+                    }
+                  />
                 </td>
                 <td className="px-4 py-3 border min-w-32 text-center">
                   {row.show ? (
