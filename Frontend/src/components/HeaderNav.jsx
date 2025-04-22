@@ -19,6 +19,7 @@ export default function HeaderNav({
   setContentHidden,
   dropdownOpen,
   setDropdownOpen,
+  signOutHandler,
 }) {
   const navigate = useNavigate();
   const [loggedInUser, setLoggedInUser] = useState("");
@@ -28,13 +29,9 @@ export default function HeaderNav({
     setLoggedInUser(localStorage.getItem("loggedInUser"));
   }, []);
 
-  const signOutHandler = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("loggedInUser");
-    handleSuccess("Sign out successful");
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
+  const privacyhandler = () => {
+    setContentHidden(true);
+    localStorage.setItem("privacy", "true");
   };
 
   return (
@@ -92,7 +89,7 @@ export default function HeaderNav({
               )}
               <button
                 className="flex items-center w-full px-4 py-2 hover:bg-gray-200"
-                onClick={() => setContentHidden(true)}
+                onClick={() => privacyhandler()}
               >
                 <Shield className="w-5 h-5 mr-2" /> Privacy
               </button>

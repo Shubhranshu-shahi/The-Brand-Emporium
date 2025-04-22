@@ -13,7 +13,7 @@ export const privacyVerf = async (user) => {
     console.log(res.data);
     return res.data;
   } catch (error) {
-    console.error("Error fetching product:", error);
+    console.error("Error verifying:", error);
     return null;
   }
 };

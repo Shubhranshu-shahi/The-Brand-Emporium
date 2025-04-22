@@ -3,6 +3,7 @@ const {
   login,
   privacyAuthPass,
   updatePassword,
+
   userExits,
 } = require("../Controllers/AuthContoller");
 const ensureAuth = require("../Middleware/Auth");
@@ -16,6 +17,7 @@ const router = require("express").Router();
 router.post("/signup", singupValidation, signup);
 router.post("/login", loginValidation, login);
 router.post("/privacy-auth", privacyAuthPass);
+
 router.post("/update-password", updatePassword);
 router.post("/user-exist", userExits);
 

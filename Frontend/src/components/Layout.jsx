@@ -4,6 +4,7 @@ import HeaderNav from "./HeaderNav";
 import SideNavTest from "./SideNav";
 import axios from "axios";
 import { privacyVerf } from "../assets/helper/PrivacyVerfication";
+import { useNavigate } from "react-router-dom";
 
 export default function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(null); // null initially
@@ -11,12 +12,17 @@ export default function Layout({ children }) {
   const [contentHidden, setContentHidden] = useState(false);
   const [password, setPassword] = useState("");
 
+  const navigate = useNavigate();
+
   // Detect screen size and sync with localStorage
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
     const storedValue = localStorage.getItem("SideNavCollapsed");
 
     const isMobile = mediaQuery.matches;
+    if (localStorage.getItem("privacy") === "true") {
+      setContentHidden(true);
+    }
 
     // on mobile, force collapsed
     if (isMobile) {
@@ -47,11 +53,13 @@ export default function Layout({ children }) {
     try {
       const user = {
         name: localStorage.getItem("loggedInUser"),
+        email: localStorage.getItem("email"),
         password,
       };
       const res = await privacyVerf(user);
       if (res && res.success) {
         setContentHidden(false);
+        localStorage.setItem("privacy", "false");
       } else {
         alert("Wrong password");
       }
@@ -61,12 +69,23 @@ export default function Layout({ children }) {
     }
   };
 
+  const signOutHandler = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("loggedInUser");
+    localStorage.removeItem("email");
+    handleSuccess("Sign out successful");
+    setTimeout(() => {
+      navigate("/login");
+    }, 1000);
+  };
+
   return (
     <div className="flex h-screen relative">
       <HeaderNav
         setContentHidden={setContentHidden}
         dropdownOpen={dropdownOpen}
         setDropdownOpen={setDropdownOpen}
+        signOutHandler={signOutHandler}
       />
       <SideNavTest collapsed={collapsed} setCollapsed={setCollapsed} />
 
@@ -87,10 +106,16 @@ export default function Layout({ children }) {
           />
           <button
             onClick={privercyVefication}
-            className="bg-white text-black px-4 py-2 rounded-lg shadow-md"
+            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md"
           >
             {" "}
             Show
+          </button>
+          <button
+            onClick={signOutHandler}
+            className="bg-red-500 hover:bg-red-600 text-white m-2 px-4 py-2 rounded-lg shadow-md"
+          >
+            log out
           </button>
         </motion.div>
       )}

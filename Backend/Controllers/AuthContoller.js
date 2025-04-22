@@ -70,9 +70,9 @@ const login = async (req, res) => {
 const privacyAuthPass = async (req, res) => {
   console.log("Checking");
   try {
-    const { name, password } = req.body;
+    const { name, email, password } = req.body;
 
-    const user = await UserModal.findOne({ name });
+    const user = await UserModal.findOne({ email });
     const errMessage = "Authentication failed, password is incorrect";
     if (!user) {
       return res.status(403).json({
