@@ -7,6 +7,7 @@ const ProductRouter = require("./Routes/ProductRouter");
 const CustomerRouter = require("./Routes/CustomerRouter");
 const InvoiceRouter = require("./Routes/InvoiceRouter");
 const CategoryRouter = require("./Routes/CategoryRouter");
+const OtpRouter = require("./Routes/OtpRouter");
 
 require("dotenv").config();
 
@@ -26,6 +27,7 @@ app.use("/products", ProductRouter);
 app.use("/customer", CustomerRouter);
 app.use("/invoice", InvoiceRouter);
 app.use("/category", CategoryRouter);
+app.use("/otp", OtpRouter);
 
 app.listen(PORT, () => {
   console.log(`server is running on ${PORT} `);
