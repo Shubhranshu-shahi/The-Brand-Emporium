@@ -1,12 +1,14 @@
-import { Eye, X } from "lucide-react";
-import { useMemo } from "react";
+import { ChevronDown, Eye, X } from "lucide-react";
+import { useMemo, useState } from "react";
 
 function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
+  const [expandedRow, setExpandedRow] = useState(false);
   const generateProductId = () => {
     const timestamp = Date.now().toString().slice(-6);
     const randomNum = Math.floor(10000 + Math.random() * 90000);
     return `${timestamp}${randomNum}`;
   };
+
   const toggleShow = (index) => {
     setRows((prevRows) =>
       prevRows.map((row, i) =>
@@ -230,12 +232,23 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 "Price",
                 "Amount",
                 "Show",
+
                 "Action",
               ].map((header) => (
                 <th key={header} className="px-4 py-3 border">
                   {header}
                 </th>
               ))}
+              <th className="px-4 py-3 border">
+                <button
+                  className="bg-blue-500 hover:bg-blue-600 px-2 py-2 rounded-lg"
+                  onClick={() => {
+                    setExpandedRow((prev) => !prev);
+                  }}
+                >
+                  ShowFull
+                </button>
+              </th>
             </tr>
           </thead>
 
@@ -250,7 +263,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 <td className="px-4 py-3 text-center border">{row.items}</td>
                 <td className="px-4 py-3 border">
                   <input
-                    className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="min-w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
                     value={row.itemCode}
                     onChange={(e) =>
                       handleInputChange(index, "itemCode", e.target.value)
@@ -260,7 +273,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 </td>
                 <td className="px-4 py-3 border">
                   <input
-                    className="w-full p-2 border rounded-lg"
+                    className="min-w-full p-2 border rounded-lg"
                     value={row.itemName}
                     onChange={(e) =>
                       handleInputChange(index, "itemName", e.target.value)
@@ -269,7 +282,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 </td>
                 <td className="px-4 py-3 border">
                   <input
-                    className="w-full p-2 border rounded-lg"
+                    className="min-w-full p-2 border rounded-lg"
                     type="number"
                     value={row.mrp}
                     onChange={(e) =>
@@ -289,7 +302,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 </td>
                 <td className="px-4 py-3 border">
                   <input
-                    className="w-full p-2 border rounded-lg"
+                    className="min-w-full p-2 border rounded-lg"
                     placeholder="0"
                     value={row.discountSale}
                     onChange={(e) =>
@@ -315,15 +328,15 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                     ))}
                   </select>
                 </td>
-                <td className="px-4 py-3 text-center border">
+                <td className="px-4 min-w-full py-3 text-center border">
                   {row.taxAmount}
                 </td>
-                <td className="px-4 py-3 text-center border">
+                <td className="px-4 py-3 min-w-full text-center border">
                   {row.salePrice}
                 </td>
                 <td className="px-4 py-3 font-semibold text-center border">
                   <input
-                    className="w-full p-2 border rounded-lg"
+                    className="min-w-full p-2 border rounded-lg"
                     placeholder="0"
                     value={row.sellingPrice}
                     onChange={(e) =>
@@ -362,6 +375,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                     </button>
                   )}
                 </td>
+
                 <td className="px-4 py-3 text-center border">
                   {rows.length > 1 && index !== 0 && (
                     <button
@@ -373,6 +387,28 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                     </button>
                   )}
                 </td>
+
+                {/* --------------------------------- */}
+                <td className="px-4 py-3 border min-w-32 text-center">
+                  {expandedRow && (
+                    <div className="flex flex-col space-y-2">
+                      <input
+                        className="w-full p-2 border rounded-lg"
+                        type="number"
+                        value={row.purchasedWithQty}
+                        onChange={(e) =>
+                          handleInputChange(
+                            index,
+                            "purchasedPrice",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  )}
+                </td>
+
+                {/* ----------------------------------------- */}
               </tr>
             ))}
           </tbody>
@@ -403,6 +439,12 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 )}
               </td>
               <td colSpan="2" />
+              <td className="px-4 py-2 border text-center">
+                {rows.reduce(
+                  (sum, row) => sum + Number(row.purchasedWithQty || 0),
+                  0
+                )}
+              </td>
             </tr>
           </tfoot>
         </table>
