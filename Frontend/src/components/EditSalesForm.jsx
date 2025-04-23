@@ -19,6 +19,7 @@ export default function EditSalesForm({ invoiceNumber }) {
   const [receive, setReceive] = useState(0);
   const [remaining, setRemaining] = useState(0);
   const [type, setType] = useState("Online");
+  const [nongst, setNongst] = useState(false);
 
   const totalAmount = rows.reduce(
     (sum, row) => sum + (parseFloat(row.sellingPrice) || 0),
@@ -30,6 +31,18 @@ export default function EditSalesForm({ invoiceNumber }) {
     setProduct(prod);
     return prod;
   };
+
+  useEffect(() => {
+    if (customerAndInvoice.GSTType === "Non-GST") {
+      setCustomerAndInvoice((prev) => ({
+        ...prev,
+        CustomerGstin: "",
+      }));
+      setNongst(true);
+    } else {
+      setNongst(false);
+    }
+  }, [customerAndInvoice.GSTType]);
 
   useEffect(() => {
     const fetchInvoice = async () => {
@@ -81,7 +94,7 @@ export default function EditSalesForm({ invoiceNumber }) {
     }
   };
   useEffect(() => {
-    const newRoundOff = totalAmount;
+    const newRoundOff = parseInt(totalAmount);
     setRoundOff(newRoundOff);
     setRemaining(newRoundOff - receive);
   }, [rows, totalAmount, receive]);
@@ -98,11 +111,13 @@ export default function EditSalesForm({ invoiceNumber }) {
             getCustomerByPhone={() => {}}
             errors={() => {}}
             setErrors={() => {}}
+            nonGst={nongst}
           />
           <div></div>
           <InvoiceDetails
             invoice={customerAndInvoice}
             setInvoice={setCustomerAndInvoice}
+            nonGst={nongst}
           />
         </div>
 
@@ -113,6 +128,7 @@ export default function EditSalesForm({ invoiceNumber }) {
           setProduct={setProduct}
           lastInputRef={lastInputRef}
           searchByidProduct={searchByidProduct}
+          nonGst={nongst}
         />
 
         <div className="flex justify-between mt-4 items-start">

@@ -25,6 +25,18 @@ function InvoiceDetails({ invoice, setInvoice }) {
         }
         className="w-full p-2 text-black border rounded"
       />
+      <label className="block font-semibold text-gray-400 mt-2">
+        GST/Non GST
+      </label>
+      <select
+        name="type"
+        className="w-full p-2 border text-black rounded border-amber-600"
+        value={invoice.GSTType}
+        onChange={(e) => setInvoice({ ...invoice, GSTType: e.target.value })}
+      >
+        <option value="GST">GST</option>
+        <option value="Non-GST">Non-GST</option>
+      </select>
     </div>
   );
 }

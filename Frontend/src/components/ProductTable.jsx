@@ -1,8 +1,16 @@
 import { ChevronDown, Eye, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
+function ProductTable({
+  rows,
+  setRows,
+  lastInputRef,
+  searchByidProduct,
+  nonGst,
+}) {
   const [expandedRow, setExpandedRow] = useState(false);
+  const [products, setProducts] = useState([]);
+  const [originalTaxValues, setOriginalTaxValues] = useState([]);
   const generateProductId = () => {
     const timestamp = Date.now().toString().slice(-6);
     const randomNum = Math.floor(10000 + Math.random() * 90000);
@@ -16,6 +24,42 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
       )
     );
   };
+
+  // useEffect(() => {
+  //   console.log("nonGst", nonGst);
+  //   if (nonGst) {
+  //     // Save original tax values
+  //     setOriginalTaxValues(
+  //       products.map((p) => ({
+  //         id: p.id,
+  //         taxSale: p.taxSale,
+  //         taxAmount: p.taxAmount,
+  //       }))
+  //     );
+
+  //     // Set tax values to 0
+  //     const updated = products.map((p) => ({
+  //       ...p,
+  //       taxSale: 0,
+  //       taxAmount: 0,
+  //     }));
+  //     setProducts(updated);
+  //     console.log("updated", updated);
+  //   } else {
+  //     // Restore tax values if available
+  //     const restored = products.map((p) => {
+  //       const original = originalTaxValues.find((o) => o.id === p.id);
+  //       return original
+  //         ? {
+  //             ...p,
+  //             taxSale: original.taxSale,
+  //             taxAmount: original.taxAmount,
+  //           }
+  //         : p;
+  //     });
+  //     setProducts(restored);
+  //   }
+  // }, [nonGst]);
 
   const handleInputChange = async (index, key, value) => {
     setRows((prevRows) => {
@@ -86,13 +130,41 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
       itemName: prod.itemName,
       discountSale: prod.discountSale || "",
       sellingPrice: prod.sellingPrice || "",
-      taxSale: prod.taxSale || "0",
+      taxSale: parseFloat(prod.taxSale) || 0,
       taxAmount: (prod.sellingPrice || 0) * ((prod.taxSale || 100) / 100),
       salePrice: prod.salePrice || "",
       itemCode: prod.itemCode,
       purchasedPrice: prod.purchasedPrice,
       discountAmount,
       purchasedWithQty,
+    };
+  };
+
+  const getTotalValues = () => {
+    let totalQty = 0;
+    let totalDiscount = 0;
+    let totalTax = 0;
+    let totalAmount = 0;
+
+    rows.forEach((row) => {
+      const qty = parseFloat(row.qty) || 0;
+      const discount = parseFloat(row.discountAmount) || 0;
+      const tax = nonGst ? 0 : parseFloat(row.taxAmount) || 0;
+      const amount = nonGst
+        ? parseFloat(row.sellingPrice) || 0
+        : parseFloat(row.sellingPrice) || 0;
+
+      totalQty += qty;
+      totalDiscount += discount;
+      totalTax += tax;
+      totalAmount += amount;
+    });
+
+    return {
+      totalQty,
+      totalDiscount: totalDiscount.toFixed(2),
+      totalTax: totalTax.toFixed(2),
+      totalAmount: totalAmount.toFixed(2),
     };
   };
 
@@ -315,8 +387,11 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 </td>
                 <td className="px-4 py-3 border min-w-28">
                   <select
-                    className="w-full p-2 border rounded-lg text-center"
-                    value={row.taxSale}
+                    className={`w-full p-2 border rounded-lg text-center ${
+                      nonGst ? "bg-gray-200 cursor-not-allowed" : ""
+                    }`}
+                    value={nonGst ? 0 : row.taxSale}
+                    disabled={nonGst}
                     onChange={(e) =>
                       handleInputChange(index, "taxSale", e.target.value)
                     }
@@ -329,10 +404,10 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                   </select>
                 </td>
                 <td className="px-4 min-w-full py-3 text-center border">
-                  {row.taxAmount}
+                  {nonGst ? 0 : row.taxAmount}
                 </td>
                 <td className="px-4 py-3 min-w-full text-center border">
-                  {row.salePrice}
+                  {nonGst ? row.sellingPrice : row.salePrice}
                 </td>
                 <td className="px-4 py-3 font-semibold text-center border">
                   <input
@@ -392,18 +467,7 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
                 <td className="px-4 py-3 border min-w-32 text-center">
                   {expandedRow && (
                     <div className="flex flex-col space-y-2">
-                      <input
-                        className="w-full p-2 border rounded-lg"
-                        type="number"
-                        value={row.purchasedWithQty}
-                        onChange={(e) =>
-                          handleInputChange(
-                            index,
-                            "purchasedPrice",
-                            e.target.value
-                          )
-                        }
-                      />
+                      {row.purchasedWithQty}
                     </div>
                   )}
                 </td>
@@ -414,36 +478,26 @@ function ProductTable({ rows, setRows, lastInputRef, searchByidProduct }) {
           </tbody>
           <tfoot className="bg-gray-100 font-medium">
             <tr>
-              <td colSpan="4" className="px-4 py-4 border text-left">
-                Total:
+              <td colSpan={4} className="px-4 py-3 text-right border">
+                Totals
               </td>
-              <td className="px-4 py-2 border text-center">
-                {rows.reduce((sum, row) => sum + Number(row.qty), 0)}
+              <td className="px-4 py-3 text-center border">
+                {getTotalValues().totalQty}
               </td>
-              <td />
-              <td className="px-4 py-2 border text-center">
-                {rows.reduce(
-                  (sum, row) => sum + Number(row.discountAmount || 0),
-                  0
-                )}
+              <td className="px-4 py-3 text-center border">—</td>
+              <td className="px-4 py-3 text-center border">
+                {getTotalValues().totalDiscount}
               </td>
-              <td />
-              <td className="px-4 py-2 border text-center">
-                {rows.reduce((sum, row) => sum + Number(row.taxAmount || 0), 0)}
+              <td className="px-4 py-3 text-center border">—</td>
+              <td className="px-4 py-3 text-center border">
+                {getTotalValues().totalTax}
               </td>
-              <td />
-              <td className="px-4 py-2 border text-center">
-                {rows.reduce(
-                  (sum, row) => sum + Number(row.sellingPrice || 0),
-                  0
-                )}
+              <td className="px-4 py-3 text-center border">—</td>
+              <td className="px-4 py-3 text-center border">
+                {getTotalValues().totalAmount}
               </td>
-              <td colSpan="2" />
-              <td className="px-4 py-2 border text-center">
-                {rows.reduce(
-                  (sum, row) => sum + Number(row.purchasedWithQty || 0),
-                  0
-                )}
+              <td colSpan={2} className="px-4 py-3 border">
+                —
               </td>
             </tr>
           </tfoot>

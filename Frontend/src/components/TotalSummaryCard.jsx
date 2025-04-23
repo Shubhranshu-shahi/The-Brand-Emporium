@@ -54,7 +54,8 @@ function TotalSummaryCard({
             onChange={(e) => {
               setReceive(e.target.value);
               setRemaining(
-                parseFloat(roundOff) - parseFloat(e.target.value || 0)
+                parseFloat(roundOff).toFixed(2) -
+                  parseFloat(e.target.value || 0).toFixed(2)
               );
             }}
             className="w-full sm:w-40 p-2 border border-gray-600 bg-gray-700 text-white rounded text-right"
@@ -69,7 +70,7 @@ function TotalSummaryCard({
           <input
             type="number"
             readOnly
-            value={parseInt(remaining)}
+            value={parseInt(remaining).toFixed(2)}
             className="w-full sm:w-40 p-2 border border-gray-600 bg-gray-700 text-white rounded text-right"
           />
         </div>

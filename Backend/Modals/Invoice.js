@@ -38,6 +38,10 @@ const InvoiceSchema = new Schema(
       updatedBy: {
         type: String,
       },
+      GSTType: {
+        type: String,
+        required: true,
+      },
     },
     rows: [
       {

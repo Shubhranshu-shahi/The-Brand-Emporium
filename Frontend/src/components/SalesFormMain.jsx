@@ -17,6 +17,7 @@ function SalesFormMain() {
   const lastInputRef = useRef(null);
 
   const [product, setProduct] = useState([]);
+  const [nongst, setNongst] = useState(false);
   const [errors, setErrors] = useState({
     phone: false,
     customerName: false,
@@ -51,6 +52,7 @@ function SalesFormMain() {
     updatedBy: "",
     invoiceNumber: currentDateAndTime(),
     invoiceDate: currentDate(),
+    GSTType: "GST",
   });
 
   const [roundOff, setRoundOff] = useState(0);
@@ -62,6 +64,18 @@ function SalesFormMain() {
     (sum, row) => sum + (parseFloat(row.sellingPrice) || 0),
     0
   );
+
+  useEffect(() => {
+    if (customerAndInvoice.GSTType === "Non-GST") {
+      setCustomerAndInvoice((prev) => ({
+        ...prev,
+        CustomerGstin: "",
+      }));
+      setNongst(true);
+    } else {
+      setNongst(false);
+    }
+  }, [customerAndInvoice.GSTType]);
 
   useEffect(() => {
     if (rows.length > 0) {
@@ -156,6 +170,7 @@ function SalesFormMain() {
             getCustomerByPhone={getCustomerByPhone}
             errors={errors}
             setErrors={setErrors}
+            nonGst={nongst}
           />
           <div></div>
           <InvoiceDetails
@@ -171,6 +186,7 @@ function SalesFormMain() {
           setProduct={setProduct}
           lastInputRef={lastInputRef}
           searchByidProduct={searchByidProduct}
+          nonGst={nongst}
         />
 
         <div className="flex justify-between mt-4 items-start">

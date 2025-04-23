@@ -119,11 +119,12 @@ function InvoiceBill({ id, pdf }) {
             <p>
               <strong>Contact No.:</strong> {inv.customerAndInvoice.phone}
             </p>
-            {inv.customerAndInvoice.CustomerGstin && (
-              <p>
-                <strong>GSTIN:</strong> {inv.customerAndInvoice.CustomerGstin}
-              </p>
-            )}
+            {inv.customerAndInvoice.GSTType === "GST" &&
+              inv.customerAndInvoice.CustomerGstin && (
+                <p>
+                  <strong>GSTIN:</strong> {inv.customerAndInvoice.CustomerGstin}
+                </p>
+              )}
           </div>
           <div className="md:col-span-4">
             <h2 className="text-lg font-semibold">Tax Invoice</h2>
@@ -157,8 +158,12 @@ function InvoiceBill({ id, pdf }) {
                 <th className="border p-2">Price/Unit</th>
                 <th className="border p-2">Discount</th>
                 <th className="border p-2">Discount Amount</th>
-                <th className="border p-2">GST</th>
-                <th className="border p-2">GST Amount</th>
+                {inv.customerAndInvoice.GSTType === "GST" && (
+                  <>
+                    <th className="border p-2">GST</th>
+                    <th className="border p-2">GST Amount</th>
+                  </>
+                )}
                 <th className="border p-2">Amount</th>
               </tr>
             </thead>
@@ -181,10 +186,16 @@ function InvoiceBill({ id, pdf }) {
                   <td className="border p-2 text-right">
                     ₹ {item.discountSale} %
                   </td>
-                  <td className="border p-2 text-right">% {item.taxSale}</td>
-                  <td className="border p-2 text-right">
-                    ₹ {(item.taxSale / 100) * item.sellingPrice}
-                  </td>
+                  {inv.customerAndInvoice.GSTType === "GST" && (
+                    <>
+                      <td className="border p-2 text-right">
+                        % {item.taxSale}
+                      </td>
+                      <td className="border p-2 text-right">
+                        ₹ {(item.taxSale / 100) * item.sellingPrice}
+                      </td>
+                    </>
+                  )}
                   <td className="border p-2 text-right font-bold">
                     ₹ {Number(item.sellingPrice).toFixed(2)}
                   </td>
@@ -206,7 +217,9 @@ function InvoiceBill({ id, pdf }) {
                 <td className="border p-2 text-right">₹ {discountAm}</td>
                 <td></td>
                 <td></td>
-                <td className="border p-2 text-right">₹ {totalgstAmount}</td>
+                {inv.customerAndInvoice.GSTType === "GST" && (
+                  <td className="border p-2 text-right">₹ {totalgstAmount}</td>
+                )}
                 <td className="border p-2 text-right">
                   ₹{" "}
                   {inv.rows.reduce(
@@ -251,15 +264,22 @@ function InvoiceBill({ id, pdf }) {
                       ₹ {discountAm}
                     </td>
                   </tr>
-                  <tr>
-                    <td className="border px-3 py-2 font-semibold">SGST</td>
-                    <td className="border px-3 py-2 text-right">₹ {sgst}</td>
-                  </tr>
-                  <tr>
-                    <td className="border px-3 py-2 font-semibold">CGST</td>
-                    <td className="border px-3 py-2 text-right">₹ {cgst}</td>
-                  </tr>
-
+                  {inv.customerAndInvoice.GSTType === "GST" && (
+                    <>
+                      <tr>
+                        <td className="border px-3 py-2 font-semibold">SGST</td>
+                        <td className="border px-3 py-2 text-right">
+                          ₹ {sgst}
+                        </td>
+                      </tr>
+                      <tr>
+                        <td className="border px-3 py-2 font-semibold">CGST</td>
+                        <td className="border px-3 py-2 text-right">
+                          ₹ {cgst}
+                        </td>
+                      </tr>
+                    </>
+                  )}
                   <tr className="bg-gray-100 font-bold text-blue-700">
                     <td className="border px-3 py-2">Total</td>
                     <td className="border px-3 py-2 text-right">

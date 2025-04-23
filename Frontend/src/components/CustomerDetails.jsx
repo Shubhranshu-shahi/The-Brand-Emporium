@@ -7,6 +7,7 @@ function CustomerDetails({
   getCustomerByPhone,
   errors,
   setErrors,
+  nonGst,
 }) {
   const handlePhoneChange = (e) => {
     const phone = e.target.value.trim();
@@ -58,18 +59,6 @@ function CustomerDetails({
       )}
 
       <label className="block font-semibold text-gray-400 mt-2">
-        Customer GSTIN
-      </label>
-      <input
-        name="CustomerGstin"
-        className="w-full p-2 border text-black rounded border-amber-600"
-        value={customer.CustomerGstin}
-        onChange={(e) =>
-          setCustomer({ ...customer, CustomerGstin: e.target.value })
-        }
-      />
-
-      <label className="block font-semibold text-gray-400 mt-2">
         Customer Email
       </label>
       <input
@@ -77,6 +66,19 @@ function CustomerDetails({
         className="w-full p-2 border text-black rounded border-amber-600"
         value={customer.email}
         onChange={(e) => setCustomer({ ...customer, email: e.target.value })}
+      />
+      <label className="block font-semibold text-gray-400 mt-2">
+        Customer GSTIN
+      </label>
+      <input
+        name="CustomerGstin"
+        className={`w-full p-2 border text-black rounded border-amber-600 
+        ${nonGst ? "cursor-not-allowed disabled:bg-gray-100" : ""}`}
+        value={nonGst ? "" : customer.CustomerGstin}
+        disabled={nonGst}
+        onChange={(e) =>
+          setCustomer({ ...customer, CustomerGstin: e.target.value })
+        }
       />
     </div>
   );

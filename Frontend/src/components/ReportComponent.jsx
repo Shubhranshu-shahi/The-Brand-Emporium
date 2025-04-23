@@ -53,13 +53,14 @@ function ReportComponent() {
           phone: entry.customerAndInvoice.phone,
           invoiceNumber: entry.customerAndInvoice.invoiceNumber,
           invoiceDate: new Date(entry.customerAndInvoice.invoiceDate),
-          total: entry.totalDetails.total,
-          roundOff: entry.totalDetails.roundOff,
-          receive: entry.totalDetails.receive,
-          remaining: entry.totalDetails.remaining,
+          total: parseFloat(entry.totalDetails.total).toFixed(2),
+          roundOff: parseFloat(entry.totalDetails.roundOff).toFixed(2),
+          receive: parseFloat(entry.totalDetails.receive).toFixed(2),
+          remaining: parseFloat(entry.totalDetails.remaining).toFixed(2),
           _id: entry._id,
           billedBy: entry.customerAndInvoice.billedBy,
           updatedBy: entry.customerAndInvoice.updatedBy,
+          type: entry.totalDetails.type,
         }));
         setData(formatted);
         setFilteredData(formatted);
@@ -106,6 +107,8 @@ function ReportComponent() {
         </span>
       ),
     }),
+    columnHelper.accessor("type", { header: "Type" }),
+    columnHelper.accessor("GSTType", { header: "GST/Non-GST" }),
   ];
 
   const adminColumns = [
@@ -201,6 +204,7 @@ function ReportComponent() {
         "Round Off",
         "Received",
         "Remaining",
+        "type",
       ],
     ];
 
@@ -214,6 +218,7 @@ function ReportComponent() {
       item.roundOff,
       item.receive,
       item.remaining,
+      item.type,
     ]);
 
     autoTable(doc, {
@@ -247,14 +252,14 @@ function ReportComponent() {
           {
             title: "Total Received",
             value: `₹${filteredData
-              .reduce((sum, item) => sum + (item.receive || 0), 0)
+              .reduce((sum, item) => sum + (parseFloat(item.receive) || 0), 0)
               .toFixed(2)}`,
             color: "text-green-600",
           },
           {
             title: "Total Remaining",
             value: `₹${filteredData
-              .reduce((sum, item) => sum + (item.remaining || 0), 0)
+              .reduce((sum, item) => sum + (parseFloat(item.remaining) || 0), 0)
               .toFixed(2)}`,
             color: "text-red-500",
           },
@@ -391,6 +396,7 @@ function ReportComponent() {
             <th>Round Off</th>
             <th>Received</th>
             <th>Remaining</th>
+            <th>Type</th>
           </tr>
         </thead>
         <tbody>
@@ -405,6 +411,7 @@ function ReportComponent() {
               <td>{item.roundOff}</td>
               <td>{item.receive}</td>
               <td>{item.remaining}</td>
+              <td>{item.type}</td>
             </tr>
           ))}
         </tbody>
