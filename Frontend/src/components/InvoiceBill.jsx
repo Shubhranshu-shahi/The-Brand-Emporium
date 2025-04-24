@@ -215,8 +215,10 @@ function InvoiceBill({ id, pdf }) {
                 </td>
                 <td></td>
                 <td className="border p-2 text-right">₹ {discountAm}</td>
-                <td></td>
-                <td></td>
+                <td
+                  colSpan={inv.customerAndInvoice.GSTType === "GST" ? 2 : 1}
+                ></td>
+
                 {inv.customerAndInvoice.GSTType === "GST" && (
                   <td className="border p-2 text-right">₹ {totalgstAmount}</td>
                 )}
