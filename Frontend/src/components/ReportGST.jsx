@@ -64,7 +64,7 @@ function ReportGST({ invoices, title, flag }) {
       });
     });
     console.log(gstItems, " get items ");
-    return;
+ 
     // Export to Excel
     const worksheet = XLSX.utils.json_to_sheet(gstItems);
     const workbook = XLSX.utils.book_new();
