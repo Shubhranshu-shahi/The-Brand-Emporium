@@ -30,30 +30,42 @@ const productByID = async (req, res) => {
 };
 
 const productInsert = async (req, res) => {
-  // console.log(req.body);
-  // res.send("check");
   try {
-    const product = req.body;
-    console.log(req.body);
-    let itemCode = product.itemCode;
-    // const { itemCode } = req.body;
-    //   const product = await ProductModal.find();
-    const checkproduct = await ProductModal.findOne({ itemCode: itemCode });
-    const errMessage = "Product already exites";
-    if (checkproduct) {
-      console.log("JIIIIIIIIIIIIIII");
-      return res.status(403).json({
-        message: errMessage,
+    let products = req.body;
+    console.log(products, "--------productInsert");
+    if (!Array.isArray(products)) {
+      products = [products];
+    }
+
+    if (products.length === 0) {
+      return res.status(400).json({
+        message: "No products provided",
         success: false,
       });
     }
-    const products = new ProductModal(product);
-    await products.save();
-    res
-      .status(201)
-      .json({ message: "Product Inserted", success: true, data: product });
+    const itemCodes = products.map((product) => product.itemCode);
+    const existingProducts = await ProductModal.find({
+      itemCode: { $in: itemCodes },
+    });
+    const newProducts = products.filter(
+      (product) =>
+        !existingProducts.some((p) => p.itemCode === product.itemCode)
+    );
+    if (newProducts.length === 0) {
+      return res.status(400).json({
+        message: "All products already exist",
+        success: false,
+      });
+    }
+    console.log(newProducts, "--------newProducts");
+
+    const createdProducts = await ProductModal.insertMany(newProducts);
+    res.status(201).json({
+      message: "Products inserted successfully",
+      success: true,
+      data: createdProducts,
+    });
   } catch (err) {
-    console.log(err);
     res.status(500).json({
       message: "Internal Server Error",
       success: false,

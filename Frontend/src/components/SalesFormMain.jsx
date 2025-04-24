@@ -5,7 +5,7 @@ import { Eye, X } from "lucide-react";
 import { currentDate, currentDateAndTime } from "../assets/helper/Helpers";
 import { customerByPhone, customerInsert } from "../assets/helper/customerApi";
 import { invoiceInsert } from "../assets/helper/InvoiceApi";
-import { productById } from "../assets/helper/productApi";
+import { productById, productInsert } from "../assets/helper/productApi";
 
 import TotalSummaryCard from "./TotalSummaryCard";
 import CustomerDetails from "./CustomerDetails";
@@ -97,6 +97,7 @@ function SalesFormMain() {
   }, [roundOff]);
 
   const handleSubmit = async () => {
+    // Step 1: Validate customer data
     const newErrors = {};
 
     if (!customerAndInvoice.phone || customerAndInvoice.phone.length !== 10) {
@@ -107,17 +108,50 @@ function SalesFormMain() {
       newErrors.customerName = "Customer name is required";
     }
 
-    setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
 
-    if (Object.keys(newErrors).length === 0) {
-      console.log("Submitting customer:", customerAndInvoice);
-      const cust = await customerInsert(customerAndInvoice);
-      setCustomerAndInvoice({
-        ...customerAndInvoice,
-        customerId: cust._id,
-      });
+    try {
+      // Step 2: Identify non-existing products in parallel
+      const checks = await Promise.all(
+        rows.map(async (row) => {
+          if (!row.itemCode) return null;
+          const exists = await searchByidProduct(row.itemCode);
+          return !exists ? row : null;
+        })
+      );
+
+      const nonExistingProducts = checks.filter(Boolean).map((row) => ({
+        itemCode: row.itemCode,
+        itemName: row.itemName,
+        mrp: row.mrp,
+        category: "N/A",
+        sellingPrice: row.sellingPrice,
+        taxSale: row.taxSale,
+        purchasedPrice: row.purchasedPrice,
+        discountSale: row.discountSale,
+        discountAmount: row.discountAmount,
+        salePrice: row.salePrice,
+        purchasePrice: row.purchasedPrice,
+        taxPurchase: 0,
+      }));
+      console.log("Non-existing products:", nonExistingProducts);
+
+      // Step 3: Insert non-existing products
+      if (nonExistingProducts.length > 0) {
+        await productInsert(nonExistingProducts);
+      }
+
+      // Step 4: Insert customer
+      const insertedCustomer = await customerInsert(customerAndInvoice);
+
       const formData = {
-        customerAndInvoice,
+        customerAndInvoice: {
+          ...customerAndInvoice,
+          customerId: insertedCustomer._id,
+        },
         rows,
         totalDetails: {
           total: totalAmount,
@@ -128,13 +162,16 @@ function SalesFormMain() {
         },
       };
 
+      // Step 5: Insert invoice
       const invoiceData = await invoiceInsert(formData);
+
       if (invoiceData) {
         navigate(`/invoice/${customerAndInvoice.invoiceNumber}`, {
           state: { id: customerAndInvoice.invoiceNumber },
         });
       }
-      // Submit the form (API call or parent handler)
+    } catch (error) {
+      console.error("Submission error:", error);
     }
   };
 
