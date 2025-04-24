@@ -24,42 +24,29 @@ function ProductTable({
       )
     );
   };
-
-  // useEffect(() => {
-  //   console.log("nonGst", nonGst);
-  //   if (nonGst) {
-  //     // Save original tax values
-  //     setOriginalTaxValues(
-  //       products.map((p) => ({
-  //         id: p.id,
-  //         taxSale: p.taxSale,
-  //         taxAmount: p.taxAmount,
-  //       }))
-  //     );
-
-  //     // Set tax values to 0
-  //     const updated = products.map((p) => ({
-  //       ...p,
-  //       taxSale: 0,
-  //       taxAmount: 0,
-  //     }));
-  //     setProducts(updated);
-  //     console.log("updated", updated);
-  //   } else {
-  //     // Restore tax values if available
-  //     const restored = products.map((p) => {
-  //       const original = originalTaxValues.find((o) => o.id === p.id);
-  //       return original
-  //         ? {
-  //             ...p,
-  //             taxSale: original.taxSale,
-  //             taxAmount: original.taxAmount,
-  //           }
-  //         : p;
-  //     });
-  //     setProducts(restored);
-  //   }
-  // }, [nonGst]);
+  useEffect(() => {
+    if (nonGst) {
+      setRows((prevRows) =>
+        prevRows.map((row) => ({
+          ...row,
+          taxSale: 0,
+          taxAmount: 0,
+          salePrice: row.sellingPrice,
+        }))
+      );
+    } else {
+      setRows((prevRows) =>
+        prevRows.map((row) => {
+          const taxSale = parseFloat(row.taxSale) || 0;
+          const taxAmount = parseFloat(row.sellingPrice) * (taxSale / 100);
+          return {
+            ...row,
+            taxAmount,
+          };
+        })
+      );
+    }
+  }, [nonGst]);
 
   const handleInputChange = async (index, key, value) => {
     setRows((prevRows) => {
