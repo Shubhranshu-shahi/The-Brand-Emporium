@@ -27,6 +27,7 @@ import { getAllInvoice, invoiceDelete } from "../assets/helper/InvoiceApi";
 import { dateToString } from "../assets/helper/Helpers";
 import { handleSuccess } from "../assets/helper/utils";
 import { useNavigate } from "react-router-dom";
+import ReportGST from "./ReportGST";
 
 const columnHelper = createColumnHelper();
 
@@ -47,23 +48,27 @@ function ReportComponent() {
     const fetchData = async () => {
       try {
         const response = await getAllInvoice();
+        console.log("Response from API:", response);
         const formatted = response.map((entry, index) => ({
           "#": index + 1,
-          customerName: entry.customerAndInvoice.customerName,
-          phone: entry.customerAndInvoice.phone,
-          invoiceNumber: entry.customerAndInvoice.invoiceNumber,
-          invoiceDate: new Date(entry.customerAndInvoice.invoiceDate),
-          total: parseFloat(entry.totalDetails.total).toFixed(2),
-          roundOff: parseFloat(entry.totalDetails.roundOff).toFixed(2),
-          receive: parseFloat(entry.totalDetails.receive).toFixed(2),
-          remaining: parseFloat(entry.totalDetails.remaining).toFixed(2),
+          customerName: entry.customerAndInvoice?.customerName,
+          phone: entry.customerAndInvoice?.phone,
+          invoiceNumber: entry.customerAndInvoice?.invoiceNumber,
+          invoiceDate: new Date(entry.customerAndInvoice?.invoiceDate),
+          total: parseFloat(entry.totalDetails?.total).toFixed(2),
+          roundOff: parseFloat(entry.totalDetails?.roundOff).toFixed(2),
+          receive: parseFloat(entry.totalDetails?.receive).toFixed(2),
+          remaining: parseFloat(entry.totalDetails?.remaining).toFixed(2),
           _id: entry._id,
-          billedBy: entry.customerAndInvoice.billedBy,
-          updatedBy: entry.customerAndInvoice.updatedBy,
-          type: entry.totalDetails.type,
+          billedBy: entry.customerAndInvoice?.billedBy,
+          updatedBy: entry.customerAndInvoice?.updatedBy,
+          type: entry.totalDetails?.type,
+          rows: entry.rows,
+          GSTType: entry.customerAndInvoice?.GSTType,
         }));
         setData(formatted);
         setFilteredData(formatted);
+        console.log("Formatted data:", formatted);
       } catch (error) {
         console.error("Error fetching invoice data:", error);
       }
@@ -85,8 +90,11 @@ function ReportComponent() {
     }
   }, [startDate, endDate, data]);
 
-  const isAdmin = localStorage.getItem("loggedInUser") === "shubh";
-  console.log(isAdmin);
+  const isAdmin =
+    localStorage.getItem("loggedInUser") === "shubh" ||
+    localStorage.getItem("loggedInUser") === "admin" ||
+    localStorage.getItem("loggedInUser") === "Admin";
+
   const baseColumns = [
     columnHelper.accessor("#", { header: "#" }),
     columnHelper.accessor("customerName", { header: "Customer Name" }),
@@ -306,7 +314,7 @@ function ReportComponent() {
             className="px-3 py-2 border sm:w-full w-full rounded-md"
           />
         </div>
-        <DownloadTableExcel
+        {/* <DownloadTableExcel
           filename="Invoices"
           sheet="Invoices"
           currentTableRef={exportRef.current}
@@ -314,13 +322,21 @@ function ReportComponent() {
           <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md">
             Export Excel
           </button>
-        </DownloadTableExcel>
+        </DownloadTableExcel> */}
+
+        <ReportGST invoices={filteredData} flag={0} title={"Export Report"} />
+
         <button
           onClick={handleExportPDF}
           className="ml-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
         >
           Export PDF
         </button>
+        <ReportGST
+          invoices={filteredData}
+          flag={1}
+          title={"Export GST Report"}
+        />
       </div>
       <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200">
         <table
