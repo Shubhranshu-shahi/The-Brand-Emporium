@@ -70,7 +70,7 @@ function TotalSummaryCard({
           <input
             type="number"
             readOnly
-            value={parseInt(remaining).toFixed(2)}
+            value={isNaN(remaining) ? "0" : parseInt(remaining)}
             className="w-full sm:w-40 p-2 border border-gray-600 bg-gray-700 text-white rounded text-right"
           />
         </div>

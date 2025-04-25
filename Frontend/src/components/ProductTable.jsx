@@ -155,33 +155,6 @@ function ProductTable({
     };
   };
 
-  // const updateRowCalculations = (rows, index) => {
-  //   let row = rows[index];
-  //   const qty = parseFloat(row.qty) || 1;
-  //   const mrp = parseFloat(row.mrp) || 0;
-  //   const discount = parseFloat(row.discountSale) / 100 || 0;
-  //   const taxSale = parseFloat(row.taxSale) || 0;
-
-  //   const newMrp = mrp * qty;
-  //   const sellingPrice = newMrp - newMrp * discount;
-  //   const discountAmount = parseFloat(newMrp - sellingPrice).toFixed(2);
-  //   const taxAmount = sellingPrice * (taxSale / 100);
-  //   const salePrice = sellingPrice - taxAmount;
-  //   const purchasedWithQty = (row.purchasedPrice || 0) * qty;
-
-  //   rows[index] = {
-  //     ...row,
-  //     productId: rows[index].productId || generateProductId(),
-  //     sellingPrice,
-  //     taxAmount,
-  //     salePrice,
-  //     discountAmount,
-  //     purchasedWithQty,
-  //   };
-
-  //   return rows;
-  // };
-
   const updateRowCalculations = (rows, index, changedKey = "") => {
     let row = rows[index];
     const qty = parseFloat(row.qty) || 1;
@@ -391,7 +364,7 @@ function ProductTable({
                   </select>
                 </td>
                 <td className="px-4 min-w-full py-3 text-center border">
-                  {nonGst ? 0 : row.taxAmount}
+                  {nonGst ? 0 : isNaN(row.taxAmount) ? 0 : row.taxAmount}
                 </td>
                 <td className="px-4 py-3 min-w-full text-center border">
                   {nonGst ? row.sellingPrice : row.salePrice}
