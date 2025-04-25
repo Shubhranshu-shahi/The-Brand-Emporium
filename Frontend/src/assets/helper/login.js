@@ -17,14 +17,15 @@ export const login = async (authvals) => {
         },
       }
     );
-    console.log("login res", res.data);
+    console.log("login res", res);
     return res.data;
   } catch (err) {
-    if (err.response?.data?.error) {
-      handleError(err.response.data.error.details[0].message);
-    } else {
-      handleError(err.response?.data?.message || "Login failed.");
-    }
+    const message =
+      err.response?.data?.error?.details?.[0]?.message ||
+      err.response?.data?.message ||
+      err.message ||
+      "Login failed";
+    return { success: false, message };
   }
 };
 export const signup = async (authvals) => {

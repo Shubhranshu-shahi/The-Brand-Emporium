@@ -5,12 +5,15 @@ import SideNavTest from "./SideNav";
 import axios from "axios";
 import { privacyVerf } from "../assets/helper/PrivacyVerfication";
 import { useNavigate } from "react-router-dom";
+import { handleSuccess } from "../assets/helper/utils";
+import { FullPageLoader } from "./FullPageLoader";
 
 export default function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(null); // null initially
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [contentHidden, setContentHidden] = useState(false);
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -50,6 +53,7 @@ export default function Layout({ children }) {
   if (collapsed === null) return null;
 
   const privercyVefication = async () => {
+    setLoading(true);
     try {
       const user = {
         name: localStorage.getItem("loggedInUser"),
@@ -66,21 +70,32 @@ export default function Layout({ children }) {
     } catch (error) {
     } finally {
       setPassword("");
+      setDropdownOpen(false);
+      setLoading(false);
     }
   };
 
   const signOutHandler = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("loggedInUser");
-    localStorage.removeItem("email");
-    handleSuccess("Sign out successful");
-    setTimeout(() => {
-      navigate("/login");
-    }, 1000);
+    setLoading(true);
+    try {
+      localStorage.removeItem("token");
+      localStorage.removeItem("loggedInUser");
+      localStorage.removeItem("email");
+
+      handleSuccess("Sign out successful");
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+    } catch {
+      console.log("Some Issue");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="flex h-screen relative">
+      {loading && <FullPageLoader />}
       <HeaderNav
         setContentHidden={setContentHidden}
         dropdownOpen={dropdownOpen}
