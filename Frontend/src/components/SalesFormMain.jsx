@@ -107,9 +107,10 @@ function SalesFormMain() {
     if (!customerAndInvoice.customerName?.trim()) {
       newErrors.customerName = "Customer name is required";
     }
-
+    console.log(errors);
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
+
       return;
     }
 

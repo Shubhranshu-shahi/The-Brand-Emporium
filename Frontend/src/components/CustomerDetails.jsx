@@ -12,6 +12,7 @@ function CustomerDetails({
   const handlePhoneChange = (e) => {
     const phone = e.target.value.trim();
     setCustomer({ ...customer, phone });
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
     const isValid = /^[0-9]{10}$/.test(phone);
 
     if (isValid) {
@@ -50,9 +51,10 @@ function CustomerDetails({
           errors.customerName ? "border-red-500" : "border-amber-600"
         }`}
         value={customer.customerName}
-        onChange={(e) =>
-          setCustomer({ ...customer, customerName: e.target.value })
-        }
+        onChange={(e) => {
+          setCustomer({ ...customer, customerName: e.target.value });
+          setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
+        }}
       />
       {errors.customerName && (
         <p className="text-red-500 text-sm">{errors.customerName}</p>
