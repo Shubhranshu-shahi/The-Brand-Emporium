@@ -38,13 +38,29 @@ function EditAddItemForm({ state }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setFormData(state);
-    console.log(state, "product data in edit form");
+    if (state) {
+      setFormData((prev) => ({ ...prev, ...state }));
+    }
   }, [state]);
-  const [formData, setFormData] = useState({});
+
   const [isGenerated, setIsGenerated] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [formData, setFormData] = useState({
+    itemName: "",
+    itemHSN: "",
+    category: "",
+    itemCode: "",
+    mrp: "",
+    discountSale: "",
+    salePrice: "",
+    taxSale: "0",
+    sellingPrice: "",
+    purchasePrice: "",
+    taxPurchase: "0",
+    purchasedPrice: "",
+  });
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const mrp = parseFloat(formData.mrp) || 0;
@@ -52,21 +68,23 @@ function EditAddItemForm({ state }) {
     const taxSale = parseFloat(formData.taxSale) || 0;
     const taxPurchase = parseFloat(formData.taxPurchase) || 0;
     const purchasePrice = parseFloat(formData.purchasePrice) || 0;
-
-    const discountedPrice = mrp - (mrp * discount) / 100;
-    const discountAmount = mrp - discountedPrice;
-    const salePrc = mrp - (mrp * discount) / 100;
-    const sellingPrice = discountedPrice - (discountedPrice * taxSale) / 100;
-    const purchasedPrice = purchasePrice + (purchasePrice * taxPurchase) / 100;
+    const discountedPrice = parseFloat(mrp - (mrp * discount) / 100).toFixed(2);
+    const discountAmount = parseFloat(mrp - discountedPrice).toFixed(2);
+    const salePrc = parseFloat(mrp - (mrp * discount) / 100).toFixed(2);
+    const sellingPrice = parseFloat(
+      discountedPrice - (discountedPrice * taxSale) / 100
+    ).toFixed(2);
+    const purchasedPrice = parseFloat(
+      (purchasePrice + (purchasePrice * taxPurchase) / 100).toFixed(2)
+    );
 
     setFormData((prev) => ({
       ...prev,
-      // salePrice: discountedPrice.toFixed(2),
-      salePrice: sellingPrice,
+      salePrice: parseFloat(sellingPrice).toFixed(2),
       sellingPrice: salePrc,
-      discountAmount: discountAmount.toFixed(2),
-      // sellingPrice: sellingPrice.toFixed(2),
-      purchasedPrice: purchasedPrice.toFixed(2),
+      itemHSN: formData.itemHSN || "",
+      discountAmount,
+      purchasedPrice,
     }));
   }, [
     formData.mrp,
@@ -86,23 +104,17 @@ function EditAddItemForm({ state }) {
       const res = await getAllCategory();
       const names = res.map((cat) => cat.categoryName);
       setCategories(names);
-      console.log(names, "----------category names");
-    } catch (err) {
-      console.error("Error loading categories:", err);
-    }
+    } catch (err) {}
   };
 
   //catgory insert
   const catInsert = async (categoryName) => {
-    console.log(categories, "-------------");
     const exists = categories.includes(categoryName.categoryName);
-    console.log(exists, "---exits");
+
     if (!exists) {
-      console.log("Category not found. Inserting...");
       await categoryInsert(categoryName);
       handleSuccess("Category Inserted Successfully!");
     } else {
-      console.log("Category already exists. Skipping insert.");
       handleError("Category already exists.");
       return false;
     }
@@ -115,6 +127,7 @@ function EditAddItemForm({ state }) {
       ...prev,
       [e.target.name]: e.target.value || "",
     }));
+    setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
   };
   // Generate Barcode Handler
   const barCodeHandler = useCallback(() => {
@@ -125,14 +138,14 @@ function EditAddItemForm({ state }) {
   //Update handle
 
   const handleUpdate = async () => {
+    if (!validateInputs()) return;
+
     await catInsert({ categoryName: formData.category });
     const res = await productUpdate(formData.id, formData);
     handleSuccess(res.data.message);
-    //----------------------------------------------------------------------
+
     handleSuccess("item updated successfully");
     navigate("/items");
-
-    // await productInsert(formData);
   };
 
   const handleNumericChange = (e) => {
@@ -141,75 +154,127 @@ function EditAddItemForm({ state }) {
     setFormData((prev) => ({ ...prev, [e.target.name]: value }));
   };
 
+  const validateInputs = () => {
+    const newErrors = {};
+
+    if (!formData.itemName.trim()) {
+      newErrors.itemName = "ItemName is required";
+    }
+
+    if (formData.itemCode.trim().length < 8) {
+      newErrors.itemCode = "Item Code must be at least 8 characters";
+    }
+
+    if (!formData.category.trim()) {
+      newErrors.category = "Category is required";
+    }
+
+    if (!formData.mrp.trim()) {
+      newErrors.mrp = "MRP is required";
+    }
+
+    if (!formData.discountSale.trim()) {
+      newErrors.discountSale = "Percentage is required";
+    }
+
+    if (!formData.purchasePrice.trim()) {
+      newErrors.purchasePrice = "Purchase Price is required";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
   return (
     <div className="flex-1 p-3">
       {/* <!-- Add Item Section --> */}
       <div className="bg-gray-50 p-6 rounded-lg shadow-md">
         <h3 className="text-xl font-semibold mb-4 text-gray-700">Add Item</h3>
         {/* <!-- Additional Forms from Second Image --> */}
-        <div className="grid bg-white p-6 max-w-full rounded-2xl overflow-hidden  shadow-lg grid-cols-2 gap-4 mb-4 text-gray-600">
-          <input
-            type="text"
-            placeholder="Item Name *"
-            name="itemName"
-            value={formData.itemName}
-            onChange={handleChange}
-            className="w-full p-2 border rounded"
-          />
-          <div className="flex items-center space-x-2">
+        <div className="grid bg-white p-6 max-w-full rounded-2xl  shadow-lg grid-cols-2 gap-4 mb-4 text-gray-600">
+          <div>
             <input
               type="text"
-              placeholder="Item HSN"
-              name="itemHSN"
-              value={formData.itemHSN}
+              placeholder="Item Name *"
+              name="itemName"
+              value={formData.itemName}
               onChange={handleChange}
               className="w-full p-2 border rounded"
             />
-            <button className="bg-blue-500 text-white px-3 py-2 rounded">
-              <Search />
-            </button>
+            {errors.itemName && (
+              <p className="text-sm text-red-400 mt-1 ml-1">
+                {errors.itemName}
+              </p>
+            )}
           </div>
-
-          <input
-            className="w-full p-2 border rounded"
-            list="category-list"
-            id="icategoryId"
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            placeholder="Category"
-          />
-
-          <datalist id="category-list">
-            {categories.map((cat) => (
-              <option key={cat} value={cat}></option>
-            ))}
-          </datalist>
-          <div className="flex items-center space-x-2">
-            <input
-              type="text"
-              placeholder="Item Code"
-              name="itemCode"
-              value={formData.itemCode}
-              onChange={handleChange}
-              className="w-full p-2 border rounded"
-            />
-
-            <button
-              className="bg-blue-500 text-white px-3 py-2 rounded"
-              onClick={barCodeHandler}
-            >
-              {/* <Link to="myRoute" params={myParams} target="_blank"></Link> */}
-              <Barcode />
-            </button>
-            {isGenerated && (
-              <button
-                type="button"
-                className="px-3 py-2 bg-blue-500 text-white rounded"
-                onClick={() => setModalOpen(true)}
-              >
-                <Pen />
+          <div className="flex flex-col">
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                placeholder="Item HSN"
+                name="itemHSN"
+                value={formData.itemHSN}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              />
+              <button className="bg-blue-500 text-white px-3 py-2 rounded">
+                <Search />
               </button>
+            </div>
+          </div>
+          <div>
+            <input
+              className="w-full p-2 border rounded"
+              list="category-list"
+              id="icategoryId"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              placeholder="Category"
+            />
+            {errors.category && (
+              <p className="text-sm text-red-400 mt-1 ml-1">
+                {errors.category}
+              </p>
+            )}
+
+            <datalist id="category-list">
+              {categories.map((cat) => (
+                <option key={cat} value={cat}></option>
+              ))}
+            </datalist>
+          </div>
+          <div className="flex flex-col">
+            <div className="flex items-center space-x-2">
+              <input
+                type="text"
+                placeholder="Item Code"
+                name="itemCode"
+                value={formData.itemCode}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+              />
+
+              <button
+                className="bg-blue-500 text-white px-3 py-2 rounded"
+                onClick={barCodeHandler}
+                disabled={formData.itemCode !== ""}
+              >
+                <Barcode />
+              </button>
+              {isGenerated && (
+                <button
+                  type="button"
+                  className="px-3 py-2 bg-blue-500 text-white rounded"
+                  onClick={() => setModalOpen(true)}
+                >
+                  <Pen />
+                </button>
+              )}
+            </div>
+            {errors.itemCode && (
+              <p className="text-red-500 text-sm">{errors.itemCode}</p>
             )}
           </div>
         </div>
@@ -224,17 +289,8 @@ function EditAddItemForm({ state }) {
             Pricing
           </button>
         </div>
-        <div></div>
-        <div className="grid grid-cols-3 mb-4 gap-4 max-w-full rounded-2xl overflow-hidden shadow-lg bg-white p-6 text-gray-700">
-          <div>
-            <label className="block text-gray-700 mt-2 font-bold">MRP</label>
-          </div>
-          <div>
-            <label className="block text-gray-700  mt-2 font-bold">
-              Percentage
-            </label>
-          </div>
-          <div></div>
+
+        <div className="grid grid-cols-3 mb-4 gap-4 rounded-2xl shadow-lg bg-white p-6 text-gray-700">
           <div>
             <input
               type="text"
@@ -244,6 +300,9 @@ function EditAddItemForm({ state }) {
               onChange={handleNumericChange}
               placeholder="MRP"
             />
+            {errors.mrp && (
+              <p className="text-red-500 text-sm col-span-3">{errors.mrp}</p>
+            )}
           </div>
           <div>
             <input
@@ -254,109 +313,83 @@ function EditAddItemForm({ state }) {
               onChange={handleNumericChange}
               placeholder="Disc. on MRP"
             />
-          </div>
-          <div></div>
-        </div>
-        <div className="grid grid-cols-3 gap-4 mb-4 max-w-full rounded-2xl overflow-hidden  shadow-lg bg-white p-6 text-gray-700">
-          <label className="block text-gray-700 font-bold mt-2">
-            Sale Price
-          </label>
-          <div>
-            <label className="block text-gray-700  mt-2 font-bold">
-              Tax on Sale Price
-            </label>
-          </div>
-          <div>
-            <label className="block text-gray-700  mt-2 font-bold">
-              Sell At
-            </label>
-          </div>
-          <div>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              name="salePrice"
-              value={formData.salePrice}
-              onChange={handleNumericChange}
-              placeholder="Sale Price"
-            />
-          </div>
-          <div>
-            <select
-              className="w-full text-gray-700 p-2 h-10 border rounded"
-              name="taxSale"
-              value={formData.taxSale}
-              onChange={handleChange}
-            >
-              <option>0</option>
-              <option>5</option>
-              <option>12</option>
-              <option>18</option>
-              <option>28</option>
-            </select>
-          </div>
-          <div>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              name="sellingPrice"
-              readOnly
-              value={formData.sellingPrice}
-              placeholder="Sale Price"
-            />
+            {errors.discountSale && (
+              <p className="text-red-500 text-sm col-span-3">
+                {errors.discountSale}
+              </p>
+            )}
           </div>
         </div>
-        <div className="grid grid-cols-3 gap-4 mb-4 max-w-full rounded-2xl overflow-hidden  shadow-lg bg-white p-6 text-gray-700">
-          <div>
-            <label className="block text-gray-700 font-bold mt-1">
-              Purchase Price
-            </label>
-          </div>
-          <div>
-            <label className="block text-gray-700 font-bold mt-1">
-              Tax on Purchase
-            </label>
-          </div>
-          <div>
-            <label className="block text-gray-700 font-bold mt-1">
-              Purchased At
-            </label>
-          </div>
-          <div>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              name="purchasePrice"
-              value={formData.purchasePrice}
-              onChange={handleNumericChange}
-              placeholder="Purchase Price"
-            />
-          </div>
-          <div>
-            <select
-              className="w-full h-10 p-2 border rounded text-gray-600"
-              name="taxPurchase"
-              value={formData.taxPurchase}
-              onChange={handleChange}
-            >
-              <option>0</option>
-              <option>5</option>
-              <option>12</option>
-              <option>16</option>
-              <option>18</option>
-              <option>22</option>
-            </select>
-          </div>
-          <div>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              name="purchasedPrice"
-              value={formData.purchasedPrice}
-              readOnly
-              placeholder="Purchased Price"
-            />
-          </div>
+        <div className="grid grid-cols-3 gap-4 mb-4 rounded-2xl shadow-lg bg-white p-6 text-gray-700">
+          <input
+            type="text"
+            className="w-full p-2 border rounded"
+            name="salePrice"
+            value={formData.salePrice}
+            onChange={handleNumericChange}
+            placeholder="Sale Price"
+          />
+
+          <select
+            className="w-full text-gray-700 p-2 h-10 border rounded"
+            name="taxSale"
+            value={formData.taxSale}
+            onChange={handleChange}
+          >
+            <option>0</option>
+            <option>5</option>
+            <option>12</option>
+            <option>18</option>
+            <option>28</option>
+          </select>
+
+          <input
+            type="text"
+            className="w-full p-2 border rounded"
+            name="sellingPrice"
+            readOnly
+            value={formData.sellingPrice}
+            placeholder="Sale Price"
+          />
+        </div>
+
+        <div className="grid grid-cols-3 gap-4 mb-4 rounded-2xl shadow-lg bg-white p-6 text-gray-700">
+          <input
+            type="text"
+            className="w-full p-2 border rounded"
+            name="purchasePrice"
+            value={formData.purchasePrice}
+            onChange={handleNumericChange}
+            placeholder="Purchase Price"
+          />
+          {errors.purchasePrice && (
+            <p className="text-red-500 text-sm col-span-3">
+              {errors.purchasePrice}
+            </p>
+          )}
+
+          <select
+            className="w-full h-10 p-2 border rounded text-gray-600"
+            name="taxPurchase"
+            value={formData.taxPurchase}
+            onChange={handleChange}
+          >
+            <option>0</option>
+            <option>5</option>
+            <option>12</option>
+            <option>16</option>
+            <option>18</option>
+            <option>22</option>
+          </select>
+
+          <input
+            type="text"
+            className="w-full p-2 border rounded"
+            name="purchasedPrice"
+            value={formData.purchasedPrice}
+            readOnly
+            placeholder="Purchased Price"
+          />
         </div>
 
         <div className="mt-4 text-right">
@@ -364,7 +397,7 @@ function EditAddItemForm({ state }) {
             type="button"
             className="bg-blue-500 text-white px-4 py-2 rounded"
             onClick={handleUpdate}
-            disabled={!formData.itemName || !formData.mrp}
+            // disabled={!formData.itemName || !formData.mrp}
           >
             Update
           </button>

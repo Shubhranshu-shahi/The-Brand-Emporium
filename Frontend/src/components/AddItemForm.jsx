@@ -6,6 +6,7 @@ import BarcodeImage from "./BarcodeImage";
 import { productInsert } from "../assets/helper/productApi";
 import { genrateBarcode } from "../assets/helper/Helpers";
 import { categoryInsert, getAllCategory } from "../assets/helper/category";
+import { handleError, handleSuccess } from "../assets/helper/utils";
 
 const BarcodeModal = ({ itemCode, isOpen, onClose }) => {
   if (!isOpen) return null;
@@ -84,20 +85,19 @@ function AddItemForm() {
 
   const catInsert = async (categoryName) => {
     if (!categories.includes(categoryName.categoryName)) {
-      await categoryInsert(categoryName);
+      return await categoryInsert(categoryName);
     }
   };
 
   const onSubmit = async (data) => {
     await catInsert({ categoryName: data.category });
     await productInsert(data);
-    alert("Item Saved Successfully!");
   };
 
   const handleSaveNew = async (data) => {
     await catInsert({ categoryName: data.category });
     await productInsert(data);
-    alert("Item Saved & Ready for New Entry!");
+
     reset();
     const refreshedCategories = await getAllCategory();
     const names = refreshedCategories.map((cat) => cat.categoryName);

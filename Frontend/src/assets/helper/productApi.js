@@ -36,9 +36,7 @@ export const productInsert = async (productdata) => {
       console.log("its success", data.message);
     })
     .catch((err) => {
-      //   console.log(err);
       handleError(err?.response?.data?.message);
-      //   console.log(err?.response?.data?.message);
     });
 };
 export const productById = async (id) => {

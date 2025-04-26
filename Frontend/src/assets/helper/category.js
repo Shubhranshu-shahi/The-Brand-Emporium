@@ -36,10 +36,6 @@ export const categoryInsert = async (categoryData) => {
     const { data } = res;
     console.log(data);
     if (data.success) {
-      console.log(data, "------inside success");
-
-      console.log(data);
-
       return data;
     }
   } catch (err) {
