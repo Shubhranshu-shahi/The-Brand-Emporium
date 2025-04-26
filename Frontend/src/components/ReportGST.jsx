@@ -1,20 +1,20 @@
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
-
 import React from "react";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 import { currentDate, dateToString } from "../assets/helper/Helpers";
 
 function ReportGST({ invoices, title, flag }) {
-  const exportGSTItemsToExcel = (invoices = [], exportFlag) => {
+  const exportGSTItemsToExcel = async (invoices = [], exportFlag) => {
     if (!Array.isArray(invoices)) {
       console.error("Expected an array of invoices but got:", invoices);
       return;
     }
+
     const gstItems = [];
     invoices.forEach((invoice) => {
       invoice.rows?.forEach((item) => {
         if (exportFlag == 1) {
-          if (invoice.GSTType == "GST" && parseFloat(item.taxSale) > 0) {
+          if (invoice.GSTType === "GST" && parseFloat(item.taxSale) > 0) {
             gstItems.push({
               InvoiceNumber: invoice.invoiceNumber,
               InvoiceDate: dateToString(invoice.invoiceDate),
@@ -61,18 +61,37 @@ function ReportGST({ invoices, title, flag }) {
       });
     });
 
-    // Export to Excel
-    const worksheet = XLSX.utils.json_to_sheet(gstItems);
-    const workbook = XLSX.utils.book_new();
-    let sheetName = `GST Report_${currentDate()}`;
-    let fileName = `GST_Report.xlsx${currentDate()}`;
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet("GST Report");
 
-    if (exportFlag == 0) {
-      sheetName = `AllReport_${currentDate()}`;
-      fileName = `All_Report_${currentDate()}.xlsx`;
-    }
-    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
-    XLSX.writeFile(workbook, "GST_Report.xlsx");
+    // Add Header Row
+    worksheet.columns = Object.keys(gstItems[0] || {}).map((key) => ({
+      header: key,
+      key: key,
+      width: 20,
+    }));
+
+    // Add Data Rows
+    gstItems.forEach((item) => {
+      worksheet.addRow(item);
+    });
+
+    // Style the header
+    worksheet.getRow(1).font = { bold: true };
+
+    // Create a buffer
+    const buffer = await workbook.xlsx.writeBuffer();
+
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    const filename =
+      (exportFlag === 1 ? "GST_Report_" : "All_Report_") +
+      currentDate() +
+      ".xlsx";
+
+    saveAs(blob, filename);
   };
 
   return (
@@ -88,5 +107,3 @@ function ReportGST({ invoices, title, flag }) {
 }
 
 export default ReportGST;
-
-// Flatten & filter GST items
