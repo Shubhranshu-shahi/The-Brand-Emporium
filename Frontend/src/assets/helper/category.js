@@ -7,7 +7,7 @@ const BASE_URL = `${base_url}category`;
 export const getAllCategory = async () => {
   try {
     const response = await axios.get(BASE_URL);
-    console.log(response.data);
+
     return response.data.data;
   } catch (error) {
     console.error("Error fetching category:", error);
