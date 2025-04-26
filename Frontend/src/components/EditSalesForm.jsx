@@ -20,6 +20,10 @@ export default function EditSalesForm({ invoiceNumber }) {
   const [remaining, setRemaining] = useState(0);
   const [type, setType] = useState("Online");
   const [nongst, setNongst] = useState(false);
+  const [errors, setErrors] = useState({
+    phone: false,
+    customerName: false,
+  });
 
   const totalAmount = rows.reduce(
     (sum, row) => sum + (parseFloat(row.sellingPrice) || 0),
@@ -61,6 +65,21 @@ export default function EditSalesForm({ invoiceNumber }) {
   }, [invoiceNumber]);
   const updatedBy = localStorage.getItem("loggedInUser");
   const handleUpdate = async () => {
+    const newErrors = {};
+
+    if (!customerAndInvoice.phone || customerAndInvoice.phone.length !== 10) {
+      newErrors.phone = "Enter a valid 10-digit phone number";
+    }
+
+    if (!customerAndInvoice.customerName?.trim()) {
+      newErrors.customerName = "Customer name is required";
+    }
+    console.log(errors);
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+
+      return;
+    }
     const sanitizedRows = rows.map((row) => {
       const { purchasedPrice = 0, qty = 1 } = row;
       const purchasedWithQty = row.purchasedWithQty ?? purchasedPrice * qty;
@@ -99,6 +118,18 @@ export default function EditSalesForm({ invoiceNumber }) {
     setRemaining(newRoundOff - receive);
   }, [rows, totalAmount, receive]);
 
+  const isRowsValid = () => {
+    return rows.every((row) => {
+      return (
+        row.itemCode.trim() !== "" &&
+        row.mrp !== "" &&
+        row.qty !== "" &&
+        row.sellingPrice !== "" &&
+        row.purchasedPrice !== ""
+      );
+    });
+  };
+
   return (
     <div className="p-2 w-full bg-white rounded-xl">
       <div className="overflow-x-auto min-w-full mx-auto bg-gray-50 p-6 rounded-lg shadow-lg">
@@ -109,8 +140,8 @@ export default function EditSalesForm({ invoiceNumber }) {
             customer={customerAndInvoice}
             setCustomer={setCustomerAndInvoice}
             getCustomerByPhone={() => {}}
-            errors={() => {}}
-            setErrors={() => {}}
+            errors={errors}
+            setErrors={setErrors}
             nonGst={nongst}
           />
           <div></div>
@@ -150,7 +181,10 @@ export default function EditSalesForm({ invoiceNumber }) {
         <div className="flex justify-end mt-4 space-x-2">
           <button
             onClick={handleUpdate}
-            className="px-4 py-2 bg-green-600 text-white rounded"
+            disabled={!isRowsValid()}
+            className={`px-4 py-2 text-white rounded ${
+              isRowsValid() ? "bg-green-500" : "bg-gray-400 cursor-not-allowed"
+            } `}
           >
             Update Invoice
           </button>

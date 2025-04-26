@@ -1,4 +1,5 @@
 function InvoiceDetails({ invoice, setInvoice }) {
+  console.log(invoice, "--------jadduuu");
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg">
       <h2 className="font-semibold text-gray-700 mb-2">Invoice Details</h2>
@@ -19,7 +20,13 @@ function InvoiceDetails({ invoice, setInvoice }) {
       <input
         type="date"
         name="invoiceDate"
-        value={invoice.invoiceDate}
+        value={
+          invoice.invoiceDate
+            ? invoice.invoiceDate.includes("T")
+              ? invoice.invoiceDate.split("T")[0] // if existing data from backend
+              : invoice.invoiceDate // if already a date (new inserted)
+            : ""
+        }
         onChange={(e) =>
           setInvoice({ ...invoice, invoiceDate: e.target.value })
         }

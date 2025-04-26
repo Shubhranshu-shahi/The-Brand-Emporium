@@ -97,7 +97,6 @@ function SalesFormMain() {
   }, [roundOff]);
 
   const handleSubmit = async () => {
-    // Step 1: Validate customer data
     const newErrors = {};
 
     if (!customerAndInvoice.phone || customerAndInvoice.phone.length !== 10) {
@@ -194,6 +193,18 @@ function SalesFormMain() {
     return prod;
   };
 
+  const isRowsValid = () => {
+    return rows.every((row) => {
+      return (
+        row.itemCode.trim() !== "" &&
+        row.mrp !== "" &&
+        row.qty !== "" &&
+        row.sellingPrice !== "" &&
+        row.purchasedPrice !== ""
+      );
+    });
+  };
+
   return (
     <div className="p-2 w-full bg-white rounded-xl">
       <div className="overflow-x-auto min-w-full mx-auto bg-gray-50 p-6 rounded-lg shadow-lg">
@@ -244,10 +255,15 @@ function SalesFormMain() {
         </div>
 
         <div className="flex justify-end mt-4 space-x-2">
-          <button className="bg-blue-500 px-4 py-2 rounded">Share</button>
+          <button className="bg-blue-500 px-4 py-2 rounded text-white">
+            Share
+          </button>
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-green-500 text-white rounded"
+            disabled={!isRowsValid()}
+            className={`px-4 py-2 text-white rounded ${
+              isRowsValid() ? "bg-green-500" : "bg-gray-400 cursor-not-allowed"
+            } `}
           >
             Save
           </button>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../assets/css/test.css";
-import { DownloadTableExcel } from "react-export-table-to-excel";
+
 import { motion, AnimatePresence } from "framer-motion";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
