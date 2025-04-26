@@ -60,6 +60,8 @@ const Auth = () => {
           localStorage.setItem("loggedInUser", res.name);
           localStorage.setItem("email", res.email);
           navigate("/dashboard");
+        } else {
+          handleError(res.message);
         }
       } else {
         const res = await signup(authvals);
@@ -82,6 +84,7 @@ const Auth = () => {
   };
 
   const sendOtpHandler = async (flag) => {
+    if (!validateInputs()) return;
     console.log(flag);
     setLoading(true);
     try {

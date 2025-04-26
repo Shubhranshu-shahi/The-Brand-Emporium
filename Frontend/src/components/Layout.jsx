@@ -5,14 +5,16 @@ import SideNavTest from "./SideNav";
 import axios from "axios";
 import { privacyVerf } from "../assets/helper/PrivacyVerfication";
 import { useNavigate } from "react-router-dom";
-import { handleSuccess } from "../assets/helper/utils";
+import { handleError, handleSuccess } from "../assets/helper/utils";
 import { FullPageLoader } from "./FullPageLoader";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function Layout({ children }) {
   const [collapsed, setCollapsed] = useState(null); // null initially
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [contentHidden, setContentHidden] = useState(false);
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -65,7 +67,7 @@ export default function Layout({ children }) {
         setContentHidden(false);
         localStorage.setItem("privacy", "false");
       } else {
-        alert("Wrong password");
+        handleError("Wrong Password");
       }
     } catch (error) {
     } finally {
@@ -112,19 +114,28 @@ export default function Layout({ children }) {
           transition={{ duration: 0.3 }}
           className="fixed inset-0 z-50 bg-black bg-opacity-100 flex justify-center items-center"
         >
-          <input
-            type="password"
-            placeholder="Password"
-            className=" border text-white rounded-lg mr-2 p-2"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className=" border text-white rounded-lg mr-2 p-2"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-300 hover:text-white"
+            >
+              {showPassword ? <Eye /> : <EyeOff />}
+            </button>
+          </div>
           <button
             onClick={privercyVefication}
             className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow-md"
           >
             {" "}
-            Show
+            Show Content
           </button>
           <button
             onClick={signOutHandler}
