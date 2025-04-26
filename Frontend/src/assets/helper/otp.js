@@ -1,6 +1,7 @@
 import axios from "axios";
+import { base_url } from "./BASEURL";
 
-const BASE_URL = "http://localhost:8080/otp";
+const BASE_URL = `${base_url}otp`;
 
 export const sendOtp = async (email) => {
   try {
@@ -16,7 +17,7 @@ export const sendOtp = async (email) => {
         },
       }
     );
-    // console.log(res.data);
+
     return res.data;
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -34,7 +35,7 @@ export const verifyOtp = async (email, otp) => {
         },
       }
     );
-    // console.log(res.data);
+
     return res.data;
   } catch (error) {
     console.error("Error fetching product:", error);

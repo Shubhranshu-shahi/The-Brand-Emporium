@@ -1,8 +1,8 @@
 import axios from "axios";
+import { base_url } from "./BASEURL";
 
-const BASE_URL = "http://localhost:8080/auth/privacy-auth";
+const BASE_URL = `${base_url}auth/privacy-auth`;
 export const privacyVerf = async (user) => {
-  console.log("options", user);
   try {
     const res = await axios.post(BASE_URL, user, {
       headers: {
@@ -10,7 +10,6 @@ export const privacyVerf = async (user) => {
       },
     });
 
-    console.log(res.data);
     return res.data;
   } catch (error) {
     console.error("Error verifying:", error);

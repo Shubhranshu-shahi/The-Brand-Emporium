@@ -1,26 +1,21 @@
 import axios from "axios";
 import { handleError, handleSuccess } from "./utils";
+import { base_url } from "./BASEURL";
 
-const BASE_URl = "http://localhost:8080/products";
+const BASE_URl = `${base_url}products`;
 export const getAllProduct = async () => {
   try {
     const res = await axios.get(BASE_URl);
     if (res.data.success) {
-      console.log(res.data);
       return res.data.data;
-      // console.log(res.data);
-      // handleSuccess(res.data.message);
     } else {
       handleError(res.data.message);
     }
   } catch (err) {
     handleError(err);
-    console.log(err);
   }
 };
 export const productInsert = async (productdata) => {
-  console.log("options", productdata);
-
   //   try {
   await axios
     .post(BASE_URl, productdata, {
@@ -33,7 +28,6 @@ export const productInsert = async (productdata) => {
       if (data.success) {
         handleSuccess(data.message);
       }
-      console.log("its success", data.message);
     })
     .catch((err) => {
       handleError(err?.response?.data?.message);
@@ -64,8 +58,6 @@ export const productDelete = async (id) => {
 };
 
 export const productUpdate = async (id, productData) => {
-  console.log("options", productData);
-  console.log("options", id);
   const url = `${BASE_URl}/${id}`;
   try {
     const response = await axios.put(url, productData, {

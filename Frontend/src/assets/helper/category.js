@@ -1,7 +1,8 @@
 import axios from "axios";
 import { handleError, handleSuccess } from "./utils";
+import { base_url } from "./BASEURL";
 
-const BASE_URL = "http://localhost:8080/category";
+const BASE_URL = `${base_url}category`;
 
 export const getAllCategory = async () => {
   try {
@@ -18,7 +19,7 @@ export const categoryById = async (id) => {
   const url = `${BASE_URL}/${id}`;
   try {
     const response = await axios.get(url);
-    console.log(response.data);
+
     return response.data.data;
   } catch (error) {
     console.error("Error fetching category:", error);
@@ -26,7 +27,6 @@ export const categoryById = async (id) => {
   }
 };
 export const categoryInsert = async (categoryData) => {
-  console.log(categoryData, "-----cd");
   try {
     const res = await axios.post(BASE_URL, categoryData, {
       headers: {
@@ -34,11 +34,9 @@ export const categoryInsert = async (categoryData) => {
       },
     });
     const { data } = res;
-    console.log(data);
+
     if (data.success) {
       return data;
     }
-  } catch (err) {
-    console.log(err);
-  }
+  } catch (err) {}
 };

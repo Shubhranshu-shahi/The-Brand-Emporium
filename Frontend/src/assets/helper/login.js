@@ -1,6 +1,7 @@
 import axios from "axios";
+import { base_url } from "./BASEURL";
 
-const BASE_URL = "http://localhost:8080/auth";
+const BASE_URL = `${base_url}auth`;
 
 export const login = async (authvals) => {
   try {
@@ -73,7 +74,7 @@ export const userExites = async (email) => {
         },
       }
     );
-    console.log(res.data);
+
     return res.data;
   } catch (err) {
     handleError("An error occurred. Please try again.");
