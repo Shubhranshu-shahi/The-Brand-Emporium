@@ -28,6 +28,7 @@ function PartiesList() {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [addPartyModalOpen, setAddPartyModalOpen] = useState(false);
   const [editPartyData, setEditPartyData] = useState(null);
+  // const [customerInvoices, setCustomerInvoices] = useState({});
 
   const [addPartyData, setAddPartyData] = useState({
     customerName: "",
@@ -146,20 +147,33 @@ function PartiesList() {
     }
   };
 
-  const handleSaveadd = (updatedParty) => {
-    console.log("updatedParty", updatedParty);
-    allCustomers();
-    // setCustomers((prev) => [...prev, updatedParty]);
+  const handleSaveadd = (newCustomer) => {
+    const cleanedCustomer = {
+      id: newCustomer._id,
+      name: newCustomer.customerName || "N/A",
+      phone: newCustomer.phone || "N/A",
+      gstin: newCustomer.CustomerGstin || "N/A",
+      email: newCustomer.email || "N/A",
+      invoiceNumbers: Array.isArray(newCustomer.invoiceNumber)
+        ? newCustomer.invoiceNumber
+        : [],
+      invoiceDates: Array.isArray(newCustomer.invoiceDate)
+        ? newCustomer.invoiceDate
+        : [],
+    };
 
-    // // Optional: update selected customer if same party is open
-    // if (selectedCustomer?.id === updatedParty.id) {
-    //   SetSelectedCustomer(updatedParty);
-    // }
+    setCustomers((prev) => [...prev, cleanedCustomer]);
+
+    // Optional: auto-select the newly added customer
+    SetSelectedCustomer(cleanedCustomer);
+    setSelectedRowId(cleanedCustomer.id);
   };
 
   const handleDelete = async (row) => {
     const res = await customerDelete(row.id);
-    allCustomers();
+    // --------------------------------------
+    setCustomers((prev) => prev.filter((cust) => cust.id !== row.id));
+    // allCustomers();
     handleSuccess(res.message);
   };
 
@@ -289,7 +303,11 @@ function PartiesList() {
               fallback={<div className="text-gray-500">Loading table...</div>}
             >
               {selectedCustomer?.invoiceNumbers?.length > 0 && (
-                <PartiesInvoice selectedCustomer={selectedCustomer} />
+                <PartiesInvoice
+                  selectedCustomer={selectedCustomer}
+                  // cachedInvoices={customerInvoices}
+                  // setCachedInvoices={setCustomerInvoices}
+                />
               )}
             </Suspense>
           </motion.div>
