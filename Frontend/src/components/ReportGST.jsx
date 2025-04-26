@@ -2,12 +2,12 @@ import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 
 import React from "react";
-import { dateToString } from "../assets/helper/Helpers";
+import { currentDate, dateToString } from "../assets/helper/Helpers";
 
 function ReportGST({ invoices, title, flag }) {
   console.log("Invoices:", invoices);
 
-  const exportGSTItemsToExcel = (invoices = []) => {
+  const exportGSTItemsToExcel = (invoices = [], exportFlag) => {
     if (!Array.isArray(invoices)) {
       console.error("Expected an array of invoices but got:", invoices);
       return;
@@ -15,7 +15,7 @@ function ReportGST({ invoices, title, flag }) {
     const gstItems = [];
     invoices.forEach((invoice) => {
       invoice.rows?.forEach((item) => {
-        if (flag == 1) {
+        if (exportFlag == 1) {
           if (invoice.GSTType == "GST" && parseFloat(item.taxSale) > 0) {
             gstItems.push({
               InvoiceNumber: invoice.invoiceNumber,
@@ -64,19 +64,28 @@ function ReportGST({ invoices, title, flag }) {
       });
     });
     console.log(gstItems, " get items ");
- 
+
     // Export to Excel
     const worksheet = XLSX.utils.json_to_sheet(gstItems);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "GST Report");
+    let sheetName = `GST Report_${currentDate()}`;
+    let fileName = `GST_Report.xlsx${currentDate()}`;
 
+    if (exportFlag == 0) {
+      console.log("hello");
+      sheetName = `AllReport_${currentDate()}`;
+      fileName = `All_Report_${currentDate()}.xlsx`;
+
+      console.log(sheetName, "-----", fileName);
+    }
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
     XLSX.writeFile(workbook, "GST_Report.xlsx");
   };
 
   return (
     <div>
       <button
-        onClick={() => exportGSTItemsToExcel(invoices)}
+        onClick={() => exportGSTItemsToExcel(invoices, flag)}
         className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md"
       >
         {title}

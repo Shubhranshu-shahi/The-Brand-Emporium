@@ -30,7 +30,6 @@ const signup = async (req, res) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log("email", email, password);
     const user = await UserModal.findOne({ email });
     const errMessage = "Authentication failed, email or password is incorrect";
     if (!user) {
@@ -68,7 +67,6 @@ const login = async (req, res) => {
 };
 
 const privacyAuthPass = async (req, res) => {
-  console.log("Checking");
   try {
     const { name, email, password } = req.body;
 
@@ -85,7 +83,6 @@ const privacyAuthPass = async (req, res) => {
     if (!isPass) {
       return res.status(403).json({ message: errMessage, success: false });
     }
-    console.log("user", user);
 
     res.status(200).json({
       message: "Password is correct",
@@ -136,7 +133,7 @@ const updatePassword = async (req, res) => {
 const userExits = async (req, res) => {
   try {
     const { email } = req.body;
-    console.log("email", email);
+
     const user = await UserModal.findOne({ email: email });
     if (!user) {
       return res.json({
