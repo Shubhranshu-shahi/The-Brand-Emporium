@@ -14,7 +14,6 @@ function InvoiceBill({ id, pdf }) {
   });
   const [sgst, setSgst] = useState(0);
   const [cgst, setCgst] = useState(0);
-  console.log(id, "-------id");
 
   const [totalgstAmount, setTotalgstAmount] = useState(0);
   const calculateGST = () => {
@@ -51,7 +50,6 @@ function InvoiceBill({ id, pdf }) {
   };
 
   const getinvoice = async () => {
-    console.log("Fetching invoice...");
     try {
       const invoice = await invoiceGenrate(id);
       if (invoice) {
@@ -354,9 +352,8 @@ function InvoiceBill({ id, pdf }) {
         <div className="mt-4 p-4 text-center md:text-left" id="download-button">
           <button
             onClick={() => {
-              console.log("Download button clicked");
               const downloadBtn = document.getElementById("download-button");
-              console.log("Download button element:", downloadBtn);
+
               downloadBtn.classList.add("hidden");
               setTimeout(() => {
                 pdf();

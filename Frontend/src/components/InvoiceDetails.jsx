@@ -1,5 +1,4 @@
 function InvoiceDetails({ invoice, setInvoice }) {
-  console.log(invoice, "--------jadduuu");
   return (
     <div className="bg-white p-4 rounded-lg shadow-lg">
       <h2 className="font-semibold text-gray-700 mb-2">Invoice Details</h2>

@@ -135,7 +135,6 @@ function PartiesInvoice({ selectedCustomer }) {
         <div className="flex space-x-2">
           <button
             onClick={() => {
-              console.log(row.original);
               handleUpdate(row.original);
             }}
             className="p-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
@@ -262,7 +261,6 @@ function PartiesInvoice({ selectedCustomer }) {
                   <tr
                     key={row.id}
                     onClick={() => {
-                      console.log("check");
                       setSelectedRowId(row.id);
                     }}
                     className={`cursor-pointer ${

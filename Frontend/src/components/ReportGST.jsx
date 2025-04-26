@@ -5,8 +5,6 @@ import React from "react";
 import { currentDate, dateToString } from "../assets/helper/Helpers";
 
 function ReportGST({ invoices, title, flag }) {
-  console.log("Invoices:", invoices);
-
   const exportGSTItemsToExcel = (invoices = [], exportFlag) => {
     if (!Array.isArray(invoices)) {
       console.error("Expected an array of invoices but got:", invoices);
@@ -39,7 +37,6 @@ function ReportGST({ invoices, title, flag }) {
             });
           }
         } else {
-          console.log("NON-GST");
           gstItems.push({
             InvoiceNumber: invoice.invoiceNumber,
             InvoiceDate: dateToString(invoice.invoiceDate),
@@ -63,7 +60,6 @@ function ReportGST({ invoices, title, flag }) {
         }
       });
     });
-    console.log(gstItems, " get items ");
 
     // Export to Excel
     const worksheet = XLSX.utils.json_to_sheet(gstItems);
@@ -72,11 +68,8 @@ function ReportGST({ invoices, title, flag }) {
     let fileName = `GST_Report.xlsx${currentDate()}`;
 
     if (exportFlag == 0) {
-      console.log("hello");
       sheetName = `AllReport_${currentDate()}`;
       fileName = `All_Report_${currentDate()}.xlsx`;
-
-      console.log(sheetName, "-----", fileName);
     }
     XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
     XLSX.writeFile(workbook, "GST_Report.xlsx");

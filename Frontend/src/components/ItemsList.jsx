@@ -119,7 +119,6 @@ function ItemsList() {
 
   const handleUpdate = (row) => {
     navigate(`/edit-item/${row.id}`, { state: row });
-    console.log("Update:", row);
   };
 
   const handleDelete = async (row) => {
@@ -131,8 +130,6 @@ function ItemsList() {
   const handleRowClick = (rowData) => {
     SetSelectedProduct(rowData);
     setSelectedRowId(rowData.id);
-    console.log(rowData.id);
-    console.log(rowData);
   };
 
   return (

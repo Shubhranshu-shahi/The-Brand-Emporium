@@ -11,7 +11,6 @@ function CustomerDetailsForm({ customerAndInvoice, setCustomerAndInvoice }) {
       customerName: cust.customerName || "",
       phone,
     }));
-    console.log(cust, "---customer");
   };
   return (
     <>

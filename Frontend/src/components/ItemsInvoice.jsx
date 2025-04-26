@@ -42,7 +42,7 @@ function ItemsInvoice({ selectedProduct }) {
       setLoading(true);
 
       const res = await SearchInvoiceByProductId(selectedProduct);
-      console.log(res);
+
       setFetchedInvoices(Array.isArray(res) ? res : []);
     } catch (error) {
       console.error("Error fetching invoices:", error);
@@ -53,8 +53,6 @@ function ItemsInvoice({ selectedProduct }) {
   };
 
   useEffect(() => {
-    console.log("check");
-    console.log(selectedProduct, "----selecproduct");
     if (selectedProduct.id) {
       fetchInvoicesByNumbers(selectedProduct);
     } else {
@@ -148,7 +146,6 @@ function ItemsInvoice({ selectedProduct }) {
         <div className="flex space-x-2">
           <button
             onClick={() => {
-              console.log(row.original);
               handleUpdate(row.original);
             }}
             className="p-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
@@ -275,7 +272,6 @@ function ItemsInvoice({ selectedProduct }) {
                   <tr
                     key={row.id}
                     onClick={() => {
-                      console.log("check");
                       setSelectedRowId(row.id);
                     }}
                     className={`cursor-pointer ${

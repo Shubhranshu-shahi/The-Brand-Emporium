@@ -85,7 +85,7 @@ const Auth = () => {
 
   const sendOtpHandler = async (flag) => {
     if (!validateInputs()) return;
-    console.log(flag);
+
     setLoading(true);
     try {
       if (flag === 1) {
@@ -237,7 +237,7 @@ const Auth = () => {
                   value={newpassword}
                   onChange={(e) => {
                     setNewPassword(e.target.value);
-                    console.log(e.target.name);
+
                     setErrors((prev) => ({ ...prev, [e.target.name]: "" }));
                   }}
                   className="w-full p-3 pr-12 bg-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

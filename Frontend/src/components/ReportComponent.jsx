@@ -48,7 +48,7 @@ function ReportComponent() {
     const fetchData = async () => {
       try {
         const response = await getAllInvoice();
-        console.log("Response from API:", response);
+
         const formatted = response.map((entry, index) => ({
           "#": index + 1,
           customerName: entry.customerAndInvoice?.customerName,
@@ -68,7 +68,6 @@ function ReportComponent() {
         }));
         setData(formatted);
         setFilteredData(formatted);
-        console.log("Formatted data:", formatted);
       } catch (error) {
         console.error("Error fetching invoice data:", error);
       }

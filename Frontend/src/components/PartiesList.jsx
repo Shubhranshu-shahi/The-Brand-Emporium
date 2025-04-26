@@ -127,7 +127,6 @@ function PartiesList() {
   }, [customers]);
 
   const handleUpdate = (row) => {
-    console.log("Update:", row);
     setEditPartyData(row);
     setEditModalOpen(true);
   };
@@ -180,9 +179,6 @@ function PartiesList() {
   const handleRowClick = (rowData) => {
     SetSelectedCustomer(rowData);
     setSelectedRowId(rowData.id);
-    console.log(rowData.id);
-    console.log(rowData);
-    console.log(selectedRowId);
   };
 
   return (
