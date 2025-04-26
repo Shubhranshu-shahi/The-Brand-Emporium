@@ -10,9 +10,7 @@ const getAllInvoice = async (req, res) => {
 const invoiceByID = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(req.params);
-    // const invoice = await InvoiceModal.findById(req.params.id);
-    // const invoice = await InvoiceModal.findOne({ _id: id });
+
     const invoice = await InvoiceModal.findOne({
       "customerAndInvoice.invoiceNumber": id,
     });
@@ -32,23 +30,17 @@ const invoiceByID = async (req, res) => {
 };
 
 const invoiceInsert = async (req, res) => {
-  console.log(req.body);
-  // res.send("check");
   try {
     const invoice = req.body;
-    console.log(invoice);
+
     let invoiceNumber = invoice.customerAndInvoice.invoiceNumber;
 
-    // const { itemCode } = req.body;
-    //   const invoice = await InvoiceModal.find();
-    console.log(invoiceNumber, "--------invoiceNumber");
     const checkinvoice = await InvoiceModal.findOne({
       "customerAndInvoice.invoiceNumber": invoiceNumber,
     });
-    console.log(checkinvoice, "-------check");
+
     const errMessage = "invoice already exits,or change Invoice number";
     if (checkinvoice) {
-      console.log("check");
       return res.status(409).json({
         message: errMessage,
         success: false,
@@ -60,7 +52,6 @@ const invoiceInsert = async (req, res) => {
       .status(201)
       .json({ message: "invoice generated", success: true, data: invoices });
   } catch (err) {
-    console.log(err);
     res.status(500).json({
       message: "Internal Server Error",
       success: false,
@@ -69,10 +60,9 @@ const invoiceInsert = async (req, res) => {
 };
 const invoiceDelete = async (req, res) => {
   try {
-    console.log("check");
     const { id } = req.params;
     const invoice = await InvoiceModal.findByIdAndDelete({ _id: id });
-    // const invoice = await InvoiceModal.findOne({ itemCode });
+
     if (!invoice) {
       return res.status(404).send("invoice not found");
     }

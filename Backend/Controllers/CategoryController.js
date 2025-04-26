@@ -10,10 +10,7 @@ const getAllCategory = async (req, res) => {
 const categoryByID = async (req, res) => {
   try {
     const { id } = req.params;
-    // console.log(req.params);
     let category;
-    // const product = await ProductModal.findById(req.params.id);
-    // const product = await ProductModal.findOne({ _id: id });
 
     category = await CategoryModal.findOne({ _id: id });
 
@@ -33,8 +30,6 @@ const categoryByID = async (req, res) => {
 };
 
 const categoryInsert = async (req, res) => {
-  // console.log(req.body);
-  // res.send("check");
   try {
     const category = req.body;
 

@@ -3,8 +3,7 @@ const OtpModal = require("../Modals/Otp");
 
 const verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
-  console.log("email : ", email);
-  console.log("otp : ", otp);
+
   try {
     const validOtp = await OtpModal.findOne({ email, otp });
     if (!validOtp) {
@@ -32,7 +31,7 @@ gentrateOtp = () => {
 };
 const sendOtp = async (req, res) => {
   const { email } = req.body;
-  console.log("email : ", email);
+
   const otp = gentrateOtp();
   try {
     await OtpModal.deleteMany({ email });

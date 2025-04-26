@@ -10,9 +10,7 @@ const getAllProduct = async (req, res) => {
 const productByID = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(req.params);
-    // const product = await ProductModal.findById(req.params.id);
-    // const product = await ProductModal.findOne({ _id: id });
+
     const product = await ProductModal.findOne({ itemCode: id });
     if (!product) {
       return res.status(404).send("Product not found");
@@ -32,7 +30,7 @@ const productByID = async (req, res) => {
 const productInsert = async (req, res) => {
   try {
     let products = req.body;
-    console.log(products, "--------productInsert");
+
     if (!Array.isArray(products)) {
       products = [products];
     }
@@ -57,7 +55,6 @@ const productInsert = async (req, res) => {
         success: false,
       });
     }
-    console.log(newProducts, "--------newProducts");
 
     const createdProducts = await ProductModal.insertMany(newProducts);
     res.status(201).json({
@@ -94,8 +91,7 @@ const productUpdate = async (req, res) => {
   try {
     const { id } = req.params;
     const prod = req.body;
-    console.log(prod, "--------productUpdate");
-    console.log(id, "--------id");
+
     let updatedProduct = {
       ...prod,
       updatedAt: new Date(),

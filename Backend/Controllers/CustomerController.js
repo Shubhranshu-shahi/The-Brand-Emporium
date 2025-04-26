@@ -10,10 +10,8 @@ const getAllCustomer = async (req, res) => {
 const customerByID = async (req, res) => {
   try {
     const { id, phone } = req.params;
-    // console.log(req.params);
+
     let customer;
-    // const product = await ProductModal.findById(req.params.id);
-    // const product = await ProductModal.findOne({ _id: id });
 
     customer = await CustomerModal.findOne({ phone: id });
 
@@ -33,8 +31,6 @@ const customerByID = async (req, res) => {
 };
 
 const customerInsert = async (req, res) => {
-  // console.log(req.body);
-  // res.send("check");
   try {
     const customer = req.body;
 
@@ -66,7 +62,6 @@ const customerInsert = async (req, res) => {
         .json({ message: "Customer Inserted", success: true, data: customers });
     }
   } catch (err) {
-    console.log(err);
     res.status(500).json({
       message: "Internal Server Error",
       success: false,
@@ -101,7 +96,7 @@ const customerUpdate = async (req, res) => {
     const customer = await CustomerModal.findByIdAndUpdate(id, cust, {
       new: true,
     });
-    // const product = await ProductModal.findOne({ itemCode });
+
     if (!customer) {
       return res.status(404).send("Customer not found");
     }
