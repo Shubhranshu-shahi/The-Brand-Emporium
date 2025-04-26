@@ -9,17 +9,6 @@ const transporter = nodemailer.createTransport({
 });
 
 const sendOtpEmail = async (email, otp) => {
-  console.log(
-    "User mail : ",
-    process.env.MAIL_USER,
-    " User Pass : ",
-    process.env.MAIL_PASS,
-    " User email : ",
-    email,
-    " User otp : ",
-    otp
-  );
-
   try {
     await transporter.sendMail({
       from: `The-Brand-Emporum <${process.env.MAIL_USER}>`,
