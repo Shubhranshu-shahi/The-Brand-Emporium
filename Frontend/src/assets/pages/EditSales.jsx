@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 
 function EditSales() {
   const { invoiceNumber } = useParams();
-  console.log(invoiceNumber);
+
   return (
     <Layout>
       <div className="overflow-hidden">
