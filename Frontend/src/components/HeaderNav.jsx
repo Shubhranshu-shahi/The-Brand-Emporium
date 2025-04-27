@@ -117,7 +117,7 @@ export default function HeaderNav({
           initial={{ height: 0 }}
           animate={{ height: "auto" }}
           transition={{ duration: 0.3 }}
-          className="absolute top-16 left-0 w-full bg-[#1a1d21] shadow-md z-40 flex flex-col space-y-2 px-4 py-4 text-white md:hidden"
+          className="absolute top-16 left-[4.3rem] right-0 bg-[#1a1d21] shadow-md z-40 flex flex-col space-y-2 px-4 py-4 text-white md:hidden"
         >
           <button
             onClick={() => {

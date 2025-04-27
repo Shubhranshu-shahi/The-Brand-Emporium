@@ -254,9 +254,9 @@ function SalesFormMain() {
         </div>
 
         <div className="flex justify-end mt-4 space-x-2">
-          <button className="bg-blue-500 px-4 py-2 rounded text-white">
+          {/* <button className="bg-blue-500 px-4 py-2 rounded text-white">
             Share
-          </button>
+          </button> */}
           <button
             onClick={handleSubmit}
             disabled={!isRowsValid()}
