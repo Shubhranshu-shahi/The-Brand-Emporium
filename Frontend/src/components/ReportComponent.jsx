@@ -28,6 +28,7 @@ import { dateToString } from "../assets/helper/Helpers";
 import { handleSuccess } from "../assets/helper/utils";
 import { useNavigate } from "react-router-dom";
 import ReportGST from "./ReportGST";
+import { FullPageLoader } from "./FullPageLoader";
 
 const columnHelper = createColumnHelper();
 
@@ -41,11 +42,13 @@ function ReportComponent() {
   const tableRef = useRef(null);
   const exportRef = useRef(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         const response = await getAllInvoice();
 
@@ -70,6 +73,8 @@ function ReportComponent() {
         setFilteredData(formatted);
       } catch (error) {
         console.error("Error fetching invoice data:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchData();
@@ -91,8 +96,7 @@ function ReportComponent() {
 
   const isAdmin =
     localStorage.getItem("loggedInUser") === "shubh" ||
-    localStorage.getItem("loggedInUser") === "admin" ||
-    localStorage.getItem("loggedInUser") === "Admin";
+    localStorage.getItem("loggedInUser").toLowerCase() === "admin";
 
   const baseColumns = [
     columnHelper.accessor("#", { header: "#" }),
@@ -244,6 +248,7 @@ function ReportComponent() {
 
   return (
     <div className="p-4 space-y-4 max-w-full rounded-2xl shadow-md">
+      {isLoading && <FullPageLoader />}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {[
           {

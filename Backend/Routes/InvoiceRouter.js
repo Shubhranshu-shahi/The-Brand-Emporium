@@ -6,8 +6,12 @@ const {
   invoiceDelete,
   invoiceNumbersSearch,
   InvoiceProductIdSearch,
-} = require("../Controllers/InvoiceController");
 
+  invoicesExport,
+  test,
+  getInvoices,
+  aggregatedInvoiceData,
+} = require("../Controllers/InvoiceController");
 
 const router = require("express").Router();
 
@@ -18,5 +22,9 @@ router.put("/:id", invoiceUpdate);
 router.delete("/:id", invoiceDelete);
 router.post("/invoice-numbers", invoiceNumbersSearch);
 router.post("/product-id", InvoiceProductIdSearch);
+
+router.get("/reports/invoices", getInvoices);
+router.post("/api/aggregated-invoice-data", aggregatedInvoiceData);
+// router.get("/exports", invoicesExport);
 
 module.exports = router;

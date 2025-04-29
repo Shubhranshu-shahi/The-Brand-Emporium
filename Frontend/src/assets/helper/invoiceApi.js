@@ -102,3 +102,22 @@ export const updateInvoice = async (id, data) => {
     return null;
   }
 };
+
+export const fetchAggregatedData = async ({ startDate, endDate, groupBy }) => {
+  const url = `${BASE_URL}/api/aggregated-invoice-data`;
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ startDate, endDate, groupBy }),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching aggregated data:", error);
+    throw error;
+  }
+};
