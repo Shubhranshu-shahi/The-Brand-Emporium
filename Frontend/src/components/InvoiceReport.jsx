@@ -17,7 +17,7 @@ import { currentDate, dateToString } from "../assets/helper/Helpers";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
-const InvoiceNew = () => {
+const InvoiceReport = () => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -557,4 +557,4 @@ const InvoiceNew = () => {
   );
 };
 
-export default InvoiceNew;
+export default InvoiceReport;

@@ -1,12 +1,11 @@
 import React from "react";
 import Layout from "../../components/Layout";
-import InvoiceNew from "../../components/InvoiceNew";
+import InvoiceReport from "../../components/InvoiceReport";
 
 function InvoiceTest() {
-  1;
   return (
     <Layout>
-      <InvoiceNew />
+      <InvoiceReport />
     </Layout>
   );
 }

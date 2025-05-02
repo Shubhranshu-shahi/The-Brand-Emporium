@@ -99,18 +99,30 @@ const RevenueGraphWithSummary = () => {
             data: data.map((d) => d.totalRevenue),
             borderColor: "green",
             fill: false,
+            borderWidth: 2,
+            tension: 0.3, // smooth curves
+            pointRadius: 3,
+            pointHoverRadius: 5,
           },
           {
             label: "Cost",
             data: data.map((d) => d.totalCost),
             borderColor: "red",
             fill: false,
+            borderWidth: 2,
+            tension: 0.3, // smooth curves
+            pointRadius: 3,
+            pointHoverRadius: 5,
           },
           {
             label: "Profit",
             data: data.map((d) => d.totalProfit),
             borderColor: "blue",
             fill: false,
+            borderWidth: 2,
+            tension: 0.3, // smooth curves
+            pointRadius: 3,
+            pointHoverRadius: 5,
           },
         ],
       });
@@ -134,9 +146,8 @@ const RevenueGraphWithSummary = () => {
     }
   };
 
-  // useEffect(() => {
-  //   loadChartData();
-  // }, [groupBy, startDate, endDate]);
+  const formatCurrency = (amount) =>
+    amount.toLocaleString("en-IN", { style: "currency", currency: "INR" });
 
   const options = {
     responsive: true,
@@ -188,17 +199,17 @@ const RevenueGraphWithSummary = () => {
         <div className="m-6 flex flex-wrap justify-center gap-6">
           <SummaryCard
             label="Total Revenue"
-            value={totals.revenue}
+            value={formatCurrency(totals.revenue)}
             color="bg-green-600"
           />
           <SummaryCard
             label="Total Cost"
-            value={totals.cost}
+            value={formatCurrency(totals.cost)}
             color="bg-red-600"
           />
           <SummaryCard
             label="Total Profit"
-            value={totals.profit}
+            value={formatCurrency(totals.profit)}
             color="bg-blue-600"
           />
         </div>
