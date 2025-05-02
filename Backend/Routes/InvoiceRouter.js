@@ -11,6 +11,7 @@ const {
   test,
   getInvoices,
   aggregatedInvoiceData,
+  invoicesummary,
 } = require("../Controllers/InvoiceController");
 
 const router = require("express").Router();
@@ -25,6 +26,7 @@ router.post("/product-id", InvoiceProductIdSearch);
 
 router.get("/reports/invoices", getInvoices);
 router.post("/api/aggregated-invoice-data", aggregatedInvoiceData);
-// router.get("/exports", invoicesExport);
+router.get("/api/summary", invoicesummary);
+router.get("/api/exports", invoicesExport);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const InvoiceModal = require("../Modals/Invoice");
+const { parse } = require("json2csv");
 
 const getAllInvoice = async (req, res) => {
   const invoice = await InvoiceModal.find({});
@@ -148,7 +149,6 @@ const InvoiceProductIdSearch = async (req, res) => {
 };
 
 const getInvoices = async (req, res) => {
-  console.log("i in");
   const { page = 1, pageSize = 10, startDate, endDate, search } = req.query;
   const filter = {};
 
@@ -167,6 +167,7 @@ const getInvoices = async (req, res) => {
     filter.$or = [
       { "customerAndInvoice.customerName": { $regex: search, $options: "i" } },
       { "customerAndInvoice.invoiceNumber": { $regex: search, $options: "i" } },
+      { "customerAndInvoice.phone": { $regex: search, $options: "i" } },
     ];
   }
   console.log("Filter:", filter);
@@ -190,9 +191,13 @@ const getInvoices = async (req, res) => {
 };
 
 const invoicesExport = async (req, res) => {
-  const { startDate, endDate, search } = req.query;
+  console.log("i am in");
+  const { startDate, endDate, search, gstType } = req.query;
   const filter = {};
 
+  console;
+
+  // Apply date range filter if present
   if (startDate && endDate) {
     filter["customerAndInvoice.invoiceDate"] = {
       $gte: new Date(startDate),
@@ -200,19 +205,58 @@ const invoicesExport = async (req, res) => {
     };
   }
 
+  // Apply search filter if present
   if (search) {
     filter.$or = [
       { "customerAndInvoice.customerName": { $regex: search, $options: "i" } },
       { "customerAndInvoice.invoiceNumber": { $regex: search, $options: "i" } },
+      { "customerAndInvoice.phone": { $regex: search, $options: "i" } },
     ];
   }
 
+  // Apply GSTType filter if 'gstType' is passed as query parameter
+  if (gstType && gstType !== "both") {
+    filter["customerAndInvoice.GSTType"] = gstType;
+  }
+
   try {
+    // Fetch invoices from the database with applied filters
     const invoices = await InvoiceModal.find(filter);
 
-    res.json({
-      invoices,
-    });
+    console.log(invoices);
+    // Format the data for CSV
+    const csvData = invoices
+      .map((invoice) => {
+        return invoice.rows.map((item) => ({
+          InvoiceNumber: invoice.customerAndInvoice.invoiceNumber,
+          InvoiceDate: invoice.customerAndInvoice.invoiceDate,
+          CustomerName: invoice.customerAndInvoice.customerName,
+          Phone: invoice.customerAndInvoice.phone,
+          ItemCode: item.itemCode,
+          HSN: item.hsn || "", // Assuming hsn field exists
+          ItemName: item.itemName,
+          Qty: item.qty,
+          MRP: item.mrp,
+          SalePrice: item.salePrice,
+          TaxableAmount: item.taxAmount,
+          TaxPercent: item.taxSale,
+          DiscountAmount: item.discountAmount,
+          DiscountPercentage: item.discountSale,
+          CGST: parseFloat(item.taxAmount / 2).toFixed(2) || 0,
+          SGST: parseFloat(item.taxAmount / 2).toFixed(2) || 0,
+          IGST: item.igst || 0,
+          Total: item.sellingPrice,
+        }));
+      })
+      .flat(); // Flatten array if there are multiple items per invoice
+
+    // Convert data to CSV format
+    const csv = parse(csvData);
+
+    // Send the CSV data as the response
+    res.header("Content-Type", "text/csv");
+    res.attachment("invoices.csv");
+    res.send(csv);
   } catch (err) {
     res.status(500).json({ message: "Error exporting invoices", error: err });
   }
@@ -375,6 +419,76 @@ const fillMissingDates = (data, groupBy) => {
   );
 };
 
+const invoicesummary = async (req, res) => {
+  try {
+    // Build filters based on query params
+    const filters = {};
+
+    if (req.query.search) {
+      filters.$or = [
+        {
+          "customerAndInvoice.customerName": {
+            $regex: req.query.search,
+            $options: "i",
+          },
+        },
+        {
+          "customerAndInvoice.phone": {
+            $regex: req.query.search,
+            $options: "i",
+          },
+        },
+        {
+          "customerAndInvoice.invoiceNumber": {
+            $regex: req.query.search,
+            $options: "i",
+          },
+        },
+      ];
+    }
+
+    if (req.query.startDate && req.query.endDate) {
+      filters["customerAndInvoice.invoiceDate"] = {
+        $gte: new Date(req.query.startDate),
+        $lte: new Date(req.query.endDate),
+      };
+    }
+
+    // Total invoice count in DB (not affected by filters)
+    const totalInvoices = await InvoiceModal.countDocuments();
+
+    // Filtered aggregation
+    const filteredSummary = await InvoiceModal.aggregate([
+      { $match: filters }, // Apply filters if any
+      {
+        $group: {
+          _id: null,
+          filteredCount: { $sum: 1 },
+          filteredTotalReceived: { $sum: "$totalDetails.receive" },
+          filteredTotalRemaining: {
+            $sum: "$totalDetails.remaining",
+          },
+        },
+      },
+    ]);
+
+    // Default summary if no filtered invoices
+    const summary = filteredSummary[0] || {
+      filteredCount: 0,
+      filteredTotalReceived: 0,
+      filteredTotalRemaining: 0,
+    };
+
+    res.json({
+      totalInvoices, // Total invoices count
+      ...summary, // Filtered count and totals
+    });
+  } catch (err) {
+    console.error("Error getting invoice summary:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
 module.exports = { aggregatedInvoiceData };
 
 module.exports = {
@@ -388,4 +502,5 @@ module.exports = {
   getInvoices,
   invoicesExport,
   aggregatedInvoiceData,
+  invoicesummary,
 };

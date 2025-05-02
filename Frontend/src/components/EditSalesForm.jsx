@@ -25,9 +25,8 @@ export default function EditSalesForm({ invoiceNumber }) {
     customerName: false,
   });
 
-  const totalAmount = rows.reduce(
-    (sum, row) => sum + (parseFloat(row.sellingPrice) || 0),
-    0
+  const totalAmount = parseFloat(
+    rows.reduce((sum, row) => sum + (parseFloat(row.sellingPrice) || 0), 0)
   );
 
   const searchByidProduct = async (itemCode) => {
@@ -95,7 +94,7 @@ export default function EditSalesForm({ invoiceNumber }) {
       },
       rows: sanitizedRows,
       totalDetails: {
-        total: totalAmount,
+        total: Number(parseFloat(totalAmount).toFixed(2)),
         roundOff,
         receive,
         remaining,

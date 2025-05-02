@@ -222,10 +222,12 @@ function InvoiceBill({ id, pdf }) {
                 )}
                 <td className="border p-2 text-right">
                   ₹{" "}
-                  {inv.rows.reduce(
-                    (sum, row) => sum + Number(row.sellingPrice || 0),
-                    0
-                  )}
+                  {parseFloat(
+                    inv.rows.reduce(
+                      (sum, row) => sum + Number(row.sellingPrice || 0),
+                      0
+                    )
+                  ).toFixed(2)}
                 </td>
               </tr>
             </tfoot>

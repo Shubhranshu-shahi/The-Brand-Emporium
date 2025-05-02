@@ -60,9 +60,8 @@ function SalesFormMain() {
   const [remaining, setRemaining] = useState(0);
   const [type, setType] = useState("Online");
 
-  const totalAmount = rows.reduce(
-    (sum, row) => sum + (parseFloat(row.sellingPrice) || 0),
-    0
+  const totalAmount = parseFloat(
+    rows.reduce((sum, row) => sum + (parseFloat(row.sellingPrice) || 0), 0)
   );
 
   useEffect(() => {
@@ -153,7 +152,7 @@ function SalesFormMain() {
         },
         rows,
         totalDetails: {
-          total: totalAmount,
+          total: Number(parseFloat(totalAmount).toFixed(2)),
           roundOff,
           receive,
           remaining,
