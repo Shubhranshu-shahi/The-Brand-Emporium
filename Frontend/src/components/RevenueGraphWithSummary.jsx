@@ -77,7 +77,6 @@ const RevenueGraphWithSummary = () => {
       last.endDate === payload.endDate &&
       last.groupBy === payload.groupBy
     ) {
-      console.log("🔁 Skipping duplicate fetch for", payload);
       return;
     }
 
@@ -90,7 +89,7 @@ const RevenueGraphWithSummary = () => {
         setChartData(null);
         return;
       }
-      console.log(data);
+
       setChartData({
         labels: data.map((d) => d._id),
         datasets: [

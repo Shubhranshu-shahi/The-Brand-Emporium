@@ -152,8 +152,6 @@ const getInvoices = async (req, res) => {
   const { page = 1, pageSize = 10, startDate, endDate, search } = req.query;
   const filter = {};
 
-  console.log("Query params:", req.query);
-
   // Apply date range filter
   if (startDate && endDate) {
     filter["customerAndInvoice.invoiceDate"] = {
@@ -170,7 +168,6 @@ const getInvoices = async (req, res) => {
       { "customerAndInvoice.phone": { $regex: search, $options: "i" } },
     ];
   }
-  console.log("Filter:", filter);
 
   try {
     const skip = (page - 1) * pageSize;
@@ -191,7 +188,6 @@ const getInvoices = async (req, res) => {
 };
 
 const invoicesExport = async (req, res) => {
-  console.log("i am in");
   const { startDate, endDate, search, gstType } = req.query;
   const filter = {};
 
@@ -223,7 +219,6 @@ const invoicesExport = async (req, res) => {
     // Fetch invoices from the database with applied filters
     const invoices = await InvoiceModal.find(filter);
 
-    console.log(invoices);
     // Format the data for CSV
     const csvData = invoices
       .map((invoice) => {
@@ -264,15 +259,6 @@ const invoicesExport = async (req, res) => {
 
 const aggregatedInvoiceData = async (req, res) => {
   const { startDate, endDate, groupBy } = req.body;
-
-  console.log(
-    "Start date = ",
-    startDate,
-    " End Date = ",
-    endDate,
-    " group by = ",
-    groupBy
-  );
 
   // Validate input
   if (!startDate || !endDate || !groupBy) {
