@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { numberToWords } from "../assets/helper/Helpers";
-import { invoiceGenrate } from "../assets/helper/invoiceApi";
+import { numberToWords } from "../assets/api/Helpers";
+import { invoiceGenrate } from "../assets/api/InvoiceApi";
 import logo from "../img/logo.jpeg";
 import sign from "../img/sign.jpeg";
 import instaScnan from "../img/instaScan.jpg";
@@ -32,7 +32,7 @@ function InvoiceBill({ id, pdf }) {
 
     setSgst(totalSgst.toFixed(2));
     setCgst(totalCgst.toFixed(2));
-    setTotalgstAmount(gstTotalAmount);
+    setTotalgstAmount(gstTotalAmount.toFixed(2));
   };
 
   const [discountAm, setDiscountAm] = useState(0);
@@ -182,13 +182,11 @@ function InvoiceBill({ id, pdf }) {
                     ₹ {Number(item.discountAmount).toFixed(2)}
                   </td>
                   <td className="border p-2 text-right">
-                    ₹ {item.discountSale} %
+                    ₹ {item.discountSale}%
                   </td>
                   {inv.customerAndInvoice.GSTType === "GST" && (
                     <>
-                      <td className="border p-2 text-right">
-                        % {item.taxSale}
-                      </td>
+                      <td className="border p-2 text-right">{item.taxSale}%</td>
                       <td className="border p-2 text-right">
                         ₹ {(item.taxSale / 100) * item.sellingPrice}
                       </td>

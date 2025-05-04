@@ -166,6 +166,10 @@ const getInvoices = async (req, res) => {
       { "customerAndInvoice.customerName": { $regex: search, $options: "i" } },
       { "customerAndInvoice.invoiceNumber": { $regex: search, $options: "i" } },
       { "customerAndInvoice.phone": { $regex: search, $options: "i" } },
+      { "customerAndInvoice.GSTType": { $regex: search, $options: "i" } },
+      { "customerAndInvoice.billedBy": { $regex: search, $options: "i" } },
+      { "customerAndInvoice.updatedBy": { $regex: search, $options: "i" } },
+      { "totalDetails.type": { $regex: search, $options: "i" } },
     ];
   }
 
@@ -207,6 +211,10 @@ const invoicesExport = async (req, res) => {
       { "customerAndInvoice.customerName": { $regex: search, $options: "i" } },
       { "customerAndInvoice.invoiceNumber": { $regex: search, $options: "i" } },
       { "customerAndInvoice.phone": { $regex: search, $options: "i" } },
+      { "customerAndInvoice.GSTType": { $regex: search, $options: "i" } },
+      { "customerAndInvoice.billedBy": { $regex: search, $options: "i" } },
+      { "customerAndInvoice.updatedBy": { $regex: search, $options: "i" } },
+      { "totalDetails.type": { $regex: search, $options: "i" } },
     ];
   }
 
@@ -419,17 +427,36 @@ const invoicesummary = async (req, res) => {
           },
         },
         {
+          "customerAndInvoice.invoiceNumber": {
+            $regex: req.query.search,
+            $options: "i",
+          },
+        },
+        {
           "customerAndInvoice.phone": {
             $regex: req.query.search,
             $options: "i",
           },
         },
         {
-          "customerAndInvoice.invoiceNumber": {
+          "customerAndInvoice.GSTType": {
             $regex: req.query.search,
             $options: "i",
           },
         },
+        {
+          "customerAndInvoice.billedBy": {
+            $regex: req.query.search,
+            $options: "i",
+          },
+        },
+        {
+          "customerAndInvoice.updatedBy": {
+            $regex: req.query.search,
+            $options: "i",
+          },
+        },
+        { "totalDetails.type": { $regex: req.query.search, $options: "i" } },
       ];
     }
 

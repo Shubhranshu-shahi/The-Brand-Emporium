@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { useDateRange } from "../hook/useDateRange";
-import { fetchAggregatedData } from "../assets/helper/invoiceApi";
+import { fetchAggregatedData } from "../assets/api/InvoiceApi";
 import DateRangeGroupBySelector from "./DateRangeGroupBySelector";
 import { motion } from "framer-motion";
 import { ChevronDown } from "lucide-react";

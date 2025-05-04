@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ExcelJS from "exceljs";
-import { base_url } from "../assets/helper/BASEURL";
+import { base_url } from "../assets/api/BASEURL";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowUpDown,
@@ -12,8 +12,13 @@ import {
   Search,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { invoiceDelete } from "../assets/helper/invoiceApi";
-import { currentDate, dateToString } from "../assets/helper/Helpers";
+import {
+  fetchReport,
+  invoiceDelete,
+  invoiceExport,
+  invoiceStats,
+} from "../assets/api/InvoiceApi";
+import { currentDate, dateToString } from "../assets/api/Helpers";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 
@@ -44,18 +49,17 @@ const InvoiceReport = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.get(`${base_url}invoice/api/summary`, {
-        params: {
-          ...filters,
-        },
-      });
-
+      let params = {
+        ...filters,
+      };
+      const response = await invoiceStats(params);
+      // console.log(response);
       setSummary((prev) => ({
         ...prev,
-        totalInvoices: response.data.totalInvoices,
-        filteredCount: response.data.filteredCount,
-        filteredTotalReceived: response.data.filteredTotalReceived,
-        filteredTotalRemaining: response.data.filteredTotalRemaining,
+        totalInvoices: response.totalInvoices,
+        filteredCount: response.filteredCount,
+        filteredTotalReceived: response.filteredTotalReceived,
+        filteredTotalRemaining: response.filteredTotalRemaining,
       }));
     } catch (error) {
       console.error("Error fetching invoice data:", error);
@@ -67,18 +71,17 @@ const InvoiceReport = () => {
   // Fetch data with pagination and filters
   const fetchData = async () => {
     setIsLoading(true);
-    const apiEndpoint = "http://localhost:8080/invoice/invoices";
-    try {
-      const response = await axios.get(`${base_url}invoice/reports/invoices`, {
-        params: {
-          page: pagination.page,
-          pageSize: pagination.pageSize,
-          ...filters,
-        },
-      });
 
-      setData(response.data.invoices);
-      setPagination((prev) => ({ ...prev, total: response.data.total }));
+    try {
+      let params = {
+        page: pagination.page,
+        pageSize: pagination.pageSize,
+        ...filters,
+      };
+      const response = await fetchReport(params);
+
+      setData(response.invoices);
+      setPagination((prev) => ({ ...prev, total: response.total }));
     } catch (error) {
       console.error("Error fetching invoice data:", error);
     } finally {
@@ -87,18 +90,17 @@ const InvoiceReport = () => {
   };
 
   // Export to Excel using ExcelJS
-  const handleExportExcel = async (gstType, type = "") => {
+  const handleExport = async (gstType, type = "") => {
     setIsLoading(true);
-    try {
-      const response = await axios.get(`${base_url}invoice/api/exports`, {
-        params: {
-          gstType,
-          ...filters,
-        },
-        responseType: "blob",
-      });
 
-      const csvText = await response.data.text();
+    try {
+      let params = {
+        gstType,
+        ...filters,
+      };
+      const response = await invoiceExport(params);
+
+      const csvText = await response.text();
       const cleanedCsvText = preprocessCsvData(csvText);
       if (gstType === "GST" && type === "excel")
         await convertCsvToExcel(
@@ -163,21 +165,25 @@ const InvoiceReport = () => {
 
   const preprocessCsvData = (csvString) => {
     const lines = csvString.trim().split("\n");
-    const headers = lines[0].split(",").map((h) => h.replace(/^"|"$/g, "")); // Clean headers
-    const rows = lines.slice(1).map((line) =>
-      line.split(",").map((cell, i) => {
-        const cleanCell = cell.replace(/^"|"$/g, ""); // Remove surrounding quotes
+    const headers = lines[0]
+      .split(",")
+      .map((h) => h.trim().replace(/^"|"$/g, ""));
+
+    const rows = lines.slice(1).map((line) => {
+      const cells = line.split(",").map((cell, i) => {
+        const cleanCell = cell.trim().replace(/^"|"$/g, "");
         if (
           headers[i].toLowerCase().includes("date") &&
-          cleanCell.match(/^\d{4}-\d{2}-\d{2}T/)
+          /^\d{4}-\d{2}-\d{2}T/.test(cleanCell)
         ) {
           return dateToString(cleanCell);
         }
         return cleanCell;
-      })
-    );
+      });
+      return cells.join(",");
+    });
 
-    return [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+    return [headers.join(","), ...rows].join("\n");
   };
 
   const convertCsvToPdf = (csvString, fileName = "invoices.pdf") => {
@@ -297,21 +303,21 @@ const InvoiceReport = () => {
           className="sm:w-40 w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <button
-          onClick={() => handleExportExcel("GST", "excel")}
+          onClick={() => handleExport("GST", "excel")}
           disabled={isLoading}
           className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition"
         >
           {isLoading ? "Exporting..." : "Export GST Reports"}
         </button>
         <button
-          onClick={() => handleExportExcel("both", "excel")}
+          onClick={() => handleExport("both", "excel")}
           disabled={isLoading}
           className="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-green-700 transition"
         >
           {isLoading ? "Exporting..." : "Export Reports"}
         </button>
         <button
-          onClick={() => handleExportExcel("both", "pdf")}
+          onClick={() => handleExport("both", "pdf")}
           disabled={isLoading}
           className="w-full sm:w-auto bg-red-600 text-white px-4 py-2 rounded-lg shadow-md hover:bg-red-700 transition"
         >

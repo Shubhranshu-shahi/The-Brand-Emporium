@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { invoiceGenrate, updateInvoice } from "../assets/helper/invoiceApi";
+import { invoiceGenrate, updateInvoice } from "../assets/api/InvoiceApi";
 
 import CustomerDetails from "./CustomerDetails";
 import InvoiceDetails from "./InvoiceDetails";
 import ProductTable from "./ProductTable";
 import TotalSummaryCard from "./TotalSummaryCard";
-import { productById } from "../assets/helper/productApi";
+import { productById } from "../assets/api/productApi";
 
 export default function EditSalesForm({ invoiceNumber }) {
   const navigate = useNavigate();

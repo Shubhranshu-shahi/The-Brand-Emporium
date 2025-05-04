@@ -2,10 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { Eye, X } from "lucide-react";
 
-import { currentDate, currentDateAndTime } from "../assets/helper/Helpers";
-import { customerByPhone, customerInsert } from "../assets/helper/customerApi";
-import { invoiceInsert } from "../assets/helper/invoiceApi";
-import { productById, productInsert } from "../assets/helper/productApi";
+import { currentDate, currentDateAndTime } from "../assets/api/Helpers";
+import { customerByPhone, customerInsert } from "../assets/api/customerApi";
+import { invoiceInsert } from "../assets/api/InvoiceApi";
+import { productById, productInsert } from "../assets/api/productApi";
 
 import TotalSummaryCard from "./TotalSummaryCard";
 import CustomerDetails from "./CustomerDetails";
