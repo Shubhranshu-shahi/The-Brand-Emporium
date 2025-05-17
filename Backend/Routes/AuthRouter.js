@@ -10,7 +10,7 @@ const ensureAuth = require("../Middleware/Auth");
 const {
   singupValidation,
   loginValidation,
-} = require("../Middleware/authValidation");
+} = require("../Middleware/AuthValidation");
 
 const router = require("express").Router();
 
