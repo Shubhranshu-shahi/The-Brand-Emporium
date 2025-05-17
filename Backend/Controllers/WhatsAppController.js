@@ -108,8 +108,8 @@ const sendStockUpdate = async (req, res) => {
                 {
                   type: "body",
                   parameters: [
-                    { type: "text", text: brands },
                     { type: "text", text: off },
+                    { type: "text", text: brands },
                   ],
                 },
               ],
