@@ -88,7 +88,7 @@ const sendStockUpdate = async (req, res) => {
             to: `91${row.phone}`,
             type: "template",
             template: {
-              name: "new_stock_update", // removed trailing space
+              name: "new_stock_update",
               language: {
                 code: "en",
               },

@@ -5,6 +5,7 @@ const {
   productInsert,
   productUpdate,
   productDelete,
+  productSearchName,
 } = require("../Controllers/ProductController");
 // const { productValidation } = require("../Middleware/ProductsValidations");
 
@@ -15,5 +16,6 @@ router.get("/:id", productByID);
 router.post("/", productInsert);
 router.put("/:id", productUpdate);
 router.delete("/:id", productDelete);
+router.get("/prod/search", productSearchName);
 
 module.exports = router;

@@ -113,10 +113,31 @@ const productUpdate = async (req, res) => {
     });
   }
 };
+
+const productSearchName = async (req, res) => {
+  const { name } = req.query;
+
+  console.log("Product name query:", name);
+
+  if (!name) {
+    return res.status(400).json({ message: "Product name query is required" });
+  }
+
+  try {
+    const regex = new RegExp(name, "i"); // 'i' = case-insensitive
+    const products = await ProductModal.find({ itemName: regex }).limit(5); // Limit to top 10 results
+    res.json({ products });
+  } catch (err) {
+    console.error("Error searching products:", err);
+    res.status(500).json({ message: "Server error while searching products" });
+  }
+};
+
 module.exports = {
   getAllProduct,
   productInsert,
   productByID,
   productDelete,
   productUpdate,
+  productSearchName,
 };
