@@ -173,7 +173,7 @@ function EditAddItemForm({ state }) {
       newErrors.mrp = "MRP is required";
     }
 
-    if (!formData.discountSale.trim()) {
+    if (!formData.discountSale) {
       newErrors.discountSale = "Percentage is required";
     }
 

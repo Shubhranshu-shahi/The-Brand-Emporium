@@ -235,10 +235,17 @@ function AddItemForm() {
             <div>
               <input
                 type="text"
-                {...register("discountSale")}
+                {...register("discountSale", {
+                  required: "Discount percent is required",
+                })}
                 placeholder="Disc. on MRP"
                 className="w-full p-2 border rounded"
               />
+              {errors.discountSale && (
+                <p className="text-red-500 text-sm col-span-3">
+                  {errors.discountSale.message}
+                </p>
+              )}
             </div>
           </div>
 
